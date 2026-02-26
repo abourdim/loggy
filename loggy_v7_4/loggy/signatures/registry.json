@@ -1,0 +1,4227 @@
+[
+    {
+        "description": "Lock action doesn't take effect",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "PowerBoardHAL",
+        "name": "ErrorLockingFailed",
+        "uid": 1,
+        "troubleshootingSteps": "1. Check lock is not blocked by some object\n2. Check/fix/replace lock\n3. Power Cycle Charging Station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "EV41: Reactive current was detected, increasing minimum limit",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "PowerBoardHAL",
+        "name": "ErrorReactiveCurrentDetected",
+        "uid": 2,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "EV41: Overriding Effective Limits",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "PowerBoardHAL",
+        "name": "ErrorReactiveCurrentOverrideSWLimit",
+        "uid": 3,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Session stop because of reactive current level",
+        "errorCode": 4,
+        "errorType": "warning_reset_current_session",
+        "module": "PowerBoardHAL",
+        "name": "ErrorReactiveCurrentOverrideForbidden",
+        "uid": 4,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Low current on M2 connector",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWSpecificHALZr",
+        "name": "ErrorM2LowCurrent",
+        "uid": 5,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/connect another consumer\n3. Verify M2LowCurrentThreshold_mA value in ihal/ihal.properties config",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Unknown",
+        "errorCode": 0,
+        "errorType": "warning_reset_current_session",
+        "module": "HWPowerBoardStopCode",
+        "name": "InvalidCode",
+        "uid": 6,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "An internal fault of the IMD unit happened outside 1s after closing relaysr",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "BENDER_ERROR",
+        "uid": 7,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n3. Power Cycle Charging Station\n4. Check Bender unit connection to Power Board\n5. Replace Bender unit\n6. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #1 of IMD module) was detected by the IMD unit outside 1s after closing relays",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "BENDER_FAULT_1",
+        "uid": 8,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer\n3. Check Bender unit connection to Power Board\n4. Replace Bender unit\n5. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #2 of IMD module) was detected by the IMD unit outside 1s after closing relays",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "BENDER_FAULT_2",
+        "uid": 9,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer\n3. Check Bender unit connection to Power Board\n4. Replace Bender unit\n5. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overtemperature 1",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERTEMPERATURE_1",
+        "uid": 10,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overtemperature 2",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERTEMPERATURE_2",
+        "uid": 11,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Hard overcurrent",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "HARD_OVERCURRENT",
+        "uid": 12,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Power Cycle charging station\n2. Use another EV/connect another consumer\n3. Check for short-circuits\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overvoltage",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERVOLTAGE",
+        "uid": 13,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Verify correct Power Board version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Undervoltage",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "UNDERVOLTAGE",
+        "uid": 14,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Verify correct PB version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "High frequency",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "HIGH_FREQUENCY",
+        "uid": 15,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Verify correct Power Board version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Low frequency",
+        "errorCode": 10,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "LOW_FREQUENCY",
+        "uid": 16,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Verify correct PB version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Ground fault",
+        "errorCode": 11,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "GROUND_FAULT",
+        "uid": 17,
+        "troubleshootingSteps": "1. Check/restore earth connection\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "CT RCM fault",
+        "errorCode": 12,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "CT_RCM_FAULT",
+        "uid": 18,
+        "troubleshootingSteps": "1. Power Cycle Charging station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Proximity changed during charging process",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PROXIMITY",
+        "uid": 19,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Check/replace charging cable\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase 2 and 3 missing",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PHASE_2_AND_3_MISSING",
+        "uid": 20,
+        "troubleshootingSteps": "1. Verify 3 phase station is not connected to 1 phase grid\n2. Check/fix grid state and connection \n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase sequence error",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PHASE_SEQUENCE_ERROR",
+        "uid": 21,
+        "troubleshootingSteps": "1. Check/fix phases connection: make sure it follows grid layout\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Contactors welded",
+        "errorCode": 16,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "CONTACTORS_WELDED",
+        "uid": 22,
+        "troubleshootingSteps": "1. Validate relays integrity\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Code integrity fault",
+        "errorCode": 17,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "CODE_INTEGRITY_FAULT",
+        "uid": 23,
+        "troubleshootingSteps": "1. Power Cycle Charging station\n2. Reflash Power Board firmware\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Meter fault",
+        "errorCode": 18,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "METER_FAULT",
+        "uid": 24,
+        "troubleshootingSteps": "1. Power Cycle Charging station\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "An internal fault of the IMD unit happened within 1s after closing relays",
+        "errorCode": 19,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "IMMEDIATE_BENDER_ERROR",
+        "uid": 25,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n3. Power Cycle Charging Station\n4. Check Bender unit connection to Power Board\n5. Replace Bender unit\n6. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #1 of IMD module) was detected by the IMD unit within 1s after closing relays",
+        "errorCode": 20,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "IMMEDIATE_BENDER_FAULT_1",
+        "uid": 26,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n3. Power Cycle Charging Station\n4. Check Bender unit connection to Power Board\n5. Check charging cable and socket\n6. Replace Bender unit\n7. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #2 of IMD module) was detected by the IMD unit within 1s after closing relays",
+        "errorCode": 21,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "IMMEDIATE_BENDER_FAULT_2",
+        "uid": 27,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n3. Power Cycle Charging Station\n4. Check Bender unit connection to Power Board\n5. Check charging cable and socket\n6. Replace Bender unit\n7. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Idle current",
+        "errorCode": 22,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "IDLE_CURRENT",
+        "uid": 28,
+        "troubleshootingSteps": "1. Inspect connections\n2. Power Cycle Charging Station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Unexpected main relay enable",
+        "errorCode": 23,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "UNEXPECTED_MAIN_RELAY_ENABLE",
+        "uid": 29,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Unexpected aux relay enable",
+        "errorCode": 24,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "UNEXPECTED_AUX_RELAY_ENABLE",
+        "uid": 30,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Unexpected fault reset",
+        "errorCode": 25,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "UNEXPECTED_FAULT_RESET",
+        "uid": 31,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board\n4. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Invalid proximity",
+        "errorCode": 26,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "INVALID_PROXIMITY",
+        "uid": 32,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Check/replace charging cable",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase 2 missing",
+        "errorCode": 27,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PHASE_2_MISSING",
+        "uid": 33,
+        "troubleshootingSteps": "1. Verify phase B grid status",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase 3 missing",
+        "errorCode": 28,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PHASE_3_MISSING",
+        "uid": 34,
+        "troubleshootingSteps": "1. Verify phase C grid status",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main relay 1 stuck open",
+        "errorCode": 29,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_RELAY1_STUCK_OPEN",
+        "uid": 35,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main relay 2 stuck open",
+        "errorCode": 30,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_RELAY2_STUCK_OPEN",
+        "uid": 36,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main relay 1 stuck closed",
+        "errorCode": 31,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_RELAY1_STUCK_CLOSED",
+        "uid": 37,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main relay 2 stuck closed",
+        "errorCode": 32,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_RELAY2_STUCK_CLOSED",
+        "uid": 38,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Soft overcurrent",
+        "errorCode": 33,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "SOFT_OVERCURRENT",
+        "uid": 39,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Restart charging session\n2. Power Cycle Charging Station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "Host command timeout",
+        "errorCode": 34,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "HOST_COMMAND_TIMEOUT",
+        "uid": 40,
+        "troubleshootingSteps": "Only if persists\n1. Replace cable from Power Board to Main AC\n2. Replace Power Board\n3. Replace Main AC",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main 3 phase mode not available",
+        "errorCode": 35,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_3_PHASE_MODE_NOT_AVAILABLE",
+        "uid": 41,
+        "troubleshootingSteps": "1. Validate grid settings:\npowerboard.onePhaseOverride in ihal/ihal.properties\nACCharging.phaseCountBasicRequest in ChargerApp/ChargerAppConfig.properties",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Invalid hard current limit",
+        "errorCode": 36,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "INVALID_HARD_CURRENT_LIMIT",
+        "uid": 42,
+        "troubleshootingSteps": "1. Validate Rotary Switch position",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Power failure",
+        "errorCode": 37,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "POWER_FAILURE",
+        "uid": 43,
+        "troubleshootingSteps": "1. Validate grid state and connection",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Bender init error",
+        "errorCode": 38,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "BENDER_INIT_ERROR",
+        "uid": 44,
+        "troubleshootingSteps": "1.  Power Cycle Charging Station\n2. Replace Bender",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Bender self test error",
+        "errorCode": 39,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "BENDER_SELF_TEST_ERROR",
+        "uid": 45,
+        "troubleshootingSteps": "1.  Power Cycle Charging Station\n2. Replace Bender",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Main relays stuck open",
+        "errorCode": 40,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MAIN_RELAYS_STUCK_OPEN",
+        "uid": 46,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Low temperature fault 1",
+        "errorCode": 41,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "LOW_TEMP_FAULT_1",
+        "uid": 47,
+        "troubleshootingSteps": "1. Verify environment conditions\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Low temperature fault 2",
+        "errorCode": 42,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "LOW_TEMP_FAULT_2",
+        "uid": 48,
+        "troubleshootingSteps": "1. Verify environment conditions\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "An internal fault of the IMD unit is present",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "IMDBenderError",
+        "uid": 49,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer\n3. Check Bender unit connection to Power Board\n4. Replace Bender unit\n5. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #1 of IMD module) is present",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "IMDBenderDC1X6Fault",
+        "uid": 50,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer\n3. Check Bender unit connection to Power Board\n4. Replace Bender unit\n5. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "A fault (leakage indicated by output #2 of IMD module) is present",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "IMDBenderDC2X30Fault",
+        "uid": 51,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer\n3. Check Bender unit connection to Power Board\n4. Replace Bender unit\n5. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "CT-based RCM fault indicator",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "CTBasedRCMFaultIndicator",
+        "uid": 52,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Meter fault",
+        "errorCode": 4,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "MeterFault",
+        "uid": 53,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Undervoltage",
+        "errorCode": 5,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "Undervoltage",
+        "uid": 54,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Verify correct PB version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overvoltage",
+        "errorCode": 6,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "Overvoltage",
+        "uid": 55,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Verify correct Power Board version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Hard overcurrent",
+        "errorCode": 7,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "HardOvercurrent",
+        "uid": 56,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Power Cycle charging station\n2. Use another EV/connect another consumer\n3. Check for short-circuits\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Soft overcurrent",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "SoftOvercurrent",
+        "uid": 57,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Restart charging session\n2. Power Cycle Charging Station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Idle current",
+        "errorCode": 9,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "IdleCurrent",
+        "uid": 58,
+        "troubleshootingSteps": "1. Inspect connections\n2. Power Cycle Charging Station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "High grid frequency",
+        "errorCode": 10,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "HighGridFrequency",
+        "uid": 59,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Verify correct Power Board version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Low grid frequency",
+        "errorCode": 11,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "LowGridFrequency",
+        "uid": 60,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Verify correct PB version is installed (US vs EU variant)\n3. Power Cycle Charging station\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase sequence error",
+        "errorCode": 12,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "PhaseSequenceError",
+        "uid": 61,
+        "troubleshootingSteps": "1. Check/fix phases connection: make sure it follows grid layout\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Earth fault",
+        "errorCode": 13,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "EarthFault",
+        "uid": 62,
+        "troubleshootingSteps": "1. Check/restore earth connection\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Fuse fault",
+        "errorCode": 15,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "FuseFault",
+        "uid": 63,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Replace M2 line fuse\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overtemperature1",
+        "errorCode": 16,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "Overtemperature1",
+        "uid": 64,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Overtemperature2",
+        "errorCode": 17,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "Overtemperature2",
+        "uid": 65,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Host command timeout",
+        "errorCode": 18,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "HostCommandTimeout",
+        "uid": 66,
+        "troubleshootingSteps": "1. Replace cable from Power Board to Main AC\n2. Replace Power Board\n3. Replace Main AC",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Power Failure Warning",
+        "errorCode": 19,
+        "errorType": "locked_warning",
+        "module": "PowerBoardFault",
+        "name": "PowerFailureWarning",
+        "uid": 67,
+        "troubleshootingSteps": "1. Verify grid status and connection",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Power Failure Fault",
+        "errorCode": 20,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "PowerFailureFault",
+        "uid": 68,
+        "troubleshootingSteps": "1. Validate grid state and connection",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase B Loss",
+        "errorCode": 21,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "PhaseBLoss",
+        "uid": 69,
+        "troubleshootingSteps": "1. Verify phase B grid status",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Phase C Loss",
+        "errorCode": 22,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "PhaseCLoss",
+        "uid": 70,
+        "troubleshootingSteps": "1. Verify phase C grid status",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Current limit rotary switch is in incorrect position",
+        "errorCode": 23,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "RotarySwitchInvalid",
+        "uid": 83,
+        "troubleshootingSteps": "1. Validate Rotary Switch position",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Power Board is not ready to work. Registers mismatch.",
+        "errorCode": 32,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "NotReadyRegistersMismatch",
+        "uid": 71,
+        "troubleshootingSteps": "1. Validate software version is correct",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Power Board is not ready to work",
+        "errorCode": 33,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "NotReady",
+        "uid": 72,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Under/Over voltage warning",
+        "errorCode": 31,
+        "errorType": "warning",
+        "module": "PowerBoardFault",
+        "name": "VoltageWarning",
+        "uid": 73,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "PWM is not changing",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "HWBaseHAL",
+        "name": "PWMIsNotChanging",
+        "uid": 74,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "EVIC blocked condition detected",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "HWBaseHAL",
+        "name": "EvicBlocked",
+        "uid": 75,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer\n3. Reboot charging station",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Temperature 1 error",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "Temperature1Error",
+        "uid": 76,
+        "troubleshootingSteps": "1. Check/fix cooling system\n2. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Temperature 2 error",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "Temperature2Error",
+        "uid": 77,
+        "troubleshootingSteps": "1. Check/fix cooling system\n2. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Invalid FSM transition",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "InvalidFSMTransition",
+        "uid": 78,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Charging session stopped by error",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "CommonEVIC",
+        "name": "GlobalStop",
+        "uid": 79,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Control Pilot diode error",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "CPNoDiode",
+        "uid": 80,
+        "connectorRelated": false,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another charging cable\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Unintended Evic reboot detected",
+        "errorCode": 5,
+        "errorType": "warning",
+        "module": "CommonEVIC",
+        "name": "Reboot",
+        "uid": 81,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "CP state E detected",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "CPStateE",
+        "uid": 82,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another charging cable\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 1 time"
+            }
+        ]
+    },
+    {
+        "description": "Can not recover CP State",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_STATE_RECOVER",
+        "uid": 84,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Problem creating server",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_SERVER_CREATE_FAILED",
+        "uid": 85,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Got event X in state Y but car is not in charging state!",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_MESSAGE_IN_WRONG_STATE",
+        "uid": 86,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "EXI encoding failed",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_EXI_ENCODING_FAILED",
+        "uid": 87,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "PreCharge took longer than timeoutPreChargeVoltageRaise_ms",
+        "errorCode": 4,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_PRECHARGE_VOLTAGE_RAISE_TIMEOUT",
+        "uid": 88,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[Current Demand] Negative Current Value",
+        "errorCode": 5,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_NEGATIVE_CURRENT",
+        "uid": 89,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "PreCharge Voltage_mV or/and Current_mA above max values",
+        "errorCode": 6,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_OVERLOAD",
+        "uid": 90,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[V2G-DC-241] Resuming session is not supported in DIN",
+        "errorCode": 7,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_RESUMING_NOT_SUPPORTED",
+        "uid": 91,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[LogicStateMachine] There is still some error can not unpause",
+        "errorCode": 8,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_CANT_UNPAUSE",
+        "uid": 92,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[LogicStateMachine] In current state EV Restart is not allowed",
+        "errorCode": 9,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_RESTART_NOT_ALLOWED",
+        "uid": 93,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "ERROR_NORMALIZATION_OF_NOT_RAISED_ERROR",
+        "errorCode": 10,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_NORMALIZATION_OF_NOT_RAISED_ERROR",
+        "uid": 94,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[LogicStateMachine] PWM value has passed all conditions",
+        "errorCode": 11,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_PWM_CONTROL",
+        "uid": 95,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "State machine exit",
+        "errorCode": 12,
+        "errorType": "error_block_all_sessions",
+        "module": "InnerSM",
+        "name": "ERROR_UNAVAILABLE",
+        "uid": 96,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[Current Demand] Negative Voltage Value",
+        "errorCode": 13,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_NEGATIVE_VOLTAGE",
+        "uid": 97,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Communication Blocked",
+        "errorCode": 14,
+        "errorType": "error",
+        "module": "InnerSM",
+        "name": "ERROR_COMMUNICATION_BLOCKED",
+        "uid": 98,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Stuck in the undefined logic state",
+        "errorCode": 15,
+        "errorType": "error",
+        "module": "InnerSM",
+        "name": "STUCK_IN_UNDEFINED_LOGIC_STATE",
+        "uid": 99,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "State F Unavailable",
+        "errorCode": 16,
+        "errorType": "error_block_all_sessions",
+        "module": "InnerSM",
+        "name": "ERROR_UNAVAILABLE_STATE_F",
+        "uid": 100,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[LogicStateMachine] Not controlling PWM. Skipping EventCPEVCCRestart",
+        "errorCode": 17,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_RESTART_NOT_ALLOWED_PWM_CONTROLLED_OUTSIDE",
+        "uid": 101,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "[LogicStateMachine] SM is not configured to handle outer PWM Control",
+        "errorCode": 18,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "ERROR_PWM_CONTROL_OUTSIDE_NOT_ALLOWED",
+        "uid": 102,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Required Meter not found",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "MeterListener",
+        "name": "RequiredMeterNotFound",
+        "uid": 103,
+        "troubleshootingSteps": "1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties\n2. Reboot charging station\n3. Check/fix meter connection\n4. Check/replace meter\n\n",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Required Meter missing",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "MeterListener",
+        "name": "RequiredMeterMissing",
+        "uid": 104,
+        "troubleshootingSteps": "1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties\n2. Reboot charging station\n3. Check/fix meter connection\n4. Check/replace meter\n",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Preferred Meter missing",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "MeterListener",
+        "name": "PreferredMeterMissing",
+        "uid": 105,
+        "troubleshootingSteps": "1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties\n2. Reboot charging station\n3. Check/fix meter connection\n4. Check/replace meter\n",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "V2G connection closed",
+        "errorCode": 1,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_V2G_TCP_ConnectionClosed",
+        "uid": 106,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G requested energy type is not supported or could not be found in list of energy types",
+        "errorCode": 2,
+        "errorType": "warning_reset_current_session",
+        "module": "HLCStateMachine",
+        "name": "Error_Wrong_ChargeParameters",
+        "uid": 107,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G Can not get schema to use",
+        "errorCode": 3,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_SupportedSchemaNotFound",
+        "uid": 108,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G wrong sequence",
+        "errorCode": 4,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_V2G_SessionSequenceError",
+        "uid": 109,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G PrechargeRes timeout",
+        "errorCode": 5,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PrechargeResTimeout",
+        "uid": 110,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CurrentDemandRes timeout",
+        "errorCode": 6,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CurrentDemandResTimeout",
+        "uid": 111,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G WeldingDetectionRes timeout",
+        "errorCode": 7,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_WeldingDetectionResTimeout",
+        "uid": 112,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CertificateInstallationReq empty exi",
+        "errorCode": 8,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CertificateInstallationReq_EmptyExi",
+        "uid": 113,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CertificateUpdateReq empty exi",
+        "errorCode": 9,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CertificateUpdateReq_EmptyExi",
+        "uid": 114,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CertificateUpdateRes timeout",
+        "errorCode": 10,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CertificateUpdate_NoActivityTimeout",
+        "uid": 115,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CertificateInstallationRes timeout",
+        "errorCode": 11,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CertificateInstallation_NoActivityTimeout",
+        "uid": 116,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G pre com voltage check failed",
+        "errorCode": 12,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PreComVoltageCheck",
+        "uid": 117,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CableCheckRes timeout",
+        "errorCode": 13,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CableCheck_NoActivityTimeout",
+        "uid": 118,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G PrechargeRes timeout",
+        "errorCode": 14,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_Precharge_NoActivityTimeout",
+        "uid": 119,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G energy transfer is not allowed during precharge",
+        "errorCode": 15,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_Precharge_CarIsNotReadyForPowerDelivery",
+        "uid": 120,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G energy transfer is not allowed during power delivery start(AC)",
+        "errorCode": 16,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PowerDeliveryStartAC_CarIsNotReadyForPD",
+        "uid": 121,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G energy transfer is not allowed during V2GReadyToCharge state",
+        "errorCode": 17,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_ReadyToCharge_CarIsNotReadyForPowerDelivery",
+        "uid": 122,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G energy transfer is not allowed during V2GCurrentDemandMessaging state",
+        "errorCode": 18,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_CurrentDemand_CarIsNotReadyForPowerDelivery",
+        "uid": 123,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G Error during sending PowerDeliveryReplyResBpt",
+        "errorCode": 19,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_DcBpt_SendPowerDeliveryReplyError",
+        "uid": 124,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G session stop",
+        "errorCode": 0,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Info_V2G_SessionStop",
+        "uid": 125,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G PowerDeliveryRes timeout during PowerDelivery start phase",
+        "errorCode": 20,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PowerDeliveryStartTimeout",
+        "uid": 126,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G CurrentDemandReq has not been sent",
+        "errorCode": 21,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_NoCurrentDemandRequest",
+        "uid": 127,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G Error during sending CurrentDemandResBpt",
+        "errorCode": 22,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_DcBpt_SendCurrentDemandError",
+        "uid": 136,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G PowerDeliveryRes timeout during PowerDelivery stop phase",
+        "errorCode": 23,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PowerDeliveryStopResTimeout",
+        "uid": 137,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "V2G unknown error",
+        "errorCode": 24,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_V2G_Unknown",
+        "uid": 138,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 3 times"
+            }
+        ]
+    },
+    {
+        "description": "EV does not obey imposed limit",
+        "errorCode": 6,
+        "errorType": "warning_reset_current_session",
+        "module": "PowerBoardHAL",
+        "name": "Error_EVNotObeyImposedLimit",
+        "uid": 139,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Earth relay stuck open",
+        "errorCode": 43,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "EARTH_RELAY_STUCK_OPEN",
+        "uid": 140,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Earth relay stuck closed",
+        "errorCode": 44,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "EARTH_RELAY_STUCK_CLOSED",
+        "uid": 141,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Inspect Power Board and Main AC and verify there is no unexpected wires connected\n3. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Overtemperature 3",
+        "errorCode": 45,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERTEMPERATURE_3",
+        "uid": 142,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Low temp fault 3",
+        "errorCode": 46,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "LOW_TEMP_FAULT_3",
+        "uid": 143,
+        "troubleshootingSteps": "1. Verify environment conditions\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Relay hold voltage fault",
+        "errorCode": 47,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "RELAY_HOLD_VOLTAGE_FAULT",
+        "uid": 144,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Relay full voltage fault",
+        "errorCode": 48,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "RELAY_FULL_VOLTAGE_FAULT",
+        "uid": 145,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "CT test fault",
+        "errorCode": 49,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "CT_TEST_FAULT",
+        "uid": 146,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Socket variant selection fault",
+        "errorCode": 50,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "VARIANT_SOCKET_FAULT",
+        "uid": 147,
+        "troubleshootingSteps": "1. Verify operation variant jumper position\n2. Power Cycle Charging Station\n3. Replace Power Board\"",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Overtemperature 4",
+        "errorCode": 51,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERTEMPERATURE_4",
+        "uid": 148,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Low temperature fault 4",
+        "errorCode": 52,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "LOW_TEMP_FAULT_4",
+        "uid": 149,
+        "troubleshootingSteps": "1. Verify environment conditions\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "NVM data corrupted",
+        "errorCode": 53,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "NVM_DATA_FAULT",
+        "uid": 150,
+        "troubleshootingSteps": "1. Power Cycle Charging Session\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Phase power imbalance detected",
+        "errorCode": 0,
+        "errorType": "warning_reset_current_session",
+        "module": "EnergyManagerPowerBalance",
+        "name": "ENERGY_MANAGER_POWER_IMBALANCE_DETECTED",
+        "uid": 151,
+        "troubleshootingSteps": "No action is required",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "PEN error",
+        "errorCode": 0,
+        "errorType": "warning_reset_current_session",
+        "module": "HWPowerBoardStopCodeRu",
+        "name": "PEN_ERROR",
+        "uid": 152
+    },
+    {
+        "description": "PEN fault",
+        "errorCode": 1,
+        "errorType": "warning_reset_current_session",
+        "module": "HWPowerBoardStopCodeRu",
+        "name": "PEN_FAULT",
+        "uid": 153
+    },
+    {
+        "description": "NE fault",
+        "errorCode": 2,
+        "errorType": "warning_reset_current_session",
+        "module": "HWPowerBoardStopCodeRu",
+        "name": "NE_FAULT",
+        "uid": 154
+    },
+    {
+        "description": "Temperature 1 is less than the lower limit",
+        "errorCode": 24,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "Temperature1LessThanLowerLimit",
+        "uid": 155,
+        "troubleshootingSteps": "1. Check/fix the heating system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Temperature 2 is less than the lower limit",
+        "errorCode": 25,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "Temperature2LessThanLowerLimit",
+        "uid": 156,
+        "troubleshootingSteps": "1. Check/fix the heating system\n2. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "User button is stuck",
+        "errorCode": 26,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFaultRu",
+        "name": "UserButtonStuck",
+        "uid": 157
+    },
+    {
+        "description": "Invalid RT Config packet received",
+        "errorCode": 27,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFaultRu",
+        "name": "InvalidRTConfig",
+        "uid": 158
+    },
+    {
+        "description": "PEN fault",
+        "errorCode": 28,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFaultRu",
+        "name": "PENFault",
+        "uid": 159
+    },
+    {
+        "description": "N to E voltage fault",
+        "errorCode": 29,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFaultRu",
+        "name": "NEFault",
+        "uid": 160
+    },
+    {
+        "description": "PEN module error",
+        "errorCode": 30,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFaultRu",
+        "name": "PENError",
+        "uid": 161
+    },
+    {
+        "description": "Invalid PP State in CP State B",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWBaseHAL",
+        "name": "InvalidPPStateInCPStateB",
+        "connectorRelated": true,
+        "uid": 162,
+        "troubleshootingSteps": "1. Check/replace charging cable\n2. Power Cycle Charging station\n3. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 1 time"
+            }
+        ]
+    },
+    {
+        "description": "Wait cable unplug after IMD error",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWSpecificHAL",
+        "name": "WAIT_CABLE_UNPLUG_AFTER_IMD",
+        "uid": 163,
+        "troubleshootingSteps": "1. Unplug Cable\n2. Power Cycle Charging Session\n3. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "OCPP cannot connect to Central System",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "ocpp-cmd",
+        "name": "OCPP_CONNECTION_ERROR",
+        "uid": 164,
+        "troubleshootingSteps": "1. Check and fix OCPP Central System settings\n2. Check and fix network configuration and settings \n3. Restart charging station\n4. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 4 times"
+            }
+        ]
+    },
+    {
+        "description": "EEBus connection is lost",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "iotc-eebus-evcs",
+        "name": "EEBUS_LOST_CONNECTION",
+        "uid": 165,
+        "troubleshootingSteps": "1. Check and fix CEM settings\n2. Check and fix network configuration and settings \n3. Restart charging station\n4. Replace Main AC board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Blinking Red 4 times"
+            }
+        ]
+    },
+    {
+        "description": "Internal HAL error. Socket priority issue.",
+        "errorCode": 7,
+        "errorType": "warning_reset_current_session",
+        "module": "PowerBoardHAL",
+        "name": "ErrorStartingChargingOnInactiveConnector",
+        "uid": 166,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station",
+        "onSiteServiceRequired": false,
+        "hmiIndications": [
+            {
+                "customer": "Zr",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "Relay enable signal mismatch",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardHAL",
+        "name": "CONTACTORS_ENABLE_SIGNAL_MISMATCH",
+        "uid": 167,
+        "troubleshootingSteps": "1. Check the cable between Main Board and Power Board\n2. Replace the cable\nReplace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Feedback from PB doesn't match commands",
+        "errorCode": 10,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardHAL",
+        "name": "HOST_COMMAND_FEEDBACK_MISMATCH",
+        "uid": 168,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "No feedback from PB",
+        "errorCode": 11,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardHAL",
+        "name": "HOST_COMMAND_FEEDBACK_TIMEOUT",
+        "uid": 169,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Socket lock self-test failure",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCodeRu",
+        "name": "LOCK_TEST_FAULT",
+        "uid": 170,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check lock wiring\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Meter in error state",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "Eichrecht",
+        "name": "EICHRECHT_ERROR_STATE_TERMINAL",
+        "uid": 171
+    },
+    {
+        "description": "Meter temporarily unavailable",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "Eichrecht",
+        "name": "EICHRECHT_ERROR_STATE_UNAVAILABLE",
+        "uid": 172
+    },
+    {
+        "description": "Orphan session found",
+        "errorCode": 2,
+        "errorType": "warning_reset_current_session",
+        "module": "Eichrecht",
+        "name": "EICHRECHT_ERROR_STATE_ORPHAN_SESSION",
+        "uid": 173
+    },
+    {
+        "description": "Charging was not confirmed by confirmers. Timeout.",
+        "errorCode": 19,
+        "errorType": "warning_reset_current_session",
+        "module": "InnerSM",
+        "name": "CHARGING_CONFIRMATION_TIMEOUT",
+        "uid": 174,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Charging was declined by confirmers.",
+        "errorCode": 20,
+        "errorType": "warning_reset_current_session",
+        "module": "InnerSM",
+        "name": "CHARGING_CONFIRMATION_DECLINED",
+        "uid": 175,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "VAS server error ",
+        "errorCode": 1,
+        "errorType": "warning_reset_current_session",
+        "module": "VASServer",
+        "name": "VAS_SERVER_RECEIVE_TIMEOUT",
+        "uid": 176
+    },
+    {
+        "description": "CP line DCDC error",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "CPLineDCDCError",
+        "uid": 177,
+        "troubleshootingSteps": "1. Power cycle of Charging station\n2. Measure CP-line voltage\n3. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Overvoltage at battery side",
+        "errorCode": 12,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalMg",
+        "name": "Error_Battery_Overvoltage",
+        "uid": 178
+    },
+    {
+        "description": "Critical Comm Error",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_CriticalCommError",
+        "uid": 179
+    },
+    {
+        "description": "Phase Out Under-Voltage",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_PhaseOutUnderVoltageFault",
+        "uid": 180
+    },
+    {
+        "description": "Heatsink TempSensor fault",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_HeatsinkTempSensorFault",
+        "uid": 181
+    },
+    {
+        "description": "Flash checksum shutdown",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_FlashChecksumShutdown",
+        "uid": 182
+    },
+    {
+        "description": "Lca ovr curr shutdown",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaOvrCurrShgutdown",
+        "uid": 183
+    },
+    {
+        "description": "Dc link undervoltage shutdown",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU5",
+        "name": "ErrorMIU5_DcLinkUndervoltageShutdown",
+        "uid": 184
+    },
+    {
+        "description": "Emergency stop",
+        "errorCode": 19,
+        "errorType": "warning_reset_current_session",
+        "module": "HWSpecificHAL",
+        "name": "EmergencyStop",
+        "uid": 185,
+        "troubleshootingSteps": "1. Verify Emergency button is not pressed\n2. Check buttons' wiring or replace Emergency button\n3. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Authorization response performance timeout",
+        "errorCode": 25,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_AuthorizationResTimeout",
+        "uid": 186,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Service discovery response performance timeout",
+        "errorCode": 26,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_ServiceDiscoveryResTimeout",
+        "uid": 187,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Supported app protocol response performance timeout",
+        "errorCode": 27,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_SupportedAppProtocolResTimeout",
+        "uid": 188,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Session setup response performance timeout",
+        "errorCode": 28,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_SessionSetupResTimeout",
+        "uid": 189,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Service detail response performance timeout",
+        "errorCode": 29,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_ServiceDetailResTimeout",
+        "uid": 190,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Service selection response performance timeout",
+        "errorCode": 30,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_ServiceSelectionResTimeout",
+        "uid": 191,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Service selection response performance timeout",
+        "errorCode": 31,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_ChargeParameterDiscoveryResTimeout",
+        "uid": 192,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Cable check response performance timeout",
+        "errorCode": 32,
+        "errorType": "error",
+        "module": "HLCStateMachineDC",
+        "name": "Error_CableCheckResTimeout",
+        "uid": 193,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Power delivery start response performance timeout",
+        "errorCode": 33,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_PowerDeliveryStartResTimeout",
+        "uid": 194,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer"
+    },
+    {
+        "description": "Session stop response performance timeout",
+        "errorCode": 34,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_SessionStopResTimeout",
+        "uid": 195,
+        "troubleshootingSteps": "1. Reboot charging station"
+    },
+    {
+        "description": "Rectifier Connection Failed",
+        "errorCode": 20,
+        "errorType": "error_block_all_sessions",
+        "module": "HWSpecificHAL",
+        "name": "Error_RectifierConnectionFailed",
+        "uid": 196,
+        "troubleshootingSteps": "1. Check Rectifier connection to Dispenser\n2. Reboot Rectifier"
+    },
+    {
+        "description": "Contactor welded",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "ContactorWelded",
+        "uid": 197,
+        "troubleshootingSteps": "1. Check contactors\n2. Check wiring\n2. Power Cycle Charging Station",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Cable Check Fault",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "CableCheckFault",
+        "uid": 198,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Check Charging Cable connection\n3. Replace Charging Cable\n4. Check Power Socket connection\n5. Replace Power Socket\n6. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "IMD Fault",
+        "errorCode": 10,
+        "errorType": "error_block_all_sessions",
+        "module": "CommonEVIC",
+        "name": "IMDFault",
+        "uid": 199,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Check wiring\n3. Replace the Power Board/StarterKit",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "State change error",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "EnergyManager",
+        "name": "EM_state_change_error",
+        "uid": 200,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Start session failed",
+        "errorCode": 2,
+        "errorType": "warning_reset_current_session",
+        "module": "EnergyManager",
+        "name": "EM_start_session_error",
+        "uid": 201,
+        "troubleshootingSteps": "1. Restart charging session\n2. Reboot charging station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Lock is disconnected",
+        "errorCode": 21,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardHAL",
+        "name": "LockFailure",
+        "uid": 202,
+        "connectorRelated": true,
+        "troubleshootingSteps": "1. Check Lock cable is plugged in\n2. Replace Lock Cable\n3. Replace Lock\n4. Replace Power Board",
+        "onSiteServiceRequired": true,
+        "hmiIndications": [
+            {
+                "customer": "Ru",
+                "hmiIndicationDescription": "Solid Red"
+            }
+        ]
+    },
+    {
+        "description": "No meter values for Overcurrent Protection",
+        "errorCode": 1,
+        "errorType": "error",
+        "module": "SoftLimitMonitor",
+        "name": "MeterValuesNotReceived",
+        "uid": 203,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Overcurrent detected",
+        "errorCode": 2,
+        "errorType": "error",
+        "module": "SoftLimitMonitor",
+        "name": "OvercurrentDetected",
+        "uid": 204,
+        "troubleshootingSteps": "1. Restart charging session\n2. Power Cycle Charging Station\n3. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Connection established. Measurements Data Unavailable",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "MeterECR380D",
+        "name": "DataUnavailable",
+        "uid": 205,
+        "troubleshootingSteps": "1. Check meters' wiring",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Connection Failed",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "MeterECR380D",
+        "name": "ConnectionFailed",
+        "uid": 206,
+        "troubleshootingSteps": "1. Check meters' configuration\n2. Check meters' wiring\n3. Reboot charger\n4. Replace meter.",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "The data from Rectifier are not received after the system started, the timeout was reached. Builtin parameters are applied",
+        "errorCode": 24,
+        "errorType": "warning",
+        "module": "HWHalMg",
+        "name": "RectifierUnavailableOnStartup",
+        "uid": 207
+    },
+    {
+        "description": "Reading registers failed from Modbus meter",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "IotcMeterModbusGeneral",
+        "name": "DataUnavailable",
+        "uid": 208,
+        "connectorRelated": false,
+        "troubleshootingSteps": "Check meter wiring. Reboot charger. Replace meter.",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Connection Failed",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "IotcMeterModbusGeneral",
+        "name": "ConnectionFailed",
+        "uid": 209,
+        "connectorRelated": false,
+        "troubleshootingSteps": "1. Check meters' configuration\n2. Check meters' wiring\n3. Reboot charger\n4. Replace meter.",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Detecting Modbus meter failed",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "IotcMeterModbusGeneral",
+        "name": "AutoDetectionFailed",
+        "uid": 210,
+        "connectorRelated": false,
+        "troubleshootingSteps": "1. Check if correct meter is selected in configuration\n2. Check meters' wiring\n3. Reboot charger\n4. Replace meter.",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Cable check precondition: Invalid CP state",
+        "errorCode": 1,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionInvalidCPState",
+        "uid": 211
+    },
+    {
+        "description": "Cable check precondition: Invalid PP state",
+        "errorCode": 2,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionInvalidPPState",
+        "uid": 212
+    },
+    {
+        "description": "Cable check precondition: IMD failure",
+        "errorCode": 3,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionIMDFailure",
+        "uid": 213
+    },
+    {
+        "description": "Cable check precondition: Undervoltage",
+        "errorCode": 4,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionUndervoltage",
+        "uid": 214
+    },
+    {
+        "description": "Cable check precondition: Overvoltage",
+        "errorCode": 5,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionOvervoltage",
+        "uid": 215
+    },
+    {
+        "description": "Cable check precondition: rectifier not ready",
+        "errorCode": 6,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionRectifierNotReady",
+        "uid": 216
+    },
+    {
+        "description": "Cable check precondition: rectifier mode mismatch",
+        "errorCode": 7,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionRectifierModeMismatch",
+        "uid": 217
+    },
+    {
+        "description": "Cable check: short circuit test failed",
+        "errorCode": 8,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionShortCircuitTest",
+        "uid": 218
+    },
+    {
+        "description": "Cable check: IMD selftest detect failed",
+        "errorCode": 9,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionIMDSelftestDetectFailed",
+        "uid": 219
+    },
+    {
+        "description": "Cable check: IMD selftest clear failed",
+        "errorCode": 10,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionIMDSelftestClearFailed",
+        "uid": 220
+    },
+    {
+        "description": "Cable check: rectifier failed",
+        "errorCode": 11,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionRectifierFailed",
+        "uid": 221
+    },
+    {
+        "description": "Cable check: unexpected IMD event",
+        "errorCode": 12,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CableCheckPreconditionUnexpectedIMDEvent",
+        "uid": 222
+    },
+    {
+        "description": "Unexpected CP state change",
+        "errorCode": 13,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "UnexpectedCPStateChange",
+        "uid": 223,
+        "troubleshootingSteps": "1. Check/replace charging cable\n2. Use another EV/consumer\n3. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Unexpected PP state change",
+        "errorCode": 14,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "UnexpectedPPStateChange",
+        "uid": 224,
+        "troubleshootingSteps": "1. Check/replace charging cable\n2. Use another EV/consume\n3. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "IMD failure",
+        "errorCode": 15,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "IMDFailure",
+        "uid": 225
+    },
+    {
+        "description": "Overtemperature",
+        "errorCode": 16,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "Overtemperature",
+        "uid": 226,
+        "troubleshootingSteps": "1. Power off charging station\n2. Check the temperature of charger's components\n3. Find and remove the reason of overheating\n4. Wait until charging station get colder\n5. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "External emergency stop line was triggered",
+        "errorCode": 17,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "ExternalEmergencyStop",
+        "uid": 227,
+        "troubleshootingSteps": "1. Check Emergency button and wiring\n2. Check/replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Rectifier Connection Failed",
+        "errorCode": 18,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "RectifierConnectionFailed",
+        "uid": 228
+    },
+    {
+        "description": "Rectifier failure",
+        "errorCode": 19,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "RectifierFailure",
+        "uid": 229
+    },
+    {
+        "description": "Unexpected attempt to set new PWM duty ratio",
+        "errorCode": 20,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "UnexpectedCPPWMCommand",
+        "uid": 230,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Main board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Current ramp down timeout",
+        "errorCode": 21,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "CurrentRampDownTimeout",
+        "uid": 231
+    },
+    {
+        "description": "Power board fault",
+        "errorCode": 22,
+        "errorType": "error",
+        "module": "AcEvicGlobalStop",
+        "name": "PowerBoardFault",
+        "uid": 232,
+        "troubleshootingSteps": "1. Power Cycle Charging station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Watchdog interrupt during charging session",
+        "errorCode": 23,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "ChargingWatchdogInterruption",
+        "uid": 233,
+        "troubleshootingSteps": "1. Power Cycle Charging Station",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Rectifier temperature fault",
+        "errorCode": 24,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "RectifierTemperatureFault",
+        "uid": 234
+    },
+    {
+        "description": "Watchdog interrupt out of charging session",
+        "errorCode": 25,
+        "errorType": "error",
+        "module": "AcEvicGlobalStop",
+        "name": "NotChargingWatchdogInterruption",
+        "uid": 235,
+        "troubleshootingSteps": "1. Power Cycle Charging Station",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "EV ignored EVSE transition to C1 state",
+        "errorCode": 26,
+        "errorType": "error",
+        "module": "CommonEvicGlobalStop",
+        "name": "EVIgnoredCPStateC1",
+        "uid": 236,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Use another EV/consumer",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Contactor did not open",
+        "errorCode": 27,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "ContactorDidNotOpen",
+        "uid": 237
+    },
+    {
+        "description": "Contactor did not close",
+        "errorCode": 28,
+        "errorType": "error",
+        "module": "DcEvicGlobalStop",
+        "name": "ContactorDidNotClose",
+        "uid": 238
+    },
+    {
+        "description": "App has restarted",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "Monit",
+        "name": "AppHasRestarted",
+        "uid": 239,
+        "troubleshootingSteps": "No special actions are required",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Process restarted too often",
+        "errorCode": 6,
+        "errorType": "warning",
+        "module": "Monit",
+        "name": "ProcessRestartedTooOften",
+        "uid": 240,
+        "troubleshootingSteps": "No special actions are required",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "HMI board is not ready",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "HMIboard",
+        "name": "HMIBboardIsNotReady",
+        "uid": 241,
+        "troubleshootingSteps": "1. Check HMI board connection\n2. Replace HMI board cable\n3. Replace HMI board\n4. Replace Main AC",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "HMI board init timeout",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "HMIboard",
+        "name": "HMIBoardInitTimeout",
+        "uid": 242,
+        "troubleshootingSteps": "1. Check HMI board connection\n2. Replace HMI board cable\n3. Replace HMI board\n4. Replace Main AC",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "No response for schedules request from Plaza",
+        "errorCode": 1,
+        "errorType": "warning_reset_current_session",
+        "module": "PlazaCommunication",
+        "name": "NoScheduleResponse",
+        "uid": 243,
+        "troubleshootingSteps": "1. Check network connection\n2. Check Plaza configuration\n",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Power board Fault that is unknown - not specified in error registry.",
+        "errorCode": 100,
+        "errorType": "error",
+        "module": "PowerBoardFault",
+        "name": "UnknownPBFault",
+        "uid": 244,
+        "troubleshootingSteps": "1. Replace Power Board"
+    },
+    {
+        "description": "The data from the meter was not updated during the timeout",
+        "errorCode": 0,
+        "errorType": "error",
+        "module": "MeterQiPower",
+        "name": "MeterIsMissing",
+        "uid": 245,
+        "troubleshootingSteps": "1. Check connection with the meter\n2. Check meter connection configuration on the charger\n3. Check the meter configuration",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Charger lid is open",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "TamperDetection",
+        "name": "LidOpen",
+        "uid": 246,
+        "troubleshootingSteps": "1. Check charger lid",
+        "connectorRelated": false,
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Charger lid is close",
+        "errorCode": 2,
+        "errorType": "error",
+        "module": "TamperDetection",
+        "name": "LidClose",
+        "uid": 247,
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Wait cable unplug after lid was closed",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "TamperDetection",
+        "name": "LidCloseWaitUnplug",
+        "uid": 248,
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "V2G Exi document processin error",
+        "errorCode": 35,
+        "errorType": "error",
+        "module": "HLCStateMachine",
+        "name": "Error_V2G_ExiDocProcessing",
+        "uid": 249
+    },
+    {
+        "description": "IMD Warning during CableCheck",
+        "errorCode": 11,
+        "errorType": "error",
+        "module": "CommonEVIC",
+        "name": "IMDWarningDuringCableCheck",
+        "uid": 253,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Check wiring\n3. Replace the IMD Sensor",
+        "connectorRelated": true,
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "IMD Warning after CableCheck passed",
+        "errorCode": 12,
+        "errorType": "warning",
+        "module": "CommonEVIC",
+        "name": "IMDWarningOutsideCableCheck",
+        "uid": 254,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Check wiring\n3. Replace the IMD Sensor",
+        "connectorRelated": true,
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Short circuit test failed during cable check",
+        "errorCode": 25,
+        "errorType": "error",
+        "module": "HWHalMg",
+        "connectorRelated": true,
+        "onSiteServiceRequired": true,
+        "troubleshootingSteps": "1. Check connector for short circuit",
+        "name": "ErrorShortCircuitTestFailed",
+        "uid": 250
+    },
+    {
+        "description": "DcHub communication error",
+        "errorCode": 26,
+        "errorType": "error",
+        "module": "HWHalMg",
+        "onSiteServiceRequired": true,
+        "troubleshootingSteps": "1. Check DcHub communication",
+        "name": "DcSourceCommError",
+        "uid": 251
+    },
+    {
+        "description": "DcHub error inverter",
+        "errorCode": 27,
+        "errorType": "error",
+        "module": "HWHalMg",
+        "onSiteServiceRequired": true,
+        "troubleshootingSteps": "1. Check DcHub inverter",
+        "name": "DcSourceErrorInverter",
+        "uid": 252
+    },
+    {
+        "description": "Under Frequency detected. Disconneted from the grid.",
+        "errorCode": 0,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "UnderFrequencyDisconnection",
+        "uid": 255
+    },
+    {
+        "description": "Over Frequency detected. Disconneted from the grid.",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "OverFrequencyDisconnection",
+        "uid": 256
+    },
+    {
+        "description": "Grid Fault Under Voltage detected. Providing of active/reactive power is stopped.",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "GridFaultUnderVoltage",
+        "uid": 257
+    },
+    {
+        "description": "Grid Fault Over Voltage detected. Providing of active/reactive power is stopped.",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "GridFaultOverVoltage",
+        "uid": 258
+    },
+    {
+        "description": "Under Voltage (Stage 1) detected. Disconnected from the grid.",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "UnderVoltageStage1Disconnection",
+        "uid": 259
+    },
+    {
+        "description": "Over Voltage (Stage 1) detected. Disconnected from the grid.",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "OverVoltageStage1Disconnection",
+        "uid": 260
+    },
+    {
+        "description": "Under Voltage (Stage 2) detected. Disconnected from the grid.",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "UnderVoltageStage2Disconnection",
+        "uid": 261
+    },
+    {
+        "description": "Over Voltage (Stage 2) detected. Disconnected from the grid.",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "OverVoltageStage2Disconnection",
+        "uid": 262
+    },
+    {
+        "description": "Update signature validation failed",
+        "errorCode": 0,
+        "errorType": "warning",
+        "module": "UpdateFirmware",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Make sure that the update is correct\n2. Contact support",
+        "name": "UpdateValidationFailedInvalidSignature",
+        "uid": 263
+    },
+    {
+        "description": "Update checksum verification failed",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "UpdateFirmware",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Make sure that the update is correct\n2. Make sure that the checksum provided within the update is correct\n3. Retry the update procedure\n4. Contact support",
+        "name": "UpdateValidationFailedInvalidChecksum",
+        "uid": 264
+    },
+    {
+        "description": "Update certificate validation failed",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "UpdateFirmware",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Make sure that the update is correct\n2. Contact support",
+        "name": "UpdateValidationFailedInvalidCertificate",
+        "uid": 265
+    },
+    {
+        "description": "Update rootfs signature validation failed",
+        "errorCode": 3,
+        "errorType": "warning",
+        "module": "UpdateFirmware",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Make sure that the update is correct\n2. Contact support",
+        "name": "UpdateValidationFailedInvalidRootFsSignature",
+        "uid": 266
+    },
+    {
+        "description": "Charger is blocked by repeating error",
+        "errorCode": 21,
+        "errorType": "error_block_all_sessions",
+        "module": "InnerSM",
+        "name": "REPEATING_ERRORS",
+        "uid": 267
+    },
+    {
+        "description": "Fallback mode",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "Health",
+        "name": "StorageFallbackMode",
+        "uid": 268
+    },
+    {
+        "description": "eMMC wearing is high",
+        "errorCode": 2,
+        "errorType": "warning",
+        "module": "Health",
+        "name": "EmmcHighWearing",
+        "uid": 269
+    },
+    {
+        "description": "eMMC wearing is critical",
+        "errorCode": 3,
+        "errorType": "error",
+        "module": "Health",
+        "name": "EmmcCriticalWearing",
+        "uid": 270
+    },
+    {
+        "description": "There was decrease in current at the start of basic charging",
+        "errorCode": 22,
+        "errorType": "warning",
+        "module": "InnerSM",
+        "name": "BasicChargingCurrentDecreaseAtStart",
+        "uid": 271
+    },
+    {
+        "description": "Key Fault",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_KeyFault",
+        "uid": 272
+    },
+    {
+        "description": "Control Values Receipt Failure",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_ControlValuesReceiptFault",
+        "uid": 273
+    },
+    {
+        "description": "CAN &/or Modbus Comm. Error",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_CANorModbusCommFault",
+        "uid": 274
+    },
+    {
+        "description": "CIU Faulted",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_CIUFault",
+        "uid": 275
+    },
+    {
+        "description": "MIU Faulted",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_MIUFault",
+        "uid": 276
+    },
+    {
+        "description": "EPO Shutdown",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_EPOShutdown",
+        "uid": 277
+    },
+    {
+        "description": "Low LVPS Fault",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_LowLVPSFault",
+        "uid": 278
+    },
+    {
+        "description": "Low Batt. Fault",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_LowBattFault",
+        "uid": 279
+    },
+    {
+        "description": "Ambient Sens. Ovr. Range",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArCIU",
+        "name": "ErrorCIU_LowBattOvrRangeFault",
+        "uid": 280
+    },
+    {
+        "description": "Phase Out Over-Voltage",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_PhaseOutOverVoltageFault",
+        "uid": 281
+    },
+    {
+        "description": "Heatsink OverTemp fault",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_HeatsinkOverTempFault",
+        "uid": 282
+    },
+    {
+        "description": "Array Overvoltage fault",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_ArrayOvervoltageFault",
+        "uid": 283
+    },
+    {
+        "description": "Dc Link Overvoltage fault",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_DcLinkOvervoltageFault",
+        "uid": 284
+    },
+    {
+        "description": "DC Bus Hardware Fault",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_DcBusHardwareFault",
+        "uid": 285
+    },
+    {
+        "description": "Software processing shutdown",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_SoftwareProcessingShutdown",
+        "uid": 286
+    },
+    {
+        "description": "Unit Response Timeout",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_UnitResponseTimeoutFault",
+        "uid": 287
+    },
+    {
+        "description": "Current Limit timeout shutdown",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_CurrentLimitTimeoutShutdownFault",
+        "uid": 288
+    },
+    {
+        "description": "Critical communication fault",
+        "errorCode": 10,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_CriticalCommunicationFault",
+        "uid": 289
+    },
+    {
+        "description": "Offset Ir Shutdown",
+        "errorCode": 11,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_OffsetIrShutdownFault",
+        "uid": 290
+    },
+    {
+        "description": "Offset Is Shutdown",
+        "errorCode": 12,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_OffsetIsShutdownFault",
+        "uid": 291
+    },
+    {
+        "description": "K1 Failure to Close",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_K1FailureToClose",
+        "uid": 292
+    },
+    {
+        "description": "K1 Welded",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_K1WeldedFault",
+        "uid": 293
+    },
+    {
+        "description": "EPO Shutdown",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU1",
+        "name": "ErrorMIU1_EPOShutdownFault",
+        "uid": 294
+    },
+    {
+        "description": "Unexpected DC Bus fault",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_UnexpectedDCBusFault",
+        "uid": 295
+    },
+    {
+        "description": "DC Bus OverCurrent Shutdown",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_DcBusOverCurrentShutdown",
+        "uid": 296
+    },
+    {
+        "description": "Thermal OverLoad Shutdown",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_ThermalOverloadShutdown",
+        "uid": 297
+    },
+    {
+        "description": "Heatsink TempSense Dislocated fault",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_HeatSinkTempSenseDislocated",
+        "uid": 298
+    },
+    {
+        "description": "DC Input Reverse Polarity Shutdown",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_DCInputReversePolarityShutdown",
+        "uid": 299
+    },
+    {
+        "description": "DC Bus Reverse Power Fault",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_DCBusReversePowerFault",
+        "uid": 300
+    },
+    {
+        "description": "Precharge Fail Shutdown",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_PrechargeFailShutdown",
+        "uid": 301
+    },
+    {
+        "description": "DC Pos Contactor Welded fault",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_DCPosContactorWelded",
+        "uid": 302
+    },
+    {
+        "description": "DC Pos Contactor Open fault",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU2",
+        "name": "ErrorMIU2_DCPosContactorOpenFault",
+        "uid": 303
+    },
+    {
+        "description": "Wrong initial voltage at startup shutdown",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_WrongInitialVoltageStartupShutdown",
+        "uid": 304
+    },
+    {
+        "description": "Single phase open shutdown",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_SinglePhaseOpenShutdown",
+        "uid": 305
+    },
+    {
+        "description": "Sync error timeout shutdown",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_SyncErrorTimeourShutdown",
+        "uid": 306
+    },
+    {
+        "description": "Grid phase seq reverse shutdown",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_GridPhaseSeqReverseShutdown",
+        "uid": 307
+    },
+    {
+        "description": "Inverter under freq shutdown",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_InverterUnderFreqShutdown",
+        "uid": 308
+    },
+    {
+        "description": "Inverter over freq shutdown",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_InverterOverFreqShutdown",
+        "uid": 309
+    },
+    {
+        "description": "Lca grid hardware flt shutdown",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_LcaGridHwFitShutdown",
+        "uid": 310
+    },
+    {
+        "description": "Software over crnt shutdown",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_SoftwareOverCrntShutdown",
+        "uid": 311
+    },
+    {
+        "description": "Program configuration invalid",
+        "errorCode": 11,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_ProgramConfigInvalid",
+        "uid": 312
+    },
+    {
+        "description": "Power supply range shutdown",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_PowerSupplyRangeShutdown",
+        "uid": 313
+    },
+    {
+        "description": "Ext_ad_a_shtdwn",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_Ext_ad_a_shtdwn",
+        "uid": 314
+    },
+    {
+        "description": "Ext_ad_b_shtdwn",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU3",
+        "name": "ErrorMIU3_Ext_ad_b_shtdwn",
+        "uid": 315
+    },
+    {
+        "description": "Lca dt fault shtdwn",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaDtFaultShtdwn",
+        "uid": 316
+    },
+    {
+        "description": "Lca dc link overvoltage shtdwn",
+        "errorCode": 2,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaDcLinkPvervoltageShtdwn",
+        "uid": 317
+    },
+    {
+        "description": "Lca ovr curr short shtdwn",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaOverCurrShortShtdwn",
+        "uid": 318
+    },
+    {
+        "description": "Lca cneg fault shutdown",
+        "errorCode": 4,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaCnegFaultShutdown",
+        "uid": 319
+    },
+    {
+        "description": "Lca cpos fault shutdown",
+        "errorCode": 5,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaCposFaultShutdown",
+        "uid": 320
+    },
+    {
+        "description": "Lca bneg fault shutdown",
+        "errorCode": 6,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaBnegFaultShutdown",
+        "uid": 321
+    },
+    {
+        "description": "Lca bpos fault shutdown",
+        "errorCode": 7,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaBposFaultShutdown",
+        "uid": 322
+    },
+    {
+        "description": "Lca aneg fault shutdown",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaAnegFaultShutdown",
+        "uid": 323
+    },
+    {
+        "description": "Lca_apos fault shutdown",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaAposFaultShutdown",
+        "uid": 324
+    },
+    {
+        "description": "Lca ovrcur early shutdown",
+        "errorCode": 10,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaOvrcurEarlyShutdown",
+        "uid": 325
+    },
+    {
+        "description": "Lca gnd fault shutdown",
+        "errorCode": 11,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaGndFaultShutdown",
+        "uid": 326
+    },
+    {
+        "description": "Lca cp over temp shutdown",
+        "errorCode": 12,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaCpOverTempShutdown",
+        "uid": 327
+    },
+    {
+        "description": "Lca cp und temp shutdown",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_LcaCpUndTempShutdown",
+        "uid": 328
+    },
+    {
+        "description": "DC bus voltage out of range shtdwn",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU4",
+        "name": "ErrorMIU4_DcBusVoltageOutOfRangeShtdwn",
+        "uid": 329
+    },
+    {
+        "description": "MIU Faulted",
+        "errorCode": 3,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU5",
+        "name": "ErrorMIU5_MIUFaulted",
+        "uid": 330
+    },
+    {
+        "description": "DC_neg cntctr_fail_to_close_shtdwn",
+        "errorCode": 13,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU5",
+        "name": "ErrorMIU5_DC_neg_cntctr_fail_to_close_shtdwn",
+        "uid": 331
+    },
+    {
+        "description": "DC_neg_cntctr_welded_shtdwn",
+        "errorCode": 14,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU5",
+        "name": "ErrorMIU5_DC_neg_cntctr_welded_shtdwn",
+        "uid": 332
+    },
+    {
+        "description": "DC Current Sensor Fail Shutdown",
+        "errorCode": 15,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalArMIU5",
+        "name": "ErrorMIU5_DCCurrentSensorFailShutdown",
+        "uid": 333
+    },
+    {
+        "description": "Anti-Islanding Module configuration is not applied on Power Board",
+        "errorCode": 34,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardFault",
+        "name": "AIMConfigNotApplied",
+        "uid": 334,
+        "troubleshootingSteps": "1. Check validity of GridCodes configuration\n2. Power Cycle Charging Station\n3. Replace Power Board",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "File system partition switch to Read-only mode unexpectedly",
+        "errorCode": 4,
+        "errorType": "error",
+        "module": "Health",
+        "name": "FSSwitchToRO",
+        "uid": 335
+    },
+    {
+        "description": "Soft Disconnection detected, charging session temporarily stopped (until grid parameters return back to normal)",
+        "errorCode": 8,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "SoftDisconnection",
+        "uid": 336
+    },
+    {
+        "description": "Soft Reconnection detected, charging session temporarily stopped (until grid is in fault and parameters return back to normal)",
+        "errorCode": 9,
+        "errorType": "error_block_all_sessions",
+        "module": "HWHalAIM",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Check grid network",
+        "name": "SoftReconnection",
+        "uid": 337
+    },
+    {
+        "description": "Contactor error",
+        "errorCode": 58,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "CONTACTORS_ERROR",
+        "uid": 338,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check contactor wiring\n3. Check grid connection\n4. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Invalid Power Board Serial Number",
+        "errorCode": 59,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "INVALID_SERIAL_NUMBER",
+        "uid": 339,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Built-in meter calibration reset",
+        "errorCode": 60,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "METER_CONFIGURATION_RESET_FAULT",
+        "uid": 340,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Rate-Of-Change-Of-Frequency Fault",
+        "errorCode": 61,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "ROCOF_FAULT",
+        "uid": 341,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check grid\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Overvoltage Fault (10 min average)",
+        "errorCode": 62,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "OVERVOLTAGE_10_MIN",
+        "uid": 342,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check grid\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Phase B and/or C detected in 1-phase mode",
+        "errorCode": 63,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "PHASE_B_OR_C_DETECTED_IN_SINGLE_PHASE_MODE",
+        "uid": 343,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check grid wiring\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "GridCode Configuration Error",
+        "errorCode": 64,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "GRIDCODE_CONFIG_FAULT",
+        "uid": 344,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Check GridCode configuration\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "High CPU usage detected",
+        "errorCode": 4,
+        "errorType": "warning",
+        "module": "Monit",
+        "name": "HighCpuUsage",
+        "uid": 345,
+        "troubleshootingSteps": "1. If a charging session or other activities are running, no actions are needed.\n2. If a charging session or other activities are not running, recheck the new fault in 30 minutes.\n3. If this error is still reported, reboot the device.\n4. If the issue persists, call support.",
+        "connectorRelated": false,
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "MC2 Communication Fault",
+        "errorCode": 65,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_COMMUNICATION_FAULT",
+        "uid": 346,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Fault",
+        "errorCode": 66,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_FAULT",
+        "uid": 347,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Enable Signal Fault",
+        "errorCode": 67,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_ENABLE_FAULT",
+        "uid": 348,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Meter Fault",
+        "errorCode": 68,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_METER_FAULT",
+        "uid": 349,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Enable Signal Mismatch",
+        "errorCode": 69,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_ENABLE_MISMATCH",
+        "uid": 350,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Overvoltage",
+        "errorCode": 70,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_OVERVOLTAGE",
+        "uid": 351,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Undervoltage",
+        "errorCode": 71,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_UNDERVOLTAGE",
+        "uid": 352,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 High Frequency",
+        "errorCode": 72,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_HIGH_FREQUENCY",
+        "uid": 353,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Low Frequency",
+        "errorCode": 73,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_LOW_FREQUENCY",
+        "uid": 354,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Rate-Of-Change-Of-Frequency Fault",
+        "errorCode": 74,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_ROCOF_FAULT",
+        "uid": 355,
+        "troubleshootingSteps": "1. Check/fix grid frequency\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Overvoltage Fault (10 min average)",
+        "errorCode": 75,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_OVERVOLTAGE_10_MIN",
+        "uid": 356,
+        "troubleshootingSteps": "1. Check/fix grid voltage\n2. Check/fix AIM configuration\n3. Power Cycle Charging station\n4. Replace PB",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Contactors Welded",
+        "errorCode": 76,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_CONTACTORS_WELDED",
+        "uid": 357,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Validate relays integrity\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Contactors Failed Open",
+        "errorCode": 77,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_CONTACTORS_FAILED_OPEN",
+        "uid": 358,
+        "troubleshootingSteps": "1. Power cycle with 10 minutes pause (after power off)\n2. Validate relays integrity\n3. Replace Power board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Invalid Update Variant",
+        "errorCode": 4,
+        "errorType": "warning",
+        "module": "UpdateFirmware",
+        "onSiteServiceRequired": false,
+        "troubleshootingSteps": "1. Make sure that the update is correct\n2. Contact support",
+        "name": "UpdateValidationFailedInvalidUpdateVariant",
+        "uid": 359
+    },
+    {
+        "description": "Power Board Firmware Update Failed",
+        "errorCode": 1,
+        "errorType": "error_block_all_sessions",
+        "module": "PowerBoardUpdateFirmware",
+        "onSiteServiceRequired": true,
+        "troubleshootingSteps": "1. Reboot charger\n2. Power cycle with 10 minutes pause (after power off)\n3. Replace Power board",
+        "name": "PowerBoardFirmwareUpdateFailed",
+        "uid": 360
+	},
+    {
+        "description": "No current flow detected on some of the phases during 3phase BPT session",
+        "errorCode": 3,
+        "errorType": "error",
+        "module": "EnergyManager",
+        "name": "No3phCurrentFlowDetectedIn3phBptSession",
+        "uid": 361,
+        "troubleshootingSteps": "1. Check charging cable if it is 3-phase\n2. Check socket on both EV and EVSE sides\n3. Use another charging cable\n4. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "EV does not obey imposed limit",
+        "errorCode": 0,
+        "errorType": "warning_reset_current_session",
+        "module": "LimitsComplianceMonitor",
+        "name": "EVDoesNotObeyImposedLimit",
+        "uid": 378,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Soft overcurrent detected",
+        "errorCode": 1,
+        "errorType": "warning_reset_current_session",
+        "module": "LimitsComplianceMonitor",
+        "name": "SoftOvercurrentDetected",
+        "uid": 379,
+        "troubleshootingSteps": "1. Restart charging session\n2. Use another EV/consumer",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "No meter values to perform check",
+        "errorCode": 2,
+        "errorType": "error",
+        "module": "LimitsComplianceMonitor",
+        "name": "MeterValuesNotReceived",
+        "uid": 380,
+        "troubleshootingSteps": "1. Power Cycle Charging Station\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Emergency stop scenario was triggered",
+        "errorCode": 1,
+        "errorType": "warning",
+        "module": "EmergencyStopMonitor",
+        "name": "EmergencyStop",
+        "uid": 381,
+        "troubleshootingSteps": "1. Remove emergency condition",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "MC2 High Temperature Fault",
+        "errorCode": 79,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_HIGH_TEMPERATURE_FAULT",
+        "uid": 389,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "MC2 Low Temperature Fault",
+        "errorCode": 80,
+        "errorType": "error_block_all_sessions",
+        "module": "HWPowerBoardStopCode",
+        "name": "MC2_LOW_TEMPERATURE_FAULT",
+        "uid": 390,
+        "troubleshootingSteps": "1. Check/fix the cooling system\n2. Replace Power Board",
+        "onSiteServiceRequired": true
+    },
+    {
+        "description": "Derating applied",
+        "errorCode": 21,
+        "errorType": "warning",
+        "module": "TemperatureDerating",
+        "name": "DeratingApplied",
+        "uid": 391,
+        "troubleshootingSteps": "1. Check charger for overheating\n2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Derating removed",
+        "errorCode": 22,
+        "errorType": "warning",
+        "module": "TemperatureDerating",
+        "name": "DeratingRemoved",
+        "uid": 392,
+        "troubleshootingSteps": "1. Check charger for overheating\n2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Derating activated",
+        "errorCode": 23,
+        "errorType": "warning",
+        "module": "TemperatureDerating",
+        "name": "DeratingActivated",
+        "uid": 393,
+        "troubleshootingSteps": "1. Check charger for overheating\n2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires",
+        "onSiteServiceRequired": false
+    },
+    {
+        "description": "Maximal derating reached",
+        "errorCode": 24,
+        "errorType": "error_block_all_sessions",
+        "module": "TemperatureDerating",
+        "name": "MaximalDeratingReached",
+        "uid": 394,
+        "troubleshootingSteps": "1. Check charger for overheating\n2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires",
+        "onSiteServiceRequired": false
+    }
+]

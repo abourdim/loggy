@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IoTecha Log Analyzer v2.3.0 — Test Report</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #e6edf3; --dim: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --red: #f85149; --yellow: #d29922;
+    --cyan: #39d353; --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.3rem; color: var(--accent); }
+  h2 { font-size: 1.3rem; margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); color: var(--cyan); }
+  h3 { font-size: 1.05rem; margin: 1.2rem 0 0.5rem; color: var(--purple); }
+  .meta { color: var(--dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .summary-box { background: var(--surface); border: 1px solid var(--green); border-radius: 8px;
+    padding: 1.2rem 1.5rem; margin: 1.5rem 0; }
+  .summary-box .big { font-size: 2rem; font-weight: 700; color: var(--green); }
+  .summary-box .label { color: var(--dim); font-size: 0.95rem; }
+  .stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 1.6rem; font-weight: 700; }
+  .stat .lbl { font-size: 0.8rem; color: var(--dim); }
+  table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1.5rem; font-size: 0.9rem; }
+  th { background: var(--surface); color: var(--accent); text-align: left; padding: 0.6rem 0.8rem;
+    border-bottom: 2px solid var(--border); font-weight: 600; }
+  td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: rgba(88,166,255,0.05); }
+  .pass { color: var(--green); font-weight: 600; }
+  .fail { color: var(--red); font-weight: 600; }
+  .skip { color: var(--yellow); font-weight: 600; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  .badge-pass { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .badge-info { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .suite-header { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0 0.5rem; }
+  .suite-header h3 { margin: 0; }
+  .suite-count { font-size: 0.85rem; color: var(--green); font-weight: 600; }
+  code { background: var(--surface); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem; color: var(--cyan); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .stats { gap: 1rem; } }
+  .bar { height: 8px; border-radius: 4px; background: var(--surface); overflow: hidden; margin-top: 0.5rem; }
+  .bar-fill { height: 100%; border-radius: 4px; background: var(--green); }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--dim); font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>⚡ IoTecha Log Analyzer v2.3.0 — Test Report</h1>
+<div class="meta">
+  <strong>Date:</strong> 2026-02-21 &nbsp;|&nbsp;
+  <strong>Platform:</strong> Ubuntu 24 (CI) / MSYS2 UCRT64 (target) &nbsp;|&nbsp;
+  <strong>Input:</strong> 2× RACC reports (Feb 17–21)
+</div>
+
+<div class="summary-box">
+  <div class="stats">
+    <div class="stat"><div class="num" style="color:var(--green)">194</div><div class="lbl">Tests Passed</div></div>
+    <div class="stat"><div class="num" style="color:var(--red)">0</div><div class="lbl">Failed</div></div>
+    <div class="stat"><div class="num" style="color:var(--yellow)">0</div><div class="lbl">Skipped</div></div>
+    <div class="stat"><div class="num" style="color:var(--cyan)">10</div><div class="lbl">Paths Verified</div></div>
+    <div class="stat"><div class="num" style="color:var(--purple)">16</div><div class="lbl">Bugs Fixed</div></div>
+  </div>
+  <div class="bar"><div class="bar-fill" style="width:100%"></div></div>
+</div>
+
+<!-- ─── Path Testing ──────────────────────────────────────────── -->
+<h2>Path Testing Results</h2>
+<table>
+  <tr><th>#</th><th>Path</th><th>Result</th><th>Time</th><th>Notes</th></tr>
+  <tr><td>1</td><td><code>--check</code></td><td class="pass">✅ PASS</td><td>&lt;1s</td><td>All deps found</td></tr>
+  <tr><td>1</td><td><code>--version</code></td><td class="pass">✅ PASS</td><td>&lt;1s</td><td>Shows "v2.3"</td></tr>
+  <tr><td>1</td><td><code>--help</code></td><td class="pass">✅ PASS</td><td>&lt;1s</td><td>Correct weights (30/25/25/20)</td></tr>
+  <tr><td>2</td><td>Batch standard</td><td class="pass">✅ PASS</td><td>~46s</td><td>14 issues, Score 27/F</td></tr>
+  <tr><td>3</td><td>Batch deep</td><td class="pass">✅ PASS</td><td>~50s</td><td>Deep analysis + config validation</td></tr>
+  <tr><td>4</td><td><code>--web</code></td><td class="pass">✅ PASS</td><td>~61s</td><td>Standalone HTML webapp</td></tr>
+  <tr><td>5</td><td><code>--mail</code></td><td class="pass">✅ PASS</td><td>~61s</td><td>Text + HTML email briefs</td></tr>
+  <tr><td>6</td><td><code>--tickets</code></td><td class="pass">✅ PASS</td><td>~61s</td><td>14 MDs + Jira CSV + GitLab JSON</td></tr>
+  <tr><td>7</td><td><code>--compare</code></td><td class="pass">✅ PASS</td><td>~68s</td><td>Regression: EVCC watchdog +1860%</td></tr>
+  <tr><td>8</td><td><code>--fleet</code></td><td class="pass">✅ PASS</td><td>~52s</td><td>2 chargers, 13 shared + 1 unique</td></tr>
+  <tr><td>9</td><td><code>-o /custom/dir</code></td><td class="pass">✅ PASS</td><td>~46s</td><td>All files relocated, default dir removed</td></tr>
+  <tr><td>10</td><td>Test suites (194)</td><td class="pass">✅ PASS</td><td>—</td><td>56 + 109 + 29 = 194, 0 fail</td></tr>
+</table>
+
+<!-- ─── Test Suites ───────────────────────────────────────────── -->
+<h2>Test Suite Breakdown</h2>
+
+<div class="suite-header"><h3>run_tests.sh</h3><span class="suite-count">56/56 ✅</span></div>
+<table>
+  <tr><th>Category</th><th>Tests</th><th>Status</th></tr>
+  <tr><td>Syntax check (19 files)</td><td>19</td><td class="pass">✅</td></tr>
+  <tr><td>Dependencies (12 tools)</td><td>12</td><td class="pass">✅</td></tr>
+  <tr><td>Help &amp; version</td><td>3</td><td class="pass">✅</td></tr>
+  <tr><td>Signatures</td><td>2</td><td class="pass">✅ 462 entries</td></tr>
+  <tr><td>Standard analysis</td><td>8</td><td class="pass">✅ 13 issues</td></tr>
+  <tr><td>Comparison mode</td><td>4</td><td class="pass">✅</td></tr>
+  <tr><td>Mail &amp; tickets</td><td>4</td><td class="pass">✅</td></tr>
+  <tr><td>Web app</td><td>4</td><td class="pass">✅</td></tr>
+</table>
+
+<div class="suite-header"><h3>test_v2.sh</h3><span class="suite-count">109/109 ✅</span></div>
+<table>
+  <tr><th>Category</th><th>Tests</th><th>Status</th></tr>
+  <tr><td>Error registry</td><td>9</td><td class="pass">✅ 363 entries, 8 columns</td></tr>
+  <tr><td>Detector patterns</td><td>25</td><td class="pass">✅ 65 add_issue calls</td></tr>
+  <tr><td>Health score</td><td>14</td><td class="pass">✅ Weights 30/25/25/20</td></tr>
+  <tr><td>Config validation</td><td>10</td><td class="pass">✅ 12 checks</td></tr>
+  <tr><td>Causal chains</td><td>5</td><td class="pass">✅ 10 chain definitions</td></tr>
+  <tr><td>Report formatting</td><td>5</td><td class="pass">✅</td></tr>
+  <tr><td>Syntax validation</td><td>19</td><td class="pass">✅ All files clean</td></tr>
+  <tr><td>Version</td><td>2</td><td class="pass">✅ v2.3, no stale refs</td></tr>
+  <tr><td>Module coverage</td><td>5</td><td class="pass">✅</td></tr>
+  <tr><td>Mail/webapp troubleshoot</td><td>3</td><td class="pass">✅</td></tr>
+  <tr><td>Performance</td><td>2</td><td class="pass">✅ batch_count_grep</td></tr>
+  <tr><td>Signature cross-ref</td><td>1</td><td class="pass">✅</td></tr>
+  <tr><td>Error handling</td><td>3</td><td class="pass">✅ safe_run wraps 27 detectors</td></tr>
+  <tr><td>Server backend</td><td>1</td><td class="pass">✅</td></tr>
+  <tr><td>Temporal causal chains</td><td>3</td><td class="pass">✅ 4 temporal refs</td></tr>
+</table>
+
+<div class="suite-header"><h3>test_integration.sh</h3><span class="suite-count">29/29 ✅</span></div>
+<table>
+  <tr><th>Category</th><th>Tests</th><th>Status</th></tr>
+  <tr><td>Metrics verification</td><td>21</td><td class="pass">✅ All metrics populated</td></tr>
+  <tr><td>Issues verification</td><td>5</td><td class="pass">✅ 37 issues, 17 CRITICAL</td></tr>
+  <tr><td>Health score</td><td>2</td><td class="pass">✅ 45/100 Grade D</td></tr>
+  <tr><td>Detector errors</td><td>1</td><td class="pass">✅ None</td></tr>
+</table>
+
+<!-- ─── Bug Fixes ─────────────────────────────────────────────── -->
+<h2>Bug Fixes — Original (v2.2 → v2.3)</h2>
+<table>
+  <tr><th>#</th><th>Bug</th><th>Fix</th><th>Status</th></tr>
+  <tr><td>1</td><td><code>cleanup_all()</code> disabled by <code>return 0; #TMP</code></td><td>Removed dead return</td><td class="pass">✅</td></tr>
+  <tr><td>2</td><td><code>get_metric()</code> returns first not latest</td><td><code>head -1</code> → <code>tail -1</code></td><td class="pass">✅</td></tr>
+  <tr><td>3</td><td><code>grep -am1</code> missing <code>-E</code> flag (4 sites)</td><td>Added <code>-E</code> to all 4</td><td class="pass">✅</td></tr>
+  <tr><td>4</td><td>EXIT trap chain broken</td><td>Added <code>cleanup_all</code> call</td><td class="pass">✅</td></tr>
+  <tr><td>5</td><td><code>--help</code> weights wrong (40/20/20/20)</td><td>Corrected to 30/25/25/20</td><td class="pass">✅</td></tr>
+  <tr><td>6</td><td>Version header stuck at v1.0</td><td>Updated to v2.3</td><td class="pass">✅</td></tr>
+  <tr><td>12</td><td><code>menu.sh</code> parse errors (line 81–82)</td><td>Replaced with <code>tr -d</code> approach</td><td class="pass">✅</td></tr>
+  <tr><td>13</td><td>Config validator O(n²) performance</td><td>Single awk pass (1243× fewer subprocesses)</td><td class="pass">✅</td></tr>
+</table>
+
+<h2>Bug Fixes — Session (runtime &amp; MSYS2)</h2>
+<table>
+  <tr><th>Bug</th><th>Root Cause</th><th>Fix</th><th>Status</th></tr>
+  <tr><td>TUI colors lost after tee</td><td><code>exec &gt; &gt;(tee ...)</code> makes <code>[ -t 1 ]</code> false</td><td><code>_is_tty()</code> helper checks saved state</td><td class="pass">✅</td></tr>
+  <tr><td>Spinners/progress bars lost</td><td>Same tee redirect (6 sites)</td><td>All <code>[ -t 1 ]</code> → <code>_is_tty</code></td><td class="pass">✅</td></tr>
+  <tr><td>Session/console logs ignore <code>-o</code></td><td>Created before <code>_parse_args</code></td><td><code>_relocate_logs_if_needed()</code> after parse</td><td class="pass">✅</td></tr>
+  <tr><td>Duplicate report log lines</td><td>Both analyzer.sh and generators print</td><td>Removed duplicates from analyzer.sh</td><td class="pass">✅</td></tr>
+  <tr><td>Config key wall of text (1000+)</td><td>Full list dumped in description</td><td>Truncated to 10 samples + "…and N more"</td><td class="pass">✅</td></tr>
+  <tr><td><code>(7C)</code> in parse summary</td><td>Critical annotation breaks alignment</td><td>Plain count like all other rows</td><td class="pass">✅</td></tr>
+  <tr><td><code>Detector failed (exit 0)</code> on MSYS2</td><td><code>local _rc=$?</code> resets <code>$?</code></td><td>Separated: <code>local _rc; _rc=$?</code></td><td class="pass">✅</td></tr>
+  <tr><td>Division by 0 in progress</td><td>Empty total passes <code>[ -le 0 ]</code></td><td><code>(( total &lt;= 0 ))</code> + <code>${total:-0}</code></td><td class="pass">✅</td></tr>
+</table>
+
+<!-- ─── Features ──────────────────────────────────────────────── -->
+<h2>New Features in v2.3</h2>
+<table>
+  <tr><th>Feature</th><th>Description</th><th>Verified</th></tr>
+  <tr><td>Console logging</td><td>All terminal output (ANSI + spinners) captured to <code>*_console.log</code></td><td class="pass">✅</td></tr>
+  <tr><td>Log relocation</td><td>Session + console logs follow <code>-o</code> output directory</td><td class="pass">✅</td></tr>
+  <tr><td><code>_is_tty()</code> helper</td><td>Reliable tty detection after <code>exec tee</code> redirect</td><td class="pass">✅</td></tr>
+</table>
+
+<footer>
+  IoTecha Log Analyzer v2.3.0 &nbsp;|&nbsp; 194 tests passed &nbsp;|&nbsp; Generated 2026-02-21
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,527 @@
+# IoTecha Log Analyzer — Known Error Signatures V2 (Source-Informed)
+# Built from: error registry (363 errors/44 modules), source code (layer3-iotc), product configs (layer4)
+# Format: pattern<TAB>component<TAB>severity<TAB>title<TAB>root_cause<TAB>fix<TAB>kb_url
+#
+# ──── Connectivity: MQTT / Cloud (i2p2app) ────
+Connection token is failed\ti2p2/MQTT\tHIGH\tMQTT Connection Token Failure\tAWS IoT Core connection interrupted — token negotiation failing repeatedly\t1. Check SIM/network path to AWS endpoint 2. Verify MQTT certificates via CertManager 3. Review i2p2 connectionMonitor.Timeout\t
+MQTT.*fail\ti2p2/MQTT\tHIGH\tMQTT Connection Failure\tAWS IoT broker unreachable or rejecting connections\tCheck network connectivity, verify thing policy and certificates\t
+MQTT.*DISCONNECTED\ti2p2/MQTT\tMEDIUM\tMQTT Disconnect Event\tBroker disconnect due to keep-alive timeout or network interruption\tReview connectionMonitor.Timeout, check network stability\t
+ShadowUpdater.*Failed to get network stat\ti2p2/Shadow\tMEDIUM\tDevice Shadow Update Failure\tCannot read ppp0 interface stats for shadow — ppp0 not established\tFix PPP/cellular connectivity first (NetworkBoss), then shadow updates will resume\t
+Can not read file.*mb_serial\ti2p2/DeviceInfo\tLOW\tDevice Serial Read Failure\tManufacturing serial file not found at /run/media/mfr/mb_serial\tCheck factory provisioning, verify partition mount\t
+Can not read file.*firmware\ti2p2/DeviceInfo\tLOW\tFirmware Version Read Failure\t/proc/firmware/version or build_id not present\tNon-critical — affects telemetry only\t
+lastUpdate.txt\ti2p2/FirmwareUpdate\tLOW\tFWUpdate Status File Missing\tLast firmware update record not found\tNon-critical on first boot; check if FOTA ever succeeded\t
+#
+# ──── Connectivity: PPP / Cellular (NetworkBoss) ────
+PPP.*never.*established\tNetworkBoss/PPP\tCRITICAL\tPPP/Cellular Not Established\tCellular modem failed to establish PPP — SIM fault, no signal, or APN misconfigured\t1. Check SIM status (AT+CPIN?) 2. Check signal (AT+CSQ) 3. Verify APN in NetworkBoss config 4. Check modem device (/dev/ttyUSB2)\t
+PPP.*down\tNetworkBoss/PPP\tHIGH\tPPP Link Down\tCellular backup link went offline\t1. Verify SIM is active with carrier 2. Check APN setting 3. Inspect pppd logs for LCP/IPCP errors\t
+ppp0.*missing\tNetworkBoss/PPP\tMEDIUM\tPPP Interface Missing\tppp0 not present — PPP daemon not started or modem not detected\t1. Check modem presence (lsusb) 2. Verify ppp0.enabled=true in config 3. Restart NetworkBoss\t
+Setting metric of ppp0.*failed.*does not exist\tNetworkBoss/PPP\tMEDIUM\tPPP Interface Selection Failure\tInterfaceSelectionManager cannot set routing metric for ppp0 — interface not up\tResolve PPP connectivity; interface selection will auto-recover\t
+ppp-igniter.*not connected\tNetworkBoss/PPP\tHIGH\tPPP Igniter Not Connected\tPPP igniter PMQ channel not connected — NetworkBoss cannot trigger PPP setup\t1. Check NetworkBoss started before ppp-igniter 2. Verify init script order\t
+#
+# ──── Connectivity: Ethernet (NetworkBoss) ────
+Ethernet status changed.*waiting for stable\tNetworkBoss/Ethernet\tMEDIUM\tEthernet Link Instability\tEthernet link state changing — waiting for stabilization (12 checks)\tCheck cable, switch port, PHY negotiation; usually self-resolves\t
+eth.*flap\tNetworkBoss/Ethernet\tHIGH\tEthernet Link Flapping\tPHY link toggling — bad cable, switch port, or autoneg issue\t1. Replace/reseat Ethernet cable 2. Try fixed speed (ethtool) 3. Check switch port\t
+Error during interfaces initialization\tNetworkBoss/Init\tHIGH\tNetwork Interfaces Init Error\tNetworkBoss failed to initialize one or more network interfaces at startup\t1. Check network config 2. Verify hardware present 3. Review modem/WiFi driver load\t
+#
+# ──── Connectivity: WiFi (NetworkBoss) ────
+WiFi.*fail\tNetworkBoss/WiFi\tMEDIUM\tWiFi Connection Failure\tWiFi association or authentication failing\tVerify SSID/password, check signal strength, review wpa_supplicant config\t
+wlan0-ap.*captivePortal\tNetworkBoss/WiFiAP\tLOW\tWiFi AP Captive Portal Active\tWiFi access point with captive portal running — informational\tNormal for commissioning mode\t
+#
+# ──── Connectivity: InterfaceSelectionManager ────
+interfaceSelectionManager.*availabilityChecker.*ping\tNetworkBoss/ISM\tMEDIUM\tInterface Availability Check Failure\tISM ping-based availability check failing — no reachable upstream\t1. Check DNS resolution 2. Verify OCPP CS URL reachable 3. Check all interface routes\t
+#
+# ──── PMQ (Inter-Process Messaging) ────
+Direct queue not connected\tPMQ\tMEDIUM\tPMQ Queue Not Connected\tPMQ direct queue destination not yet available — target process not started or crashed\tUsually transient at boot; persistent errors mean target process failed to start\t
+Cant send message.*queue size limit\tPMQ\tMEDIUM\tPMQ Queue Full\tPMQ message queue full — receiver not consuming messages\tCheck target process health, may need restart; review queue size config\t
+Subscribing again\tPMQ\tLOW\tPMQ Resubscription\tPMQ subscriber retrying connection to publisher queue\tTransient at boot; persistent means publisher process not running\t
+ThreadAlarm.*timeout detected\tPMQ\tMEDIUM\tPMQ Thread Timeout\tPMQ thread detected blocking operation exceeding timeout\tReview which FD type is blocking; may indicate I/O or locking issue\t
+#
+# ──── ChargerApp / EVIC ────
+POWER_BOARD_FAULT\tChargerApp/PowerBoard\tHIGH\tPower Board Fault (EVIC)\tEVIC reported stop reason 22: POWER_BOARD_FAULT\t1. Check power board firmware version 2. Inspect relay/contactor state 3. Review HW diagnostics 4. Replace power board if persistent\t
+PB Version wait timeout\tChargerApp/PowerBoard\tHIGH\tPower Board Version Timeout\tHAL timed out waiting for power board firmware version response\t1. Check power board connection 2. Verify PB firmware updated 3. Check I2C/SPI bus\t
+I2C.*Got Error IRQ\tChargerApp/I2C\tMEDIUM\tI2C Communication Error\tI2C bus error interrupt from EVIC power board communication\t1. Check I2C wiring 2. Verify pull-up resistors 3. Check for bus contention\t
+Failed to export.*GPIO\tChargerApp/GPIO\tLOW\tGPIO Export Warning\tGPIO pin already exported by another process — will try to reuse\tUsually non-critical; check for duplicate GPIO consumers\t
+CPState.*fault\tChargerApp/CP\tHIGH\tControl Pilot State Fault\tCP state machine detected fault — CPStateE or CPStateF\t1. Check CP circuit and diode 2. Verify vehicle connector 3. Inspect EVIC board [On-site service may be required]\t
+EVCC.*watchdog\tChargerApp/EVCC\tLOW\tEVCC Watchdog Warning\tEVCC communication watchdog triggered — timing issue between components\tUsually non-critical; monitor if charging sessions complete normally\t
+GlobalStop\tChargerApp/EVIC\tHIGH\tCharging Global Stop\tCharging session stopped by error condition — EVIC triggered GlobalStop\t1. Check ErrorBoss for specific error details 2. Review EVIC hardware 3. Check CP/PP state [On-site service may be required]\t
+ContactorWelded\tChargerApp/Contactor\tCRITICAL\tContactor Welded Detection\tContactor detected as welded — safety-critical hardware failure\t1. IMMEDIATELY disable station 2. Replace contactor 3. Check welding detection circuit [On-site service REQUIRED]\t
+EmergencyStop\tSafety/EmergencyStop\tCRITICAL\tEmergency Stop Triggered\tExternal emergency stop line was activated\t1. Check emergency stop button state 2. Reset after clearing cause 3. Verify E-stop circuit [On-site service REQUIRED]\t
+#
+# ──── V2G / HLC (ISO 15118) ────
+V2G.*ConnectionClosed\tHLC/V2G\tHIGH\tV2G TCP Connection Closed\tISO 15118 V2G TCP session closed unexpectedly\t1. Check PLC communication (SLAC) 2. Verify V2G certificates 3. Review vehicle compatibility\t
+V2G.*timeout\tHLC/V2G\tHIGH\tV2G Protocol Timeout\tISO 15118 message exchange timed out — vehicle or EVSE response too slow\t1. Check PLC link quality 2. Review timeout settings in ChargerApp config 3. Try different vehicle\t
+V2G.*sequence.*error\tHLC/V2G\tMEDIUM\tV2G Session Sequence Error\tISO 15118 message received in wrong session state\tUsually vehicle-side issue; check SECC state machine logs\t
+V2G.*schema.*not.*found\tHLC/V2G\tMEDIUM\tV2G Schema Mismatch\tCannot find compatible V2G schema for vehicle request\tVerify supported schemas (DIN/ISO 15118-2/ISO 15118-20), update if needed\t
+V2G.*Certificate\tHLC/V2G\tMEDIUM\tV2G Certificate Issue\tISO 15118 certificate installation/update problem\tCheck V2G root certs, verify cert chain, review CertManager V2G slot\t
+CableCheck.*fail\tHLC/CableCheck\tHIGH\tDC Cable Check Failure\tCable check precondition not met — IMD, voltage, or rectifier issue\t1. Check IMD module 2. Verify cable connection 3. Review rectifier status [On-site service may be required]\t
+Precharge.*timeout\tHLC/Precharge\tHIGH\tDC Precharge Timeout\tVehicle precharge phase timed out — DC voltage matching failed\t1. Check rectifier output 2. Verify vehicle battery voltage 3. Review precharge settings\t
+#
+# ──── OCPP ────
+BootNotification.*failed\tOCPP/Boot\tHIGH\tOCPP BootNotification Failed\tBootNotification message failed — network not established at OCPP boot time\t1. Ensure network ready before OCPP starts 2. Check CS URL 3. Verify TLS certificates\t
+BootNotification.*reject\tOCPP/Boot\tHIGH\tOCPP BootNotification Rejected\tCSMS rejected BootNotification — charger not authorized on backend\t1. Register charger serial on CSMS 2. Verify chargePointVendor/Model match 3. Check CSMS logs\t
+WebSocket.*fail\tOCPP/WebSocket\tHIGH\tOCPP WebSocket Failure\tWebSocket connection to Central System failing\t1. Check CS URL 2. Verify TLS certificates 3. Check network connectivity\t
+Connection must be established\tOCPP/Connection\tHIGH\tOCPP Connection Not Established\tOCPP trying to send message but WebSocket not connected\tResolve network connectivity; OCPP will auto-reconnect (OfflineTimeout_s=300)\t
+Unexpected response received\tOCPP/Protocol\tLOW\tOCPP Unexpected Response\tOCPP received unexpected PMQ data type — protocol mismatch or timing\tUsually transient; check PMQ routing if persistent\t
+Unknown unconsumed event\tOCPP/StateMachine\tLOW\tOCPP State Machine Event Drop\tOCPP state machine received event it cannot handle in current state\tUsually harmless; check state machine transitions if charging fails\t
+Boot source file.*doesn.t exist\tOCPP/Boot\tLOW\tOCPP Boot Source File Missing\t/proc/boot_source not present — cannot detect boot partition\tNon-critical; affects diagnostics reporting only\t
+#
+# ──── EnergyManager ────
+ENERGY_MANAGER_POWER_IMBALANCE\tEnergyManager/Balance\tHIGH\tPhase Power Imbalance\t3-phase power imbalance detected — one or more phases not carrying expected load\t1. Check phase connections 2. Verify meter readings 3. Review grid connection\t
+LimitsStorage.*DELETE\tEnergyManager/DB\tLOW\tEnergyManager Limits Reset\tLimits being cleared from storage — normal on session/config change\tInformational — part of normal limits lifecycle\t
+No3phCurrentFlow\tEnergyManager/3Phase\tHIGH\tNo 3-Phase Current Flow\tNo current detected on some phases during 3-phase BPT session\t1. Check all phase connections 2. Verify meter wiring 3. Review contactor state\t
+#
+# ──── Certificate Manager ────
+Failed to read cert config.*skip\tCertManager/Config\tMEDIUM\tCertificate Config Read Failure\tCertificate root PEM file not found — slot skipped\t1. Check cert provisioning 2. Verify root cert files on filesystem 3. Re-provision if missing\t
+Failed to read certs config\tCertManager/Config\tMEDIUM\tCertificate Key File Missing\tCertificate key PEM not found at expected path\t1. Check key provisioning 2. Verify TPM key extraction 3. Re-provision\t
+Snapshot is empty\tCertManager/Snapshot\tLOW\tCertManager Empty Snapshot\tCertificate snapshot empty — no certs loaded yet\tMay be normal on first boot; check if certs provision during startup\t
+#
+# ──── Health Monitor ────
+Can.t create GPIORebooter\tHealthMonitor/GPIO\tMEDIUM\tGPIO Rebooter Unavailable\tHealth monitor cannot create GPIO rebooter — file access failed\t1. Check GPIO hardware 2. Verify permissions 3. Check if running in container/VM\t
+SoftReset\tHealthMonitor/Reboot\tMEDIUM\tSoft Reset Uptime Threshold\tHealth monitor triggered soft reboot after uptime threshold reached\tDesigned behavior — check softResetUptime threshold if too frequent\t
+Unplanned.*reboot\tHealthMonitor/Reboot\tHIGH\tUnplanned Reboot Detected\tReboot occurred without health monitor initiating it — power loss or crash\t1. Check power supply stability 2. Review kernel panic logs 3. Check watchdog config\t
+eMMC.*wearing.*high\tHealth/Storage\tMEDIUM\teMMC High Wearing\teMMC flash storage write wearing approaching limit\t1. Reduce logging verbosity 2. Move frequent writes to tmpfs 3. Plan hardware replacement\t
+eMMC.*wearing.*critical\tHealth/Storage\tCRITICAL\teMMC Critical Wearing\teMMC flash at critical wear level — imminent failure risk\t1. URGENT: Plan hardware replacement 2. Reduce all writes 3. Backup config [On-site service REQUIRED]\t
+FSSwitchToRO\tHealth/Storage\tCRITICAL\tFilesystem Switched to Read-Only\tFilesystem unexpectedly mounted read-only — possible disk/flash corruption\t1. Check dmesg for I/O errors 2. Run fsck 3. Check eMMC health [On-site service may be required]\t
+StorageFallbackMode\tHealth/Storage\tCRITICAL\tStorage Fallback Mode Active\tSystem running in fallback storage mode — primary partition unavailable\t1. Check partition table 2. Review RAUC slot status 3. Flash recovery image [On-site service REQUIRED]\t
+#
+# ──── Error Boss ────
+error_block_all_sessions\tErrorBoss\tCRITICAL\tSession-Blocking Error Active\tErrorBoss has active error_block_all_sessions — no charging possible\tReview ErrorBoss output for specific error; may require power cycle or on-site service\t
+locked_warning\tErrorBoss\tHIGH\tLocked Warning Active\tErrorBoss has locked warning that persists across sessions\tReview specific error; typically requires manual intervention or power cycle\t
+#
+# ──── Firmware Update ────
+Update.*validation.*failed\tFirmwareUpdate\tHIGH\tFirmware Update Validation Failed\tFOTA update failed signature, checksum, certificate, or variant validation\t1. Re-trigger update from CSMS 2. Verify update package integrity 3. Check signing certificates\t
+iotc-power-board-firmware-updater\tFirmwareUpdate/PowerBoard\tLOW\tPower Board FW Updater Active\tPower board firmware updater running — informational\tNormal during PB firmware update process\t
+#
+# ──── Monit (Process Supervisor) ────
+Process.*restarted\tMonit/Process\tMEDIUM\tProcess Restarted by Monit\tMonit detected process crash and restarted it\tCheck process logs for crash cause; frequent restarts indicate systemic issue\t
+restarted too often\tMonit/Process\tHIGH\tExcessive Process Restarts\tMonit reports process crashing and restarting too frequently\t1. Check process core dump 2. Review resource limits 3. Check dependencies\t
+High.*CPU\tMonit/System\tMEDIUM\tHigh CPU Usage\tMonit detected sustained high CPU usage\tIdentify CPU-heavy process (top), check for infinite loops or resource contention\t
+#
+# ──── HMI Boss ────
+HMI.*not.*ready\tHMI/Board\tMEDIUM\tHMI Board Not Ready\tHMI display board not responding during initialization\t1. Check HMI board connection 2. Verify HMI firmware 3. Check SPI/UART bus\t
+HMI.*timeout\tHMI/Board\tMEDIUM\tHMI Board Init Timeout\tHMI board initialization timed out\t1. Power cycle station 2. Check HMI board hardware 3. Verify HMI firmware version\t
+#
+# ──── Meter / Eichrecht ────
+Required.*Meter.*not.*found\tMeter\tMEDIUM\tRequired Meter Not Found\tEnergy meter required for billing/Eichrecht not detected\t1. Check meter wiring 2. Verify Modbus address 3. Check RS485 bus termination\t
+Meter.*Connection.*Failed\tMeter\tHIGH\tMeter Connection Failed\tCommunication with energy meter failed\t1. Check RS485 wiring 2. Verify baud rate 3. Check meter power supply\t
+EICHRECHT.*ERROR\tMeter/Eichrecht\tCRITICAL\tEichrecht Metering Error\tLegal metering (Eichrecht) in error state — billing integrity compromised\t1. Check meter status 2. Verify calibration seal 3. Contact metering authority [On-site service REQUIRED]\t
+#
+# ──── Tamper Detection ────
+LidOpen\tSafety/Tamper\tHIGH\tCharger Lid Open Detection\tTamper detection: charger enclosure lid is open\t1. Close lid 2. Check lid sensor 3. Verify tamper detection circuit [On-site service REQUIRED]\t
+#
+# ──── Kernel / System ────
+kernel.*panic\tKernel\tCRITICAL\tKernel Panic\tKernel panic — system crash requiring reboot\t1. Check dmesg/kern.log for cause 2. Review memory usage 3. Check driver compatibility\t
+Oops\tKernel\tCRITICAL\tKernel Oops\tKernel oops detected — driver or memory error\t1. Identify faulting module from oops dump 2. Check driver versions 3. Review memory\t
+PHY.*down\tKernel/Network\tMEDIUM\tPHY Link Down\tEthernet PHY reporting link down event\tCheck physical cable and switch port\t
+TPM.*error\tKernel/TPM\tLOW\tTPM Communication Warning\tTPM chip communication issue — may affect cert operations\tUsually transient; persistent errors may indicate hardware issue\t
+remount.*read-only\tKernel/FS\tCRITICAL\tFilesystem Remounted Read-Only\tKernel forcibly remounted filesystem as read-only due to errors\t1. Check dmesg for I/O errors 2. Run fsck 3. Check eMMC/flash health [On-site service may be required]\t
+#
+# ──── Config Manager ────
+config_manager.*not connected\tConfigManager\tMEDIUM\tConfigManager Not Connected\tComponents cannot reach ConfigManager — config updates will fail\tCheck ConfigManager process health, review PMQ connectivity\t
+#
+# ──── Grid Codes (AC Inverter) ────
+UnderFrequency\tGridCodes/AIM\tCRITICAL\tGrid Under-Frequency Disconnection\tGrid frequency below threshold — inverter disconnected for safety\t1. Check grid connection 2. Verify frequency settings 3. Wait for grid stabilization\t
+OverFrequency\tGridCodes/AIM\tCRITICAL\tGrid Over-Frequency Disconnection\tGrid frequency above threshold — inverter disconnected\t1. Check grid connection 2. Verify frequency settings 3. Wait for grid stabilization\t
+GridFault.*Voltage\tGridCodes/AIM\tCRITICAL\tGrid Voltage Fault\tGrid voltage out of tolerance — inverter disconnected for safety\t1. Check grid connection 2. Verify voltage at service entrance 3. Contact utility if persistent\t
+#
+# ──── PMQ System Health (from pmq-Sb-v1.13 source) ────
+ThreadAlarm.*timeout detected	PMQ	MEDIUM	PMQ Thread Alarm Timeout	PMQ message loop FD poll exceeded 1000ms — CPU starvation or I/O blocking	1. Check CPU usage with top/htop 2. Check storage I/O with iostat 3. Review Monit for crashed services 4. Power cycle if persistent	
+Cant send message.*queue size limit	PMQ	HIGH	PMQ Queue Overflow	Message producer outpacing consumer — messages being dropped	1. Identify slow consumer in PMQ logs 2. Check if ErrorBoss or ConfigManager blocked 3. Review thread alarm counts	
+Direct queue not connected	PMQ	LOW	PMQ Queue Not Connected	IPC queue destination not ready at send time — normal at boot, persistent means service crashed	1. Check Monit for failed services 2. Verify boot order 3. Look for crashed services with stale queues	
+Subscribing again from	PMQ	LOW	PMQ Subscription Retry	Subscriber reconnecting to publisher — indicates service restart or slow startup	Normal during boot sequence; persistent retries indicate publisher service not running	
+#
+# ──── Certificate Loading (from iotc-cert-mgr source) ────
+Failed to read cert config	CertManager	HIGH	Certificate Config Load Failure	Root CA chain file missing or unreadable — TLS connections may fail	1. Check /etc/iotecha/certs/ for missing .pem files 2. Verify CertManager config paths 3. Re-provision via OCPP InstallCertificate	
+Unexpected response received.*Certificate	CertManager	MEDIUM	Unexpected Certificate Response	CertManager received unexpected PMQ response type	1. Check CertManager/OCPP message flow 2. Verify PMQ data type versions match	
+#
+# ──── Token Manager / Auth (from iotc-token-manager source) ────
+Unknown auth token	TokenManager	MEDIUM	Unknown Auth Token	RFID/token not in local whitelist — authorization rejected	1. Verify OCPP LocalAuthList 2. Check Authorize request/response flow 3. Review offline auth mode	
+App registering [0-9]	TokenManager	LOW	Token Manager Registration	TokenManager registering with PMQ bus — informational during boot	Normal during startup; errors only if followed by failure messages	
+#
+# ──── Network Interface Selection (from iotc-network-boss source) ────
+Re-apply metric for interface	NetworkBoss	MEDIUM	Interface Metric Re-application	NetworkBoss adjusting routing metrics — interface flapping or connectivity check failing	1. Check affected interface (wlan0/eth0/ppp0) 2. For WiFi: check signal 3. For LTE: AT+CSQ 4. Review interfaceSelectionManager config	
+Error during interfaces initialization	NetworkBoss	HIGH	Network Init Failure	NetworkBoss failed to initialize network stack	1. Check eth0 cable 2. Verify modem/SIM 3. Review NetworkBoss.properties 4. Check dmesg for driver errors 5. Power cycle	
+PB Version wait timeout	ChargerApp/HAL	HIGH	Power Board Version Timeout	HAL timed out waiting for Power Board firmware version response	1. Check Power Board serial connection 2. Verify Power Board firmware 3. Check for Power Board fault LEDs 4. Replace Power Board if persistent	
+#
+# ──── OCPP Specific (from ocpp-framework source) ────
+Charge Point Model is empty	OCPP	HIGH	OCPP Charge Point Model Missing	BootNotification will fail — CPModel not configured	1. Set chargePointModel in ocpp-cmd.properties 2. Verify ConfigManager delivered OCPP config 3. Check for factory provisioning issues	
+Boot source file.*doesn't exist	OCPP	LOW	OCPP Boot Source Missing	/proc/boot_source not available — minor, cosmetic	Non-critical; OCPP reports boot reason as unknown. May affect diagnostics only.	
+Invalid SQL statement.*VACUUM	OCPP	LOW	OCPP Database Maintenance Error	SQLite VACUUM inside transaction — minor database housekeeping issue	Non-critical; self-corrects on next cycle. Monitor for database corruption symptoms.	
+rejected.*BootNotification	OCPP	HIGH	OCPP Boot Rejected by CSMS	Central System rejected BootNotification — charger cannot operate in online mode	1. Verify ChargePointVendor and Model in OCPP config 2. Check CSMS provisioning 3. Verify TLS certificates	
+#
+# ──── ChargerApp / EVIC Hardware (from charger-app source) ────
+CPState Callback is not set	ChargerApp	LOW	Deprecated CP State Polling	Using deprecated polling for Control Pilot state changes	Non-critical; performance hint. Upgrade firmware to use callback-based CP monitoring.	
+Got Error IRQ	ChargerApp/EVIC	HIGH	EVIC Hardware Interrupt Error	EVIC microcontroller reported error via I2C interrupt	1. Check EVIC I2C bus connection 2. Review interrupt code in EVIC firmware docs 3. Power cycle 4. Replace EVIC board if persistent	
+State machine with id.*not found	ChargerApp	CRITICAL	Charger State Machine Error	Internal state machine lookup failed — connector in undefined state	1. Restart ChargerApp service 2. Power cycle charger 3. Report to IoTecha if persistent	
+Watchdog CRITICAL.*evcc_communication	ChargerApp	CRITICAL	EVCC Communication Watchdog	EVCC processing blocked for >60s — service will be stopped	1. Check PMQ thread alarms for system overload 2. Review CPU usage 3. Power cycle charger 4. Report to IoTecha with RACC	
+#
+# ──── Health Monitor (from iotc-health-monitor source) ────
+Can't create GPIORebooter	HealthMonitor	MEDIUM	GPIO Rebooter Unavailable	Hardware watchdog GPIO not accessible — system cannot self-recover from hangs	1. Check /sys/class/gpio/ permissions 2. Verify kernel GPIO driver loaded 3. Non-critical in development/test environments	
+SoftReset	HealthMonitor	LOW	Soft Reset Initiated	Health Monitor initiated planned reboot after uptime threshold	Normal maintenance reboot; check if frequency is excessive (>1/day)	
+UnPlannedReboot	HealthMonitor	HIGH	Unplanned Reboot Detected	System restarted without planned reboot marker — crash, watchdog, or power loss	1. Check dmesg/kernel logs for panic/oops 2. Review power supply stability 3. Check for hardware watchdog timeout	
+#
+# ──── Emergency / Safety (from error registry) ────
+EmergencyStop	Safety	CRITICAL	Emergency Stop Activated	Hardware emergency stop line triggered — all charging sessions terminated	1. Check physical E-stop button 2. Verify E-stop wiring 3. Clear E-stop and reset 4. On-site service required	
+LidOpen	Safety/Tamper	HIGH	Tamper Detection — Lid Open	Charger enclosure lid opened — tamper detection active	1. Secure charger lid 2. Check tamper sensor wiring 3. On-site inspection required	
+
+# ──── Registry Auto-generated Supplement (v2.0) ────
+# 246 entries auto-imported from error_registry.tsv for searcher coverage
+# These complement hand-crafted patterns above with exact error name matches
+ErrorLockingFailed	PowerBoard/PowerBoardHAL	LOW	ErrorLockingFailed	Lock action doesn't take effect	1. Check lock is not blocked by some object   2. Check/fix/replace lock   3. Power Cycle Charging Station   4. Replace Power Board	
+ErrorReactiveCurrentDetected	PowerBoard/PowerBoardHAL	LOW	ErrorReactiveCurrentDetected	EV41: Reactive current was detected, increasing minimum limit	1. Restart charging session   2. Use another EV/consumer	
+ErrorReactiveCurrentOverrideSWLimit	PowerBoard/PowerBoardHAL	LOW	ErrorReactiveCurrentOverrideSWLimit	EV41: Overriding Effective Limits	1. Restart charging session   2. Use another EV/consumer	
+ErrorReactiveCurrentOverrideForbidden	PowerBoard/PowerBoardHAL	HIGH	ErrorReactiveCurrentOverrideForbidden	Session stop because of reactive current level	1. Restart charging session   2. Use another EV	
+ErrorM2LowCurrent	HWSpecificHALZr	CRITICAL	ErrorM2LowCurrent	Low current on M2 connector	1. Restart charging session   2. Use another EV/connect another consumer   3. Verify M2LowCurrentThreshold_mA value in ihal/ihal.properties config	
+InvalidCode	PowerBoard/HWPowerBoardStopCode	HIGH	InvalidCode	Unknown	1. Power Cycle Charging Station   2. Replace Power Board	
+BENDER_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	BENDER_ERROR	An internal fault of the IMD unit happened outside 1s after closing relaysr	1. Restart charging session   2. Use another EV/consumer   3. Power Cycle Charging Station   4. Check Bender unit connection to Power Board   5. Replace Bender unit   6. Replace Power Board	
+BENDER_FAULT_1	PowerBoard/HWPowerBoardStopCode	CRITICAL	BENDER_FAULT_1	A fault (leakage indicated by output #1 of IMD module) was detected by the IMD unit outside 1s after closing relays	1. Power Cycle Charging Station   2. Use another EV/consumer   3. Check Bender unit connection to Power Board   4. Replace Bender unit   5. Replace Power Board	
+BENDER_FAULT_2	PowerBoard/HWPowerBoardStopCode	CRITICAL	BENDER_FAULT_2	A fault (leakage indicated by output #2 of IMD module) was detected by the IMD unit outside 1s after closing relays	1. Power Cycle Charging Station   2. Use another EV/consumer   3. Check Bender unit connection to Power Board   4. Replace Bender unit   5. Replace Power Board	
+OVERTEMPERATURE_1	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERTEMPERATURE_1	Overtemperature 1	1. Check/fix the cooling system   2. Replace Power Board	
+OVERTEMPERATURE_2	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERTEMPERATURE_2	Overtemperature 2	1. Check/fix the cooling system   2. Replace Power Board	
+HARD_OVERCURRENT	PowerBoard/HWPowerBoardStopCode	CRITICAL	HARD_OVERCURRENT	Hard overcurrent	1. Power Cycle charging station   2. Use another EV/connect another consumer   3. Check for short-circuits   4. Replace Power Board	
+OVERVOLTAGE	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERVOLTAGE	Overvoltage	1. Check/fix grid voltage   2. Verify correct Power Board version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+UNDERVOLTAGE	PowerBoard/HWPowerBoardStopCode	CRITICAL	UNDERVOLTAGE	Undervoltage	1. Check/fix grid voltage   2. Verify correct PB version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace PB	
+HIGH_FREQUENCY	PowerBoard/HWPowerBoardStopCode	CRITICAL	HIGH_FREQUENCY	High frequency	1. Check/fix grid frequency   2. Verify correct Power Board version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+LOW_FREQUENCY	PowerBoard/HWPowerBoardStopCode	CRITICAL	LOW_FREQUENCY	Low frequency	1. Check/fix grid frequency   2. Verify correct PB version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+GROUND_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	GROUND_FAULT	Ground fault	1. Check/restore earth connection   2. Power Cycle Charging station   3. Replace Power Board	
+CT_RCM_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	CT_RCM_FAULT	CT RCM fault	1. Power Cycle Charging station   2. Replace Power Board	
+PROXIMITY	PowerBoard/HWPowerBoardStopCode	CRITICAL	PROXIMITY	Proximity changed during charging process	1. Check/replace charging cable   2. Power Cycle Charging station   3. Replace Power Board	
+PHASE_2_AND_3_MISSING	PowerBoard/HWPowerBoardStopCode	CRITICAL	PHASE_2_AND_3_MISSING	Phase 2 and 3 missing	1. Verify 3 phase station is not connected to 1 phase grid   2. Check/fix grid state and connection    3. Power Cycle Charging station   4. Replace Power Board	
+PHASE_SEQUENCE_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	PHASE_SEQUENCE_ERROR	Phase sequence error	1. Check/fix phases connection: make sure it follows grid layout   2. Power Cycle Charging station   3. Replace Power Board	
+CONTACTORS_WELDED	PowerBoard/HWPowerBoardStopCode	CRITICAL	CONTACTORS_WELDED	Contactors welded	1. Validate relays integrity   2. Power Cycle Charging station   3. Replace Power Board	
+CODE_INTEGRITY_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	CODE_INTEGRITY_FAULT	Code integrity fault	1. Power Cycle Charging station   2. Reflash Power Board firmware   3. Replace Power Board	
+METER_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	METER_FAULT	Meter fault	1. Power Cycle Charging station   2. Replace Power Board	
+IMMEDIATE_BENDER_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	IMMEDIATE_BENDER_ERROR	An internal fault of the IMD unit happened within 1s after closing relays	1. Restart charging session   2. Use another EV/consumer   3. Power Cycle Charging Station   4. Check Bender unit connection to Power Board   5. Replace Bender unit   6. Replace Power Board	
+IMMEDIATE_BENDER_FAULT_1	PowerBoard/HWPowerBoardStopCode	CRITICAL	IMMEDIATE_BENDER_FAULT_1	A fault (leakage indicated by output #1 of IMD module) was detected by the IMD unit within 1s after closing relays	1. Restart charging session   2. Use another EV/consumer   3. Power Cycle Charging Station   4. Check Bender unit connection to Power Board   5. Check charging cable and socket   6. Replace Bender unit   7. Replace Power Board	
+IMMEDIATE_BENDER_FAULT_2	PowerBoard/HWPowerBoardStopCode	CRITICAL	IMMEDIATE_BENDER_FAULT_2	A fault (leakage indicated by output #2 of IMD module) was detected by the IMD unit within 1s after closing relays	1. Restart charging session   2. Use another EV/consumer   3. Power Cycle Charging Station   4. Check Bender unit connection to Power Board   5. Check charging cable and socket   6. Replace Bender unit   7. Replace Power Board	
+IDLE_CURRENT	PowerBoard/HWPowerBoardStopCode	CRITICAL	IDLE_CURRENT	Idle current	1. Inspect connections   2. Power Cycle Charging Station   3. Replace Power Board	
+UNEXPECTED_MAIN_RELAY_ENABLE	PowerBoard/HWPowerBoardStopCode	CRITICAL	UNEXPECTED_MAIN_RELAY_ENABLE	Unexpected main relay enable	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+UNEXPECTED_AUX_RELAY_ENABLE	PowerBoard/HWPowerBoardStopCode	CRITICAL	UNEXPECTED_AUX_RELAY_ENABLE	Unexpected aux relay enable	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+UNEXPECTED_FAULT_RESET	PowerBoard/HWPowerBoardStopCode	CRITICAL	UNEXPECTED_FAULT_RESET	Unexpected fault reset	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board   4. Replace Main AC board	
+INVALID_PROXIMITY	PowerBoard/HWPowerBoardStopCode	CRITICAL	INVALID_PROXIMITY	Invalid proximity	1. Check/replace charging cable	
+PHASE_2_MISSING	PowerBoard/HWPowerBoardStopCode	CRITICAL	PHASE_2_MISSING	Phase 2 missing	1. Verify phase B grid status	
+PHASE_3_MISSING	PowerBoard/HWPowerBoardStopCode	CRITICAL	PHASE_3_MISSING	Phase 3 missing	1. Verify phase C grid status	
+MAIN_RELAY1_STUCK_OPEN	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_RELAY1_STUCK_OPEN	Main relay 1 stuck open	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+MAIN_RELAY2_STUCK_OPEN	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_RELAY2_STUCK_OPEN	Main relay 2 stuck open	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+MAIN_RELAY1_STUCK_CLOSED	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_RELAY1_STUCK_CLOSED	Main relay 1 stuck closed	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+MAIN_RELAY2_STUCK_CLOSED	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_RELAY2_STUCK_CLOSED	Main relay 2 stuck closed	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+SOFT_OVERCURRENT	PowerBoard/HWPowerBoardStopCode	CRITICAL	SOFT_OVERCURRENT	Soft overcurrent	1. Restart charging session   2. Power Cycle Charging Station   3. Use another EV/consumer	
+HOST_COMMAND_TIMEOUT	PowerBoard/HWPowerBoardStopCode	CRITICAL	HOST_COMMAND_TIMEOUT	Host command timeout	Only if persists   1. Replace cable from Power Board to Main AC   2. Replace Power Board   3. Replace Main AC	
+MAIN_3_PHASE_MODE_NOT_AVAILABLE	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_3_PHASE_MODE_NOT_AVAILABLE	Main 3 phase mode not available	1. Validate grid settings:   powerboard.onePhaseOverride in ihal/ihal.properties   ACCharging.phaseCountBasicRequest in ChargerApp/ChargerAppConfig.properties	
+INVALID_HARD_CURRENT_LIMIT	PowerBoard/HWPowerBoardStopCode	CRITICAL	INVALID_HARD_CURRENT_LIMIT	Invalid hard current limit	1. Validate Rotary Switch position	
+POWER_FAILURE	PowerBoard/HWPowerBoardStopCode	CRITICAL	POWER_FAILURE	Power failure	1. Validate grid state and connection	
+BENDER_INIT_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	BENDER_INIT_ERROR	Bender init error	1.  Power Cycle Charging Station   2. Replace Bender	
+BENDER_SELF_TEST_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	BENDER_SELF_TEST_ERROR	Bender self test error	1.  Power Cycle Charging Station   2. Replace Bender	
+MAIN_RELAYS_STUCK_OPEN	PowerBoard/HWPowerBoardStopCode	CRITICAL	MAIN_RELAYS_STUCK_OPEN	Main relays stuck open	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+LOW_TEMP_FAULT_1	PowerBoard/HWPowerBoardStopCode	CRITICAL	LOW_TEMP_FAULT_1	Low temperature fault 1	1. Verify environment conditions   2. Replace Power Board	
+LOW_TEMP_FAULT_2	PowerBoard/HWPowerBoardStopCode	CRITICAL	LOW_TEMP_FAULT_2	Low temperature fault 2	1. Verify environment conditions   2. Replace Power Board	
+IMDBenderError	PowerBoard/PowerBoardFault	LOW	IMDBenderError	An internal fault of the IMD unit is present	1. Power Cycle Charging Station   2. Use another EV/consumer   3. Check Bender unit connection to Power Board   4. Replace Bender unit   5. Replace Power Board	
+IMDBenderDC1X6Fault	PowerBoard/PowerBoardFault	LOW	IMDBenderDC1X6Fault	A fault (leakage indicated by output #1 of IMD module) is present	1. Power Cycle Charging Station   2. Use another EV/consumer   3. Check Bender unit connection to Power Board   4. Replace Bender unit   5. Replace Power Board	
+IMDBenderDC2X30Fault	PowerBoard/PowerBoardFault	LOW	IMDBenderDC2X30Fault	A fault (leakage indicated by output #2 of IMD module) is present	1. Power Cycle Charging Station   2. Use another EV/consumer   3. Check Bender unit connection to Power Board   4. Replace Bender unit   5. Replace Power Board	
+CTBasedRCMFaultIndicator	PowerBoard/PowerBoardFault	LOW	CTBasedRCMFaultIndicator	CT-based RCM fault indicator	1. Power Cycle Charging Station   2. Replace Power Board	
+MeterFault	PowerBoard/PowerBoardFault	LOW	MeterFault	Meter fault	1. Power Cycle Charging Station   2. Replace Power Board	
+Undervoltage	PowerBoard/PowerBoardFault	LOW	Undervoltage	Undervoltage	1. Check/fix grid voltage   2. Verify correct PB version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace PB	
+Overvoltage	PowerBoard/PowerBoardFault	LOW	Overvoltage	Overvoltage	1. Check/fix grid voltage   2. Verify correct Power Board version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+HardOvercurrent	PowerBoard/PowerBoardFault	LOW	HardOvercurrent	Hard overcurrent	1. Power Cycle charging station   2. Use another EV/connect another consumer   3. Check for short-circuits   4. Replace Power Board	
+SoftOvercurrent	PowerBoard/PowerBoardFault	CRITICAL	SoftOvercurrent	Soft overcurrent	1. Restart charging session   2. Power Cycle Charging Station   3. Use another EV/consumer	
+IdleCurrent	PowerBoard/PowerBoardFault	LOW	IdleCurrent	Idle current	1. Inspect connections   2. Power Cycle Charging Station   3. Replace Power Board	
+HighGridFrequency	PowerBoard/PowerBoardFault	LOW	HighGridFrequency	High grid frequency	1. Check/fix grid frequency   2. Verify correct Power Board version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+LowGridFrequency	PowerBoard/PowerBoardFault	LOW	LowGridFrequency	Low grid frequency	1. Check/fix grid frequency   2. Verify correct PB version is installed (US vs EU variant)   3. Power Cycle Charging station   4. Replace Power Board	
+PhaseSequenceError	PowerBoard/PowerBoardFault	LOW	PhaseSequenceError	Phase sequence error	1. Check/fix phases connection: make sure it follows grid layout   2. Power Cycle Charging station   3. Replace Power Board	
+EarthFault	PowerBoard/PowerBoardFault	LOW	EarthFault	Earth fault	1. Check/restore earth connection   2. Power Cycle Charging station   3. Replace Power Board	
+FuseFault	PowerBoard/PowerBoardFault	LOW	FuseFault	Fuse fault	1. Replace M2 line fuse   2. Replace Power Board	
+Overtemperature1	PowerBoard/PowerBoardFault	LOW	Overtemperature1	Overtemperature1	1. Check/fix the cooling system   2. Replace Power Board	
+Overtemperature2	PowerBoard/PowerBoardFault	LOW	Overtemperature2	Overtemperature2	1. Check/fix the cooling system   2. Replace Power Board	
+HostCommandTimeout	PowerBoard/PowerBoardFault	LOW	HostCommandTimeout	Host command timeout	1. Replace cable from Power Board to Main AC   2. Replace Power Board   3. Replace Main AC	
+PowerFailureWarning	PowerBoard/PowerBoardFault	HIGH	PowerFailureWarning	Power Failure Warning	1. Verify grid status and connection	
+PowerFailureFault	PowerBoard/PowerBoardFault	CRITICAL	PowerFailureFault	Power Failure Fault	1. Validate grid state and connection	
+PhaseBLoss	PowerBoard/PowerBoardFault	LOW	PhaseBLoss	Phase B Loss	1. Verify phase B grid status	
+PhaseCLoss	PowerBoard/PowerBoardFault	LOW	PhaseCLoss	Phase C Loss	1. Verify phase C grid status	
+RotarySwitchInvalid	PowerBoard/PowerBoardFault	CRITICAL	RotarySwitchInvalid	Current limit rotary switch is in incorrect position	1. Validate Rotary Switch position	
+NotReadyRegistersMismatch	PowerBoard/PowerBoardFault	LOW	NotReadyRegistersMismatch	Power Board is not ready to work. Registers mismatch.	1. Validate software version is correct	
+NotReady	PowerBoard/PowerBoardFault	LOW	NotReady	Power Board is not ready to work	1. Power Cycle Charging Station   2. Replace Power Board	
+VoltageWarning	PowerBoard/PowerBoardFault	LOW	VoltageWarning	Under/Over voltage warning	1. Power Cycle Charging Station   2. Replace Power Board	
+PWMIsNotChanging	HWBaseHAL	LOW	PWMIsNotChanging	PWM is not changing	1. Restart charging session   2. Use another EV/consumer   	
+EvicBlocked	HWBaseHAL	LOW	EvicBlocked	EVIC blocked condition detected	1. Restart charging session   2. Use another EV/consumer   3. Reboot charging station	
+Temperature1Error	CommonEVIC	CRITICAL	Temperature1Error	Temperature 1 error	1. Check/fix cooling system   2. Replace Main AC board	
+Temperature2Error	CommonEVIC	CRITICAL	Temperature2Error	Temperature 2 error	1. Check/fix cooling system   2. Replace Main AC board	
+InvalidFSMTransition	CommonEVIC	CRITICAL	InvalidFSMTransition	Invalid FSM transition	1. Power Cycle Charging Station   2. Replace Main AC board	
+GlobalStop	CommonEVIC	LOW	GlobalStop	Charging session stopped by error	1. Restart charging session   2. Use another EV/consumer	
+CPNoDiode	CommonEVIC	CRITICAL	CPNoDiode	Control Pilot diode error	1. Restart charging session   2. Use another charging cable   3. Use another EV/consumer	
+CPStateE	CommonEVIC	CRITICAL	CPStateE	CP state E detected	1. Restart charging session   2. Use another charging cable   3. Use another EV/consumer	
+ERROR_STATE_RECOVER	InnerSM	LOW	ERROR_STATE_RECOVER	Can not recover CP State	1. Restart charging session   2. Reboot charging station	
+ERROR_SERVER_CREATE_FAILED	InnerSM	LOW	ERROR_SERVER_CREATE_FAILED	Problem creating server	1. Restart charging session   2. Reboot charging station	
+ERROR_MESSAGE_IN_WRONG_STATE	InnerSM	LOW	ERROR_MESSAGE_IN_WRONG_STATE	Got event X in state Y but car is not in charging state!	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_EXI_ENCODING_FAILED	InnerSM	LOW	ERROR_EXI_ENCODING_FAILED	EXI encoding failed	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_PRECHARGE_VOLTAGE_RAISE_TIMEOUT	InnerSM	LOW	ERROR_PRECHARGE_VOLTAGE_RAISE_TIMEOUT	PreCharge took longer than timeoutPreChargeVoltageRaise_ms	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_NEGATIVE_CURRENT	InnerSM	LOW	ERROR_NEGATIVE_CURRENT	[Current Demand] Negative Current Value	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_OVERLOAD	InnerSM	LOW	ERROR_OVERLOAD	PreCharge Voltage_mV or/and Current_mA above max values	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_RESUMING_NOT_SUPPORTED	InnerSM	LOW	ERROR_RESUMING_NOT_SUPPORTED	[V2G-DC-241] Resuming session is not supported in DIN	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_CANT_UNPAUSE	InnerSM	LOW	ERROR_CANT_UNPAUSE	[LogicStateMachine] There is still some error can not unpause	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_RESTART_NOT_ALLOWED	InnerSM	LOW	ERROR_RESTART_NOT_ALLOWED	[LogicStateMachine] In current state EV Restart is not allowed	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_NORMALIZATION_OF_NOT_RAISED_ERROR	InnerSM	LOW	ERROR_NORMALIZATION_OF_NOT_RAISED_ERROR	ERROR_NORMALIZATION_OF_NOT_RAISED_ERROR	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_PWM_CONTROL	InnerSM	LOW	ERROR_PWM_CONTROL	[LogicStateMachine] PWM value has passed all conditions	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_UNAVAILABLE	InnerSM	CRITICAL	ERROR_UNAVAILABLE	State machine exit	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_NEGATIVE_VOLTAGE	InnerSM	LOW	ERROR_NEGATIVE_VOLTAGE	[Current Demand] Negative Voltage Value	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_COMMUNICATION_BLOCKED	InnerSM	MEDIUM	ERROR_COMMUNICATION_BLOCKED	Communication Blocked	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+STUCK_IN_UNDEFINED_LOGIC_STATE	InnerSM	MEDIUM	STUCK_IN_UNDEFINED_LOGIC_STATE	Stuck in the undefined logic state	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_UNAVAILABLE_STATE_F	InnerSM	CRITICAL	ERROR_UNAVAILABLE_STATE_F	State F Unavailable	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_RESTART_NOT_ALLOWED_PWM_CONTROLLED_OUTSIDE	InnerSM	LOW	ERROR_RESTART_NOT_ALLOWED_PWM_CONTROLLED_OUTSIDE	[LogicStateMachine] Not controlling PWM. Skipping EventCPEVCCRestart	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+ERROR_PWM_CONTROL_OUTSIDE_NOT_ALLOWED	InnerSM	LOW	ERROR_PWM_CONTROL_OUTSIDE_NOT_ALLOWED	[LogicStateMachine] SM is not configured to handle outer PWM Control	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+RequiredMeterNotFound	Meter/MeterListener	LOW	RequiredMeterNotFound	Required Meter not found	1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties   2. Reboot charging station   3. Check/fix meter connection   4. Check/replace meter      	
+RequiredMeterMissing	Meter/MeterListener	CRITICAL	RequiredMeterMissing	Required Meter missing	1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties   2. Reboot charging station   3. Check/fix meter connection   4. Check/replace meter   	
+PreferredMeterMissing	Meter/MeterListener	LOW	PreferredMeterMissing	Preferred Meter missing	1. Verify preferred meter settings Meter.preferred.type Meter.preferred.disableChargingOnAbsence in ChargerApp/ChargerAppConfig.properties   2. Reboot charging station   3. Check/fix meter connection   4. Check/replace meter   	
+Error_V2G_TCP_ConnectionClosed	V2G/HLCStateMachine	MEDIUM	Error_V2G_TCP_ConnectionClosed	V2G connection closed	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_Wrong_ChargeParameters	V2G/HLCStateMachine	HIGH	Error_Wrong_ChargeParameters	V2G requested energy type is not supported or could not be found in list of energy types	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_SupportedSchemaNotFound	V2G/HLCStateMachine	MEDIUM	Error_SupportedSchemaNotFound	V2G Can not get schema to use	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_V2G_SessionSequenceError	V2G/HLCStateMachine	MEDIUM	Error_V2G_SessionSequenceError	V2G wrong sequence	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PrechargeResTimeout	V2G/HLCStateMachine	MEDIUM	Error_PrechargeResTimeout	V2G PrechargeRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CurrentDemandResTimeout	V2G/HLCStateMachine	MEDIUM	Error_CurrentDemandResTimeout	V2G CurrentDemandRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_WeldingDetectionResTimeout	V2G/HLCStateMachine	MEDIUM	Error_WeldingDetectionResTimeout	V2G WeldingDetectionRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CertificateInstallationReq_EmptyExi	V2G/HLCStateMachine	MEDIUM	Error_CertificateInstallationReq_EmptyExi	V2G CertificateInstallationReq empty exi	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CertificateUpdateReq_EmptyExi	V2G/HLCStateMachine	MEDIUM	Error_CertificateUpdateReq_EmptyExi	V2G CertificateUpdateReq empty exi	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CertificateUpdate_NoActivityTimeout	V2G/HLCStateMachine	MEDIUM	Error_CertificateUpdate_NoActivityTimeout	V2G CertificateUpdateRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CertificateInstallation_NoActivityTimeout	V2G/HLCStateMachine	MEDIUM	Error_CertificateInstallation_NoActivityTimeout	V2G CertificateInstallationRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PreComVoltageCheck	V2G/HLCStateMachine	MEDIUM	Error_PreComVoltageCheck	V2G pre com voltage check failed	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CableCheck_NoActivityTimeout	V2G/HLCStateMachine	MEDIUM	Error_CableCheck_NoActivityTimeout	V2G CableCheckRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_Precharge_NoActivityTimeout	V2G/HLCStateMachine	MEDIUM	Error_Precharge_NoActivityTimeout	V2G PrechargeRes timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_Precharge_CarIsNotReadyForPowerDelivery	V2G/HLCStateMachine	MEDIUM	Error_Precharge_CarIsNotReadyForPowerDelivery	V2G energy transfer is not allowed during precharge	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PowerDeliveryStartAC_CarIsNotReadyForPD	V2G/HLCStateMachine	MEDIUM	Error_PowerDeliveryStartAC_CarIsNotReadyForPD	V2G energy transfer is not allowed during power delivery start(AC)	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_ReadyToCharge_CarIsNotReadyForPowerDelivery	V2G/HLCStateMachine	MEDIUM	Error_ReadyToCharge_CarIsNotReadyForPowerDelivery	V2G energy transfer is not allowed during V2GReadyToCharge state	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CurrentDemand_CarIsNotReadyForPowerDelivery	V2G/HLCStateMachine	MEDIUM	Error_CurrentDemand_CarIsNotReadyForPowerDelivery	V2G energy transfer is not allowed during V2GCurrentDemandMessaging state	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_DcBpt_SendPowerDeliveryReplyError	V2G/HLCStateMachine	MEDIUM	Error_DcBpt_SendPowerDeliveryReplyError	V2G Error during sending PowerDeliveryReplyResBpt	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Info_V2G_SessionStop	V2G/HLCStateMachine	MEDIUM	Info_V2G_SessionStop	V2G session stop	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PowerDeliveryStartTimeout	V2G/HLCStateMachine	MEDIUM	Error_PowerDeliveryStartTimeout	V2G PowerDeliveryRes timeout during PowerDelivery start phase	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_NoCurrentDemandRequest	V2G/HLCStateMachine	MEDIUM	Error_NoCurrentDemandRequest	V2G CurrentDemandReq has not been sent	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_DcBpt_SendCurrentDemandError	V2G/HLCStateMachine	MEDIUM	Error_DcBpt_SendCurrentDemandError	V2G Error during sending CurrentDemandResBpt	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PowerDeliveryStopResTimeout	V2G/HLCStateMachine	MEDIUM	Error_PowerDeliveryStopResTimeout	V2G PowerDeliveryRes timeout during PowerDelivery stop phase	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_V2G_Unknown	V2G/HLCStateMachine	MEDIUM	Error_V2G_Unknown	V2G unknown error	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_EVNotObeyImposedLimit	PowerBoard/PowerBoardHAL	HIGH	Error_EVNotObeyImposedLimit	EV does not obey imposed limit	1. Restart charging session   2. Use another EV/consumer	
+EARTH_RELAY_STUCK_OPEN	PowerBoard/HWPowerBoardStopCode	CRITICAL	EARTH_RELAY_STUCK_OPEN	Earth relay stuck open	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+EARTH_RELAY_STUCK_CLOSED	PowerBoard/HWPowerBoardStopCode	CRITICAL	EARTH_RELAY_STUCK_CLOSED	Earth relay stuck closed	1. Power Cycle Charging Station   2. Inspect Power Board and Main AC and verify there is no unexpected wires connected   3. Replace Power Board	
+OVERTEMPERATURE_3	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERTEMPERATURE_3	Overtemperature 3	1. Check/fix the cooling system   2. Replace Power Board	
+LOW_TEMP_FAULT_3	PowerBoard/HWPowerBoardStopCode	CRITICAL	LOW_TEMP_FAULT_3	Low temp fault 3	1. Verify environment conditions   2. Replace Power Board	
+RELAY_HOLD_VOLTAGE_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	RELAY_HOLD_VOLTAGE_FAULT	Relay hold voltage fault	1. Power Cycle Charging Station   2. Replace Power Board	
+RELAY_FULL_VOLTAGE_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	RELAY_FULL_VOLTAGE_FAULT	Relay full voltage fault	1. Power Cycle Charging Station   2. Replace Power Board	
+CT_TEST_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	CT_TEST_FAULT	CT test fault	1. Power Cycle Charging Station   2. Replace Power Board	
+VARIANT_SOCKET_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	VARIANT_SOCKET_FAULT	Socket variant selection fault	"1. Verify operation variant jumper position   2. Power Cycle Charging Station   3. Replace Power Board"""	
+OVERTEMPERATURE_4	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERTEMPERATURE_4	Overtemperature 4	1. Check/fix the cooling system   2. Replace Power Board	
+LOW_TEMP_FAULT_4	PowerBoard/HWPowerBoardStopCode	CRITICAL	LOW_TEMP_FAULT_4	Low temperature fault 4	1. Verify environment conditions   2. Replace Power Board	
+NVM_DATA_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	NVM_DATA_FAULT	NVM data corrupted	1. Power Cycle Charging Session   2. Replace Power Board	
+ENERGY_MANAGER_POWER_IMBALANCE_DETECTED	EnergyManagerPowerBalance	HIGH	ENERGY_MANAGER_POWER_IMBALANCE_DETECTED	Phase power imbalance detected	No action is required	
+PEN_ERROR	PowerBoard/HWPowerBoardStopCodeRu	HIGH	PEN_ERROR	PEN error		
+PEN_FAULT	PowerBoard/HWPowerBoardStopCodeRu	HIGH	PEN_FAULT	PEN fault		
+NE_FAULT	PowerBoard/HWPowerBoardStopCodeRu	HIGH	NE_FAULT	NE fault		
+Temperature1LessThanLowerLimit	PowerBoard/PowerBoardFault	CRITICAL	Temperature1LessThanLowerLimit	Temperature 1 is less than the lower limit	1. Check/fix the heating system   2. Replace Power Board	
+Temperature2LessThanLowerLimit	PowerBoard/PowerBoardFault	CRITICAL	Temperature2LessThanLowerLimit	Temperature 2 is less than the lower limit	1. Check/fix the heating system   2. Replace Power Board	
+UserButtonStuck	PowerBoard/PowerBoardFaultRu	CRITICAL	UserButtonStuck	User button is stuck		
+InvalidRTConfig	PowerBoard/PowerBoardFaultRu	CRITICAL	InvalidRTConfig	Invalid RT Config packet received		
+PENFault	PowerBoard/PowerBoardFaultRu	CRITICAL	PENFault	PEN fault		
+PENError	PowerBoard/PowerBoardFaultRu	CRITICAL	PENError	PEN module error		
+InvalidPPStateInCPStateB	HWBaseHAL	CRITICAL	InvalidPPStateInCPStateB	Invalid PP State in CP State B	1. Check/replace charging cable   2. Power Cycle Charging station   3. Replace Power Board	
+WAIT_CABLE_UNPLUG_AFTER_IMD	HWSpecificHAL	CRITICAL	WAIT_CABLE_UNPLUG_AFTER_IMD	Wait cable unplug after IMD error	1. Unplug Cable   2. Power Cycle Charging Session   3. Replace Main board	
+OCPP_CONNECTION_ERROR	ocpp-cmd	LOW	OCPP_CONNECTION_ERROR	OCPP cannot connect to Central System	1. Check and fix OCPP Central System settings   2. Check and fix network configuration and settings    3. Restart charging station   4. Replace Main AC board	
+EEBUS_LOST_CONNECTION	iotc-eebus-evcs	LOW	EEBUS_LOST_CONNECTION	EEBus connection is lost	1. Check and fix CEM settings   2. Check and fix network configuration and settings    3. Restart charging station   4. Replace Main AC board	
+ErrorStartingChargingOnInactiveConnector	PowerBoard/PowerBoardHAL	HIGH	ErrorStartingChargingOnInactiveConnector	Internal HAL error. Socket priority issue.	1. Restart charging session   2. Reboot charging station	
+CONTACTORS_ENABLE_SIGNAL_MISMATCH	PowerBoard/PowerBoardHAL	CRITICAL	CONTACTORS_ENABLE_SIGNAL_MISMATCH	Relay enable signal mismatch	1. Check the cable between Main Board and Power Board   2. Replace the cable   Replace Power Board	
+HOST_COMMAND_FEEDBACK_MISMATCH	PowerBoard/PowerBoardHAL	CRITICAL	HOST_COMMAND_FEEDBACK_MISMATCH	Feedback from PB doesn't match commands	1. Power Cycle Charging Station   2. Replace Power Board	
+HOST_COMMAND_FEEDBACK_TIMEOUT	PowerBoard/PowerBoardHAL	CRITICAL	HOST_COMMAND_FEEDBACK_TIMEOUT	No feedback from PB	1. Power Cycle Charging Station   2. Replace Power Board	
+LOCK_TEST_FAULT	PowerBoard/HWPowerBoardStopCodeRu	CRITICAL	LOCK_TEST_FAULT	Socket lock self-test failure	1. Power cycle with 10 minutes pause (after power off)   2. Check lock wiring   3. Replace Power board	
+EICHRECHT_ERROR_STATE_TERMINAL	Eichrecht	CRITICAL	EICHRECHT_ERROR_STATE_TERMINAL	Meter in error state		
+EICHRECHT_ERROR_STATE_UNAVAILABLE	Eichrecht	CRITICAL	EICHRECHT_ERROR_STATE_UNAVAILABLE	Meter temporarily unavailable		
+EICHRECHT_ERROR_STATE_ORPHAN_SESSION	Eichrecht	HIGH	EICHRECHT_ERROR_STATE_ORPHAN_SESSION	Orphan session found		
+CHARGING_CONFIRMATION_TIMEOUT	InnerSM	HIGH	CHARGING_CONFIRMATION_TIMEOUT	Charging was not confirmed by confirmers. Timeout.	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+CHARGING_CONFIRMATION_DECLINED	InnerSM	HIGH	CHARGING_CONFIRMATION_DECLINED	Charging was declined by confirmers.	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+VAS_SERVER_RECEIVE_TIMEOUT	VASServer	HIGH	VAS_SERVER_RECEIVE_TIMEOUT	VAS server error 		
+CPLineDCDCError	CommonEVIC	CRITICAL	CPLineDCDCError	CP line DCDC error	1. Power cycle of Charging station   2. Measure CP-line voltage   3. Replace Main board	
+Error_Battery_Overvoltage	HAL/HWHalMg	CRITICAL	Error_Battery_Overvoltage	Overvoltage at battery side		
+ErrorCIU_CriticalCommError	HAL/HWHalArCIU	CRITICAL	ErrorCIU_CriticalCommError	Critical Comm Error		
+ErrorMIU1_PhaseOutUnderVoltageFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_PhaseOutUnderVoltageFault	Phase Out Under-Voltage		
+ErrorMIU2_HeatsinkTempSensorFault	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_HeatsinkTempSensorFault	Heatsink TempSensor fault		
+ErrorMIU3_FlashChecksumShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_FlashChecksumShutdown	Flash checksum shutdown		
+ErrorMIU4_LcaOvrCurrShgutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaOvrCurrShgutdown	Lca ovr curr shutdown		
+ErrorMIU5_DcLinkUndervoltageShutdown	HAL/HWHalArMIU5	CRITICAL	ErrorMIU5_DcLinkUndervoltageShutdown	Dc link undervoltage shutdown		
+Error_AuthorizationResTimeout	V2G/HLCStateMachine	MEDIUM	Error_AuthorizationResTimeout	Authorization response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_ServiceDiscoveryResTimeout	V2G/HLCStateMachine	MEDIUM	Error_ServiceDiscoveryResTimeout	Service discovery response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_SupportedAppProtocolResTimeout	V2G/HLCStateMachine	MEDIUM	Error_SupportedAppProtocolResTimeout	Supported app protocol response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_SessionSetupResTimeout	V2G/HLCStateMachine	MEDIUM	Error_SessionSetupResTimeout	Session setup response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_ServiceDetailResTimeout	V2G/HLCStateMachine	MEDIUM	Error_ServiceDetailResTimeout	Service detail response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_ServiceSelectionResTimeout	V2G/HLCStateMachine	MEDIUM	Error_ServiceSelectionResTimeout	Service selection response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_ChargeParameterDiscoveryResTimeout	V2G/HLCStateMachine	MEDIUM	Error_ChargeParameterDiscoveryResTimeout	Service selection response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_CableCheckResTimeout	V2G/HLCStateMachineDC	MEDIUM	Error_CableCheckResTimeout	Cable check response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_PowerDeliveryStartResTimeout	V2G/HLCStateMachine	MEDIUM	Error_PowerDeliveryStartResTimeout	Power delivery start response performance timeout	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+Error_SessionStopResTimeout	V2G/HLCStateMachine	MEDIUM	Error_SessionStopResTimeout	Session stop response performance timeout	1. Reboot charging station	
+Error_RectifierConnectionFailed	HWSpecificHAL	CRITICAL	Error_RectifierConnectionFailed	Rectifier Connection Failed	1. Check Rectifier connection to Dispenser   2. Reboot Rectifier	
+ContactorWelded	CommonEVIC	CRITICAL	ContactorWelded	Contactor welded	1. Check contactors   2. Check wiring   2. Power Cycle Charging Station	
+CableCheckFault	CommonEVIC	CRITICAL	CableCheckFault	Cable Check Fault	1. Power Cycle Charging Station   2. Check Charging Cable connection   3. Replace Charging Cable   4. Check Power Socket connection   5. Replace Power Socket   6. Replace Power Board	
+IMDFault	CommonEVIC	CRITICAL	IMDFault	IMD Fault	1. Power Cycle Charging Station   2. Check wiring   3. Replace the Power Board/StarterKit	
+EM_state_change_error	EnergyManager	LOW	EM_state_change_error	State change error	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+EM_start_session_error	EnergyManager	HIGH	EM_start_session_error	Start session failed	1. Restart charging session   2. Reboot charging station   3. Use another EV/consumer	
+LockFailure	PowerBoard/PowerBoardHAL	CRITICAL	LockFailure	Lock is disconnected	1. Check Lock cable is plugged in   2. Replace Lock Cable   3. Replace Lock   4. Replace Power Board	
+MeterValuesNotReceived	SoftLimitMonitor	MEDIUM	MeterValuesNotReceived	No meter values for Overcurrent Protection	1. Power Cycle Charging Station   2. Replace Power Board	
+OvercurrentDetected	SoftLimitMonitor	MEDIUM	OvercurrentDetected	Overcurrent detected	1. Restart charging session   2. Power Cycle Charging Station   3. Use another EV/consumer	
+DataUnavailable	Meter/MeterECR380D	LOW	DataUnavailable	Connection established. Measurements Data Unavailable	1. Check meters' wiring	
+ConnectionFailed	Meter/MeterECR380D	LOW	ConnectionFailed	Connection Failed	1. Check meters' configuration   2. Check meters' wiring   3. Reboot charger   4. Replace meter.	
+RectifierUnavailableOnStartup	HAL/HWHalMg	LOW	RectifierUnavailableOnStartup	The data from Rectifier are not received after the system started, the timeout was reached. Builtin parameters are applied		
+DataUnavailable	Meter/IotcMeterModbusGeneral	LOW	DataUnavailable	Reading registers failed from Modbus meter	Check meter wiring. Reboot charger. Replace meter.	
+ConnectionFailed	Meter/IotcMeterModbusGeneral	LOW	ConnectionFailed	Connection Failed	1. Check meters' configuration   2. Check meters' wiring   3. Reboot charger   4. Replace meter.	
+AutoDetectionFailed	Meter/IotcMeterModbusGeneral	LOW	AutoDetectionFailed	Detecting Modbus meter failed	1. Check if correct meter is selected in configuration   2. Check meters' wiring   3. Reboot charger   4. Replace meter.	
+CableCheckPreconditionInvalidCPState	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionInvalidCPState	Cable check precondition: Invalid CP state		
+CableCheckPreconditionInvalidPPState	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionInvalidPPState	Cable check precondition: Invalid PP state		
+CableCheckPreconditionIMDFailure	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionIMDFailure	Cable check precondition: IMD failure		
+CableCheckPreconditionUndervoltage	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionUndervoltage	Cable check precondition: Undervoltage		
+CableCheckPreconditionOvervoltage	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionOvervoltage	Cable check precondition: Overvoltage		
+CableCheckPreconditionRectifierNotReady	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionRectifierNotReady	Cable check precondition: rectifier not ready		
+CableCheckPreconditionRectifierModeMismatch	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionRectifierModeMismatch	Cable check precondition: rectifier mode mismatch		
+CableCheckPreconditionShortCircuitTest	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionShortCircuitTest	Cable check: short circuit test failed		
+CableCheckPreconditionIMDSelftestDetectFailed	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionIMDSelftestDetectFailed	Cable check: IMD selftest detect failed		
+CableCheckPreconditionIMDSelftestClearFailed	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionIMDSelftestClearFailed	Cable check: IMD selftest clear failed		
+CableCheckPreconditionRectifierFailed	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionRectifierFailed	Cable check: rectifier failed		
+CableCheckPreconditionUnexpectedIMDEvent	DcEvicGlobalStop	MEDIUM	CableCheckPreconditionUnexpectedIMDEvent	Cable check: unexpected IMD event		
+UnexpectedCPStateChange	CommonEvicGlobalStop	MEDIUM	UnexpectedCPStateChange	Unexpected CP state change	1. Check/replace charging cable   2. Use another EV/consumer   3. Replace Main board	
+UnexpectedPPStateChange	CommonEvicGlobalStop	MEDIUM	UnexpectedPPStateChange	Unexpected PP state change	1. Check/replace charging cable   2. Use another EV/consume   3. Replace Main board	
+IMDFailure	DcEvicGlobalStop	MEDIUM	IMDFailure	IMD failure		
+Overtemperature	CommonEvicGlobalStop	MEDIUM	Overtemperature	Overtemperature	1. Power off charging station   2. Check the temperature of charger's components   3. Find and remove the reason of overheating   4. Wait until charging station get colder   5. Replace Power board	
+ExternalEmergencyStop	CommonEvicGlobalStop	MEDIUM	ExternalEmergencyStop	External emergency stop line was triggered	1. Check Emergency button and wiring   2. Check/replace Main board	
+RectifierConnectionFailed	DcEvicGlobalStop	MEDIUM	RectifierConnectionFailed	Rectifier Connection Failed		
+RectifierFailure	DcEvicGlobalStop	MEDIUM	RectifierFailure	Rectifier failure		
+UnexpectedCPPWMCommand	CommonEvicGlobalStop	MEDIUM	UnexpectedCPPWMCommand	Unexpected attempt to set new PWM duty ratio	1. Power Cycle Charging Station   2. Replace Main board	
+CurrentRampDownTimeout	DcEvicGlobalStop	MEDIUM	CurrentRampDownTimeout	Current ramp down timeout		
+PowerBoardFault	AcEvicGlobalStop	MEDIUM	PowerBoardFault	Power board fault	1. Power Cycle Charging station   2. Replace Power Board	
+ChargingWatchdogInterruption	CommonEvicGlobalStop	MEDIUM	ChargingWatchdogInterruption	Watchdog interrupt during charging session	1. Power Cycle Charging Station	
+RectifierTemperatureFault	DcEvicGlobalStop	MEDIUM	RectifierTemperatureFault	Rectifier temperature fault		
+NotChargingWatchdogInterruption	AcEvicGlobalStop	MEDIUM	NotChargingWatchdogInterruption	Watchdog interrupt out of charging session	1. Power Cycle Charging Station	
+EVIgnoredCPStateC1	CommonEvicGlobalStop	MEDIUM	EVIgnoredCPStateC1	EV ignored EVSE transition to C1 state	1. Power Cycle Charging Station   2. Use another EV/consumer	
+ContactorDidNotOpen	DcEvicGlobalStop	MEDIUM	ContactorDidNotOpen	Contactor did not open		
+ContactorDidNotClose	DcEvicGlobalStop	MEDIUM	ContactorDidNotClose	Contactor did not close		
+AppHasRestarted	Monit	LOW	AppHasRestarted	App has restarted	No special actions are required	
+ProcessRestartedTooOften	Monit	LOW	ProcessRestartedTooOften	Process restarted too often	No special actions are required	
+HMIBboardIsNotReady	HMIboard	LOW	HMIBboardIsNotReady	HMI board is not ready	1. Check HMI board connection   2. Replace HMI board cable   3. Replace HMI board   4. Replace Main AC	
+HMIBoardInitTimeout	HMIboard	LOW	HMIBoardInitTimeout	HMI board init timeout	1. Check HMI board connection   2. Replace HMI board cable   3. Replace HMI board   4. Replace Main AC	
+NoScheduleResponse	PlazaCommunication	HIGH	NoScheduleResponse	No response for schedules request from Plaza	1. Check network connection   2. Check Plaza configuration   	
+UnknownPBFault	PowerBoard/PowerBoardFault	MEDIUM	UnknownPBFault	Power board Fault that is unknown - not specified in error registry.	1. Replace Power Board	
+MeterIsMissing	Meter/MeterQiPower	MEDIUM	MeterIsMissing	The data from the meter was not updated during the timeout	1. Check connection with the meter   2. Check meter connection configuration on the charger   3. Check the meter configuration	
+LidClose	TamperDetection	MEDIUM	LidClose	Charger lid is close		
+LidCloseWaitUnplug	TamperDetection	CRITICAL	LidCloseWaitUnplug	Wait cable unplug after lid was closed		
+Error_V2G_ExiDocProcessing	V2G/HLCStateMachine	MEDIUM	Error_V2G_ExiDocProcessing	V2G Exi document processin error		
+IMDWarningDuringCableCheck	CommonEVIC	MEDIUM	IMDWarningDuringCableCheck	IMD Warning during CableCheck	1. Power Cycle Charging Station   2. Check wiring   3. Replace the IMD Sensor	
+IMDWarningOutsideCableCheck	CommonEVIC	LOW	IMDWarningOutsideCableCheck	IMD Warning after CableCheck passed	1. Power Cycle Charging Station   2. Check wiring   3. Replace the IMD Sensor	
+ErrorShortCircuitTestFailed	HAL/HWHalMg	MEDIUM	ErrorShortCircuitTestFailed	Short circuit test failed during cable check	1. Check connector for short circuit	
+DcSourceCommError	HAL/HWHalMg	MEDIUM	DcSourceCommError	DcHub communication error	1. Check DcHub communication	
+DcSourceErrorInverter	HAL/HWHalMg	MEDIUM	DcSourceErrorInverter	DcHub error inverter	1. Check DcHub inverter	
+UnderFrequencyDisconnection	HAL/HWHalAIM	CRITICAL	UnderFrequencyDisconnection	Under Frequency detected. Disconneted from the grid.	1. Check grid network	
+OverFrequencyDisconnection	HAL/HWHalAIM	CRITICAL	OverFrequencyDisconnection	Over Frequency detected. Disconneted from the grid.	1. Check grid network	
+GridFaultUnderVoltage	HAL/HWHalAIM	CRITICAL	GridFaultUnderVoltage	Grid Fault Under Voltage detected. Providing of active/reactive power is stopped.	1. Check grid network	
+GridFaultOverVoltage	HAL/HWHalAIM	CRITICAL	GridFaultOverVoltage	Grid Fault Over Voltage detected. Providing of active/reactive power is stopped.	1. Check grid network	
+UnderVoltageStage1Disconnection	HAL/HWHalAIM	CRITICAL	UnderVoltageStage1Disconnection	Under Voltage (Stage 1) detected. Disconnected from the grid.	1. Check grid network	
+OverVoltageStage1Disconnection	HAL/HWHalAIM	CRITICAL	OverVoltageStage1Disconnection	Over Voltage (Stage 1) detected. Disconnected from the grid.	1. Check grid network	
+UnderVoltageStage2Disconnection	HAL/HWHalAIM	CRITICAL	UnderVoltageStage2Disconnection	Under Voltage (Stage 2) detected. Disconnected from the grid.	1. Check grid network	
+OverVoltageStage2Disconnection	HAL/HWHalAIM	CRITICAL	OverVoltageStage2Disconnection	Over Voltage (Stage 2) detected. Disconnected from the grid.	1. Check grid network	
+UpdateValidationFailedInvalidSignature	UpdateFirmware	LOW	UpdateValidationFailedInvalidSignature	Update signature validation failed	1. Make sure that the update is correct   2. Contact support	
+UpdateValidationFailedInvalidChecksum	UpdateFirmware	LOW	UpdateValidationFailedInvalidChecksum	Update checksum verification failed	1. Make sure that the update is correct   2. Make sure that the checksum provided within the update is correct   3. Retry the update procedure   4. Contact support	
+UpdateValidationFailedInvalidCertificate	UpdateFirmware	LOW	UpdateValidationFailedInvalidCertificate	Update certificate validation failed	1. Make sure that the update is correct   2. Contact support	
+UpdateValidationFailedInvalidRootFsSignature	UpdateFirmware	LOW	UpdateValidationFailedInvalidRootFsSignature	Update rootfs signature validation failed	1. Make sure that the update is correct   2. Contact support	
+REPEATING_ERRORS	InnerSM	CRITICAL	REPEATING_ERRORS	Charger is blocked by repeating error		
+StorageFallbackMode	Health	CRITICAL	StorageFallbackMode	Fallback mode		
+EmmcHighWearing	Health	LOW	EmmcHighWearing	eMMC wearing is high		
+EmmcCriticalWearing	Health	MEDIUM	EmmcCriticalWearing	eMMC wearing is critical		
+BasicChargingCurrentDecreaseAtStart	InnerSM	LOW	BasicChargingCurrentDecreaseAtStart	There was decrease in current at the start of basic charging		
+ErrorCIU_KeyFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_KeyFault	Key Fault		
+ErrorCIU_ControlValuesReceiptFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_ControlValuesReceiptFault	Control Values Receipt Failure		
+ErrorCIU_CANorModbusCommFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_CANorModbusCommFault	CAN &/or Modbus Comm. Error		
+ErrorCIU_CIUFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_CIUFault	CIU Faulted		
+ErrorCIU_MIUFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_MIUFault	MIU Faulted		
+ErrorCIU_EPOShutdown	HAL/HWHalArCIU	CRITICAL	ErrorCIU_EPOShutdown	EPO Shutdown		
+ErrorCIU_LowLVPSFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_LowLVPSFault	Low LVPS Fault		
+ErrorCIU_LowBattFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_LowBattFault	Low Batt. Fault		
+ErrorCIU_LowBattOvrRangeFault	HAL/HWHalArCIU	CRITICAL	ErrorCIU_LowBattOvrRangeFault	Ambient Sens. Ovr. Range		
+ErrorMIU1_PhaseOutOverVoltageFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_PhaseOutOverVoltageFault	Phase Out Over-Voltage		
+ErrorMIU1_HeatsinkOverTempFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_HeatsinkOverTempFault	Heatsink OverTemp fault		
+ErrorMIU1_ArrayOvervoltageFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_ArrayOvervoltageFault	Array Overvoltage fault		
+ErrorMIU1_DcLinkOvervoltageFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_DcLinkOvervoltageFault	Dc Link Overvoltage fault		
+ErrorMIU1_DcBusHardwareFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_DcBusHardwareFault	DC Bus Hardware Fault		
+ErrorMIU1_SoftwareProcessingShutdown	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_SoftwareProcessingShutdown	Software processing shutdown		
+ErrorMIU1_UnitResponseTimeoutFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_UnitResponseTimeoutFault	Unit Response Timeout		
+ErrorMIU1_CurrentLimitTimeoutShutdownFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_CurrentLimitTimeoutShutdownFault	Current Limit timeout shutdown		
+ErrorMIU1_CriticalCommunicationFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_CriticalCommunicationFault	Critical communication fault		
+ErrorMIU1_OffsetIrShutdownFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_OffsetIrShutdownFault	Offset Ir Shutdown		
+ErrorMIU1_OffsetIsShutdownFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_OffsetIsShutdownFault	Offset Is Shutdown		
+ErrorMIU1_K1FailureToClose	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_K1FailureToClose	K1 Failure to Close		
+ErrorMIU1_K1WeldedFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_K1WeldedFault	K1 Welded		
+ErrorMIU1_EPOShutdownFault	HAL/HWHalArMIU1	CRITICAL	ErrorMIU1_EPOShutdownFault	EPO Shutdown		
+ErrorMIU2_UnexpectedDCBusFault	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_UnexpectedDCBusFault	Unexpected DC Bus fault		
+ErrorMIU2_DcBusOverCurrentShutdown	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_DcBusOverCurrentShutdown	DC Bus OverCurrent Shutdown		
+ErrorMIU2_ThermalOverloadShutdown	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_ThermalOverloadShutdown	Thermal OverLoad Shutdown		
+ErrorMIU2_HeatSinkTempSenseDislocated	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_HeatSinkTempSenseDislocated	Heatsink TempSense Dislocated fault		
+ErrorMIU2_DCInputReversePolarityShutdown	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_DCInputReversePolarityShutdown	DC Input Reverse Polarity Shutdown		
+ErrorMIU2_DCBusReversePowerFault	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_DCBusReversePowerFault	DC Bus Reverse Power Fault		
+ErrorMIU2_PrechargeFailShutdown	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_PrechargeFailShutdown	Precharge Fail Shutdown		
+ErrorMIU2_DCPosContactorWelded	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_DCPosContactorWelded	DC Pos Contactor Welded fault		
+ErrorMIU2_DCPosContactorOpenFault	HAL/HWHalArMIU2	CRITICAL	ErrorMIU2_DCPosContactorOpenFault	DC Pos Contactor Open fault		
+ErrorMIU3_WrongInitialVoltageStartupShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_WrongInitialVoltageStartupShutdown	Wrong initial voltage at startup shutdown		
+ErrorMIU3_SinglePhaseOpenShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_SinglePhaseOpenShutdown	Single phase open shutdown		
+ErrorMIU3_SyncErrorTimeourShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_SyncErrorTimeourShutdown	Sync error timeout shutdown		
+ErrorMIU3_GridPhaseSeqReverseShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_GridPhaseSeqReverseShutdown	Grid phase seq reverse shutdown		
+ErrorMIU3_InverterUnderFreqShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_InverterUnderFreqShutdown	Inverter under freq shutdown		
+ErrorMIU3_InverterOverFreqShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_InverterOverFreqShutdown	Inverter over freq shutdown		
+ErrorMIU3_LcaGridHwFitShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_LcaGridHwFitShutdown	Lca grid hardware flt shutdown		
+ErrorMIU3_SoftwareOverCrntShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_SoftwareOverCrntShutdown	Software over crnt shutdown		
+ErrorMIU3_ProgramConfigInvalid	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_ProgramConfigInvalid	Program configuration invalid		
+ErrorMIU3_PowerSupplyRangeShutdown	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_PowerSupplyRangeShutdown	Power supply range shutdown		
+ErrorMIU3_Ext_ad_a_shtdwn	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_Ext_ad_a_shtdwn	Ext_ad_a_shtdwn		
+ErrorMIU3_Ext_ad_b_shtdwn	HAL/HWHalArMIU3	CRITICAL	ErrorMIU3_Ext_ad_b_shtdwn	Ext_ad_b_shtdwn		
+ErrorMIU4_LcaDtFaultShtdwn	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaDtFaultShtdwn	Lca dt fault shtdwn		
+ErrorMIU4_LcaDcLinkPvervoltageShtdwn	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaDcLinkPvervoltageShtdwn	Lca dc link overvoltage shtdwn		
+ErrorMIU4_LcaOverCurrShortShtdwn	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaOverCurrShortShtdwn	Lca ovr curr short shtdwn		
+ErrorMIU4_LcaCnegFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaCnegFaultShutdown	Lca cneg fault shutdown		
+ErrorMIU4_LcaCposFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaCposFaultShutdown	Lca cpos fault shutdown		
+ErrorMIU4_LcaBnegFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaBnegFaultShutdown	Lca bneg fault shutdown		
+ErrorMIU4_LcaBposFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaBposFaultShutdown	Lca bpos fault shutdown		
+ErrorMIU4_LcaAnegFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaAnegFaultShutdown	Lca aneg fault shutdown		
+ErrorMIU4_LcaAposFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaAposFaultShutdown	Lca_apos fault shutdown		
+ErrorMIU4_LcaOvrcurEarlyShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaOvrcurEarlyShutdown	Lca ovrcur early shutdown		
+ErrorMIU4_LcaGndFaultShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaGndFaultShutdown	Lca gnd fault shutdown		
+ErrorMIU4_LcaCpOverTempShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaCpOverTempShutdown	Lca cp over temp shutdown		
+ErrorMIU4_LcaCpUndTempShutdown	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_LcaCpUndTempShutdown	Lca cp und temp shutdown		
+ErrorMIU4_DcBusVoltageOutOfRangeShtdwn	HAL/HWHalArMIU4	CRITICAL	ErrorMIU4_DcBusVoltageOutOfRangeShtdwn	DC bus voltage out of range shtdwn		
+ErrorMIU5_MIUFaulted	HAL/HWHalArMIU5	CRITICAL	ErrorMIU5_MIUFaulted	MIU Faulted		
+ErrorMIU5_DC_neg_cntctr_fail_to_close_shtdwn	HAL/HWHalArMIU5	CRITICAL	ErrorMIU5_DC_neg_cntctr_fail_to_close_shtdwn	DC_neg cntctr_fail_to_close_shtdwn		
+ErrorMIU5_DC_neg_cntctr_welded_shtdwn	HAL/HWHalArMIU5	CRITICAL	ErrorMIU5_DC_neg_cntctr_welded_shtdwn	DC_neg_cntctr_welded_shtdwn		
+ErrorMIU5_DCCurrentSensorFailShutdown	HAL/HWHalArMIU5	CRITICAL	ErrorMIU5_DCCurrentSensorFailShutdown	DC Current Sensor Fail Shutdown		
+AIMConfigNotApplied	PowerBoard/PowerBoardFault	CRITICAL	AIMConfigNotApplied	Anti-Islanding Module configuration is not applied on Power Board	1. Check validity of GridCodes configuration   2. Power Cycle Charging Station   3. Replace Power Board	
+FSSwitchToRO	Health	MEDIUM	FSSwitchToRO	File system partition switch to Read-only mode unexpectedly		
+SoftDisconnection	HAL/HWHalAIM	CRITICAL	SoftDisconnection	Soft Disconnection detected, charging session temporarily stopped (until grid parameters return back to normal)	1. Check grid network	
+SoftReconnection	HAL/HWHalAIM	CRITICAL	SoftReconnection	Soft Reconnection detected, charging session temporarily stopped (until grid is in fault and parameters return back to normal)	1. Check grid network	
+CONTACTORS_ERROR	PowerBoard/HWPowerBoardStopCode	CRITICAL	CONTACTORS_ERROR	Contactor error	1. Power cycle with 10 minutes pause (after power off)   2. Check contactor wiring   3. Check grid connection   4. Replace Power board	
+INVALID_SERIAL_NUMBER	PowerBoard/HWPowerBoardStopCode	CRITICAL	INVALID_SERIAL_NUMBER	Invalid Power Board Serial Number	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+METER_CONFIGURATION_RESET_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	METER_CONFIGURATION_RESET_FAULT	Built-in meter calibration reset	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+ROCOF_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	ROCOF_FAULT	Rate-Of-Change-Of-Frequency Fault	1. Power cycle with 10 minutes pause (after power off)   2. Check grid   3. Replace Power board	
+OVERVOLTAGE_10_MIN	PowerBoard/HWPowerBoardStopCode	CRITICAL	OVERVOLTAGE_10_MIN	Overvoltage Fault (10 min average)	1. Power cycle with 10 minutes pause (after power off)   2. Check grid   3. Replace Power board	
+PHASE_B_OR_C_DETECTED_IN_SINGLE_PHASE_MODE	PowerBoard/HWPowerBoardStopCode	CRITICAL	PHASE_B_OR_C_DETECTED_IN_SINGLE_PHASE_MODE	Phase B and/or C detected in 1-phase mode	1. Power cycle with 10 minutes pause (after power off)   2. Check grid wiring   3. Replace Power board	
+GRIDCODE_CONFIG_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	GRIDCODE_CONFIG_FAULT	GridCode Configuration Error	1. Power cycle with 10 minutes pause (after power off)   2. Check GridCode configuration   3. Replace Power board	
+HighCpuUsage	Monit	LOW	HighCpuUsage	High CPU usage detected	1. If a charging session or other activities are running, no actions are needed.   2. If a charging session or other activities are not running, recheck the new fault in 30 minutes.   3. If this error is still reported, reboot the device.   4. If the issue persists, call support.	
+MC2_COMMUNICATION_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_COMMUNICATION_FAULT	MC2 Communication Fault	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+MC2_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_FAULT	MC2 Fault	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+MC2_ENABLE_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_ENABLE_FAULT	MC2 Enable Signal Fault	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+MC2_METER_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_METER_FAULT	MC2 Meter Fault	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+MC2_ENABLE_MISMATCH	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_ENABLE_MISMATCH	MC2 Enable Signal Mismatch	1. Power cycle with 10 minutes pause (after power off)   2. Replace Power board	
+MC2_OVERVOLTAGE	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_OVERVOLTAGE	MC2 Overvoltage	1. Check/fix grid voltage   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_UNDERVOLTAGE	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_UNDERVOLTAGE	MC2 Undervoltage	1. Check/fix grid voltage   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_HIGH_FREQUENCY	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_HIGH_FREQUENCY	MC2 High Frequency	1. Check/fix grid frequency   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_LOW_FREQUENCY	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_LOW_FREQUENCY	MC2 Low Frequency	1. Check/fix grid frequency   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_ROCOF_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_ROCOF_FAULT	MC2 Rate-Of-Change-Of-Frequency Fault	1. Check/fix grid frequency   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_OVERVOLTAGE_10_MIN	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_OVERVOLTAGE_10_MIN	MC2 Overvoltage Fault (10 min average)	1. Check/fix grid voltage   2. Check/fix AIM configuration   3. Power Cycle Charging station   4. Replace PB	
+MC2_CONTACTORS_WELDED	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_CONTACTORS_WELDED	MC2 Contactors Welded	1. Power cycle with 10 minutes pause (after power off)   2. Validate relays integrity   3. Replace Power board	
+MC2_CONTACTORS_FAILED_OPEN	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_CONTACTORS_FAILED_OPEN	MC2 Contactors Failed Open	1. Power cycle with 10 minutes pause (after power off)   2. Validate relays integrity   3. Replace Power board	
+UpdateValidationFailedInvalidUpdateVariant	UpdateFirmware	LOW	UpdateValidationFailedInvalidUpdateVariant	Invalid Update Variant	1. Make sure that the update is correct   2. Contact support	
+PowerBoardFirmwareUpdateFailed	PowerBoard/PowerBoardUpdateFirmware	CRITICAL	PowerBoardFirmwareUpdateFailed	Power Board Firmware Update Failed	1. Reboot charger   2. Power cycle with 10 minutes pause (after power off)   3. Replace Power board	
+No3phCurrentFlowDetectedIn3phBptSession	EnergyManager	MEDIUM	No3phCurrentFlowDetectedIn3phBptSession	No current flow detected on some of the phases during 3phase BPT session	1. Check charging cable if it is 3-phase   2. Check socket on both EV and EVSE sides   3. Use another charging cable   4. Use another EV/consumer	
+EVDoesNotObeyImposedLimit	LimitsComplianceMonitor	HIGH	EVDoesNotObeyImposedLimit	EV does not obey imposed limit	1. Restart charging session   2. Use another EV/consumer	
+SoftOvercurrentDetected	LimitsComplianceMonitor	HIGH	SoftOvercurrentDetected	Soft overcurrent detected	1. Restart charging session   2. Use another EV/consumer	
+MeterValuesNotReceived	LimitsComplianceMonitor	MEDIUM	MeterValuesNotReceived	No meter values to perform check	1. Power Cycle Charging Station   2. Replace Power Board	
+MC2_HIGH_TEMPERATURE_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_HIGH_TEMPERATURE_FAULT	MC2 High Temperature Fault	1. Check/fix the cooling system   2. Replace Power Board	
+MC2_LOW_TEMPERATURE_FAULT	PowerBoard/HWPowerBoardStopCode	CRITICAL	MC2_LOW_TEMPERATURE_FAULT	MC2 Low Temperature Fault	1. Check/fix the cooling system   2. Replace Power Board	
+DeratingApplied	TemperatureDerating	LOW	DeratingApplied	Derating applied	1. Check charger for overheating   2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires	
+DeratingRemoved	TemperatureDerating	LOW	DeratingRemoved	Derating removed	1. Check charger for overheating   2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires	
+DeratingActivated	TemperatureDerating	LOW	DeratingActivated	Derating activated	1. Check charger for overheating   2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires	
+MaximalDeratingReached	TemperatureDerating	CRITICAL	MaximalDeratingReached	Maximal derating reached	1. Check charger for overheating   2. Verify that all wiring is properly secured, connections are tight, and there are no loose or improperly clamped wires	

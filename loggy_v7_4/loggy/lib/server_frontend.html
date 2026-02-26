@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>⚡ Loggy</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0e14;--bg2:#13161f;--bg3:#1a1e2a;--bg4:#222838;
+  --border:#2a3045;--border2:#353d55;
+  --fg:#c8cdd8;--fg2:#8b93a8;--fg3:#5f6780;
+  --accent:#4f8df7;--accent2:#3672d9;--accent-bg:rgba(79,141,247,.1);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.1);
+  --green:#22c55e;--green-bg:rgba(34,197,94,.1);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,.1);
+  --cyan:#06b6d4;
+  --mono:'JetBrains Mono','Consolas',monospace;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --radius:8px;--radius2:12px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar .brand{padding:20px;border-bottom:1px solid var(--border)}
+.sidebar .brand h1{font-size:15px;color:#fff;letter-spacing:-.3px}
+.sidebar .brand .ver{font-size:11px;color:var(--accent);font-family:var(--mono);margin-top:2px}
+.sidebar nav{flex:1;overflow-y:auto;padding:12px 8px}
+.nav-section{margin-bottom:12px}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--fg3);padding:4px 12px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:none;background:none;color:var(--fg2);font-size:13px;font-family:var(--sans);cursor:pointer;border-radius:6px;text-align:left;transition:all .12s;font-weight:500}
+.nav-btn:hover{background:var(--bg3);color:var(--fg)}
+.nav-btn.active{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.nav-btn .icon{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.nav-btn .key{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--fg3);background:var(--bg3);padding:1px 5px;border-radius:3px}
+.sidebar .status-bar{padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--fg3)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px}
+.dot-ok{background:var(--green)}.dot-err{background:var(--red)}.dot-warn{background:var(--orange)}.dot-idle{background:var(--fg3)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.header{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;background:var(--bg2)}
+.header h2{font-size:17px;color:#fff;font-weight:700}
+.header .crumb{font-size:12px;color:var(--fg3);font-family:var(--mono)}
+.panel{flex:1;overflow-y:auto;padding:24px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;margin-bottom:16px}
+.card h3{font-size:15px;color:#fff;margin-bottom:12px;font-weight:600}
+.card-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;flex:1;min-width:150px}
+.card-sm .val{font-size:22px;font-weight:700;font-family:var(--mono)}
+.card-sm .lbl{font-size:11px;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--fg);font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .12s;font-weight:500}
+.btn:hover{border-color:var(--border2);background:var(--bg4)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:12px;font-weight:600;color:var(--fg2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+input[type=text],input[type=number],select{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--fg);font-family:var(--sans);font-size:13px;outline:none;transition:border .15s}
+input:focus,select:focus{border-color:var(--accent)}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+.checkbox-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.tag-crit{background:var(--red-bg);color:var(--red)}
+.tag-high{background:var(--red-bg);color:var(--red)}
+.tag-med{background:var(--orange-bg);color:var(--orange)}
+.tag-low{background:var(--green-bg);color:var(--green)}
+.tag-err{background:var(--red-bg);color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--fg3);padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg3)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--bg3)}
+.log-view{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-family:var(--mono);font-size:12px;line-height:1.7;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-all;color:var(--fg2)}
+.log-view .err{color:var(--red)}.log-view .warn{color:var(--orange)}.log-view .ok{color:var(--green)}.log-view .crit{color:var(--red);font-weight:700}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius2);padding:48px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--accent-bg)}
+.upload-zone .icon{font-size:48px;margin-bottom:12px;opacity:.5}
+.upload-zone p{color:var(--fg2)}
+.upload-zone .sub{font-size:12px;color:var(--fg3);margin-top:6px}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{display:flex;align-items:center;gap:10px;padding:20px;color:var(--fg2)}
+.health-gauge{text-align:center;padding:20px}
+.health-gauge .score{font-size:56px;font-weight:700;font-family:var(--mono);line-height:1}
+.health-gauge .grade{font-size:28px;font-weight:700;margin-top:4px}
+.health-gauge .label{font-size:12px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+.grade-a,.grade-b{color:var(--green)}.grade-c,.grade-d{color:var(--orange)}.grade-f{color:var(--red)}
+.issue-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;border-left:3px solid var(--fg3)}
+.issue-card.sev-critical,.issue-card.sev-high{border-left-color:var(--red)}
+.issue-card.sev-medium{border-left-color:var(--orange)}
+.issue-card.sev-low{border-left-color:var(--green)}
+.issue-card .issue-title{font-weight:600;color:#fff;margin-bottom:4px}
+.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px}
+.sig-card .pattern{font-family:var(--mono);font-size:12px;color:var(--cyan)}
+.sig-card .sig-title{font-weight:600;color:#fff;font-size:13px;margin-top:4px}
+.sig-card .sig-meta{font-size:12px;color:var(--fg2);margin-top:4px;line-height:1.6}
+.toast-container{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 16px;border-radius:8px;font-size:13px;color:#fff;animation:slideIn .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.toast-ok{background:#166534}.toast-err{background:#991b1b}.toast-info{background:#1e3a5f}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.hidden{display:none!important}
+@media(max-width:768px){.sidebar{width:56px}.sidebar .brand h1,.sidebar .nav-label,.sidebar .nav-btn span:not(.icon),.sidebar .nav-btn .key,.sidebar .status-bar span:not(.dot){display:none}.sidebar .brand{padding:12px}.sidebar .brand .ver{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><h1>⚡ IoTecha Analyzer</h1><div class="ver" id="ver">V2.0</div></div>
+    <nav>
+      <div class="nav-section">
+        <div class="nav-label">Analyze</div>
+        <button class="nav-btn active" data-view="upload" onclick="showView('upload')"><span class="icon">📂</span><span>Load Logs</span><span class="key">1</span></button>
+        <button class="nav-btn" data-view="analyze" onclick="showView('analyze')"><span class="icon">🔍</span><span>Run Analysis</span><span class="key">2</span></button>
+        <button class="nav-btn" data-view="results" onclick="showView('results')"><span class="icon">📊</span><span>Results</span><span class="key">3</span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Investigate</div>
+        <button class="nav-btn" data-view="search" onclick="showView('search')"><span class="icon">🔎</span><span>Search Logs</span><span class="key">4</span></button>
+        <button class="nav-btn" data-view="components" onclick="showView('components')"><span class="icon">🧩</span><span>Components</span><span class="key">5</span></button>
+        <button class="nav-btn" data-view="signatures" onclick="showView('signatures')"><span class="icon">🧬</span><span>Signatures</span><span class="key">6</span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Advanced</div>
+        <button class="nav-btn" data-view="compare" onclick="showView('compare')"><span class="icon">⚖️</span><span>Compare</span><span class="key">7</span></button>
+        <button class="nav-btn" data-view="fleet" onclick="showView('fleet')"><span class="icon">🏭</span><span>Fleet</span><span class="key">8</span></button>
+        <button class="nav-btn" data-view="reports" onclick="showView('reports')"><span class="icon">📄</span><span>Reports</span><span class="key">9</span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">System</div>
+        <button class="nav-btn" data-view="check" onclick="showView('check')"><span class="icon">✅</span><span>Check Install</span><span class="key">0</span></button>
+        <button class="nav-btn" data-view="help" onclick="showView('help')"><span class="icon">📖</span><span>Help</span><span class="key">h</span></button>
+      </div>
+    </nav>
+    <div class="status-bar" id="statusBar"><span class="dot dot-idle"></span> No session</div>
+  </div>
+
+  <div class="main">
+    <div class="header"><h2 id="viewTitle">Load Logs</h2><span class="crumb" id="viewCrumb"></span></div>
+    <div class="panel" id="panel">
+
+      <!-- Upload -->
+      <div id="view-upload" class="view">
+        <div class="upload-zone" id="dropZone">
+          <div class="icon">📦</div>
+          <p><strong>Drop RACC zip here</strong> or click to browse</p>
+          <div class="sub">Supports: .zip archives, log directories</div>
+          <input type="file" id="fileInput" accept=".zip" style="display:none">
+        </div>
+        <div style="text-align:center;margin:20px 0;color:var(--fg3)">— or —</div>
+        <div class="card">
+          <h3>Load from server path</h3>
+          <div class="form-row"><label>Path to RACC zip or log directory</label><input type="text" id="pathInput" placeholder="/path/to/RACC-Report.zip"></div>
+          <button class="btn btn-primary" onclick="loadFromPath()">Load</button>
+        </div>
+        <div id="uploadStatus" class="hidden"></div>
+      </div>
+
+      <!-- Analyze -->
+      <div id="view-analyze" class="view hidden">
+        <div class="card">
+          <h3>Analysis Configuration</h3>
+          <div id="analyzeNoSession" class="loading-msg">No logs loaded. Go to <strong>Load Logs</strong> first.</div>
+          <div id="analyzeForm" class="hidden">
+            <div class="form-row"><label>Analysis Mode</label>
+              <select id="analysisMode">
+                <option value="standard">Standard — 34+ issue detectors + health score</option>
+                <option value="deep">Deep — + boot timing, causal chains, gaps, config, histogram, PMQ</option>
+              </select>
+            </div>
+            <div class="form-row"><label>Output Options</label>
+              <div class="checkbox-row"><input type="checkbox" id="optWeb"><label for="optWeb">Interactive Web App</label></div>
+              <div class="checkbox-row"><input type="checkbox" id="optMail"><label for="optMail">Email Brief (text + HTML)</label></div>
+              <div class="checkbox-row"><input type="checkbox" id="optTickets"><label for="optTickets">Issue Tickets (MD + Jira CSV + GitLab JSON)</label></div>
+            </div>
+            <button class="btn btn-primary" id="runBtn" onclick="runAnalysis()">▶ Run Analysis</button>
+          </div>
+        </div>
+        <div id="analysisOutput" class="hidden"><div class="card"><h3>Output</h3><div class="log-view" id="analysisLog"></div></div></div>
+      </div>
+
+      <!-- Results -->
+      <div id="view-results" class="view hidden">
+        <div id="resultsEmpty" class="card"><p style="color:var(--fg3)">No analysis results yet. Run an analysis first.</p></div>
+        <div id="resultsContent" class="hidden">
+          <div class="card-row">
+            <div class="card-sm"><div class="health-gauge"><div class="score" id="healthScore">—</div><div class="grade" id="healthGrade">—</div><div class="label">Health Score</div></div></div>
+            <div class="card-sm"><div class="val" id="issueCount">0</div><div class="lbl">Issues Found</div></div>
+            <div class="card-sm"><div class="val" id="deviceId">—</div><div class="lbl">Device ID</div></div>
+            <div class="card-sm"><div class="val" id="modeLbl">—</div><div class="lbl">Analysis Mode</div></div>
+          </div>
+          <div class="card"><h3>Detected Issues</h3><div id="issuesList"></div></div>
+          <div class="card"><h3>Full Analyzer Output</h3><div class="log-view" id="rawOutput" style="max-height:500px"></div></div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div id="view-search" class="view hidden">
+        <div class="card">
+          <h3>Search Logs</h3>
+          <div class="form-row"><label>Pattern (keyword or regex)</label><input type="text" id="searchQ" placeholder="MQTT.*fail"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <div class="form-row"><label>Severity</label><select id="searchSev"><option value="">All</option><option value="C">Critical</option><option value="E">Error</option><option value="W">Warning</option><option value="I">Info</option><option value="N">Notice</option></select></div>
+            <div class="form-row"><label>Component</label><input type="text" id="searchComp" placeholder="NetworkBoss"></div>
+            <div class="form-row"><label>Max Results</label><input type="number" id="searchMax" value="50" min="1" max="500"></div>
+          </div>
+          <button class="btn btn-primary" onclick="runSearch()">🔎 Search</button>
+        </div>
+        <div id="searchResults" class="hidden"><div class="card"><h3>Results <span id="searchCount" style="color:var(--fg3);font-weight:400"></span></h3><div class="log-view" id="searchLog" style="max-height:500px"></div></div></div>
+      </div>
+
+      <!-- Components -->
+      <div id="view-components" class="view hidden">
+        <div class="card"><h3>Parsed Components</h3>
+          <div id="compEmpty" style="color:var(--fg3)">Load and analyze logs first.</div>
+          <table id="compTable" class="hidden"><thead><tr><th>Component</th><th>Total Lines</th><th>Errors</th><th>Warnings</th></tr></thead><tbody id="compBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Signatures -->
+      <div id="view-signatures" class="view hidden">
+        <div class="card"><h3>Error Signature Database</h3><p style="color:var(--fg2);margin-bottom:16px">21 built-in patterns — auto-matched against detected issues.</p><div id="sigList"></div></div>
+      </div>
+
+      <!-- Compare -->
+      <div id="view-compare" class="view hidden">
+        <div class="card">
+          <h3>Regression Comparison</h3>
+          <p style="color:var(--fg2);margin-bottom:16px">Compare two RACC captures to detect regressions.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-row"><label>Baseline (before)</label><input type="text" id="cmpBase" placeholder="/path/to/before.zip"></div>
+            <div class="form-row"><label>Target (after)</label><input type="text" id="cmpTarget" placeholder="/path/to/after.zip"></div>
+          </div>
+          <button class="btn btn-primary" onclick="runCompare()">⚖️ Compare</button>
+        </div>
+        <div id="cmpOut" class="hidden"><div class="card"><h3>Comparison Output</h3><div class="log-view" id="cmpLog"></div></div><div class="card" id="cmpReports"></div></div>
+      </div>
+
+      <!-- Fleet -->
+      <div id="view-fleet" class="view hidden">
+        <div class="card">
+          <h3>Fleet Analysis</h3>
+          <p style="color:var(--fg2);margin-bottom:16px">Analyze all RACC .zip files in a directory.</p>
+          <div class="form-row"><label>Directory containing RACC zips</label><input type="text" id="fleetDir" placeholder="/path/to/racc-folder/"></div>
+          <button class="btn btn-primary" onclick="runFleet()">🏭 Run Fleet Analysis</button>
+        </div>
+        <div id="fleetOut" class="hidden"><div class="card"><h3>Fleet Output</h3><div class="log-view" id="fleetLog"></div></div><div class="card" id="fleetReports"></div></div>
+      </div>
+
+      <!-- Reports -->
+      <div id="view-reports" class="view hidden">
+        <div class="card"><h3>Generated Reports</h3>
+          <div id="rptEmpty" style="color:var(--fg3)">No reports generated yet.</div>
+          <div id="rptList" class="hidden"></div>
+        </div>
+      </div>
+
+      <!-- Check -->
+      <div id="view-check" class="view hidden">
+        <div class="card"><h3>Installation Check</h3>
+          <button class="btn btn-primary" onclick="runCheck()" id="checkBtn">✅ Run Check</button>
+          <div id="checkOut" class="hidden" style="margin-top:16px"><div class="log-view" id="checkLog"></div></div>
+        </div>
+      </div>
+
+      <!-- Help -->
+      <div id="view-help" class="view hidden">
+
+        <div class="card">
+          <h3>⚡ Loggy <span style="color:var(--accent);font-family:var(--mono);font-weight:400">V2.0</span></h3>
+          <p style="color:var(--fg2)">Diagnostic &amp; forensic toolkit for IoTecha EV charger RACC log bundles. Pure Bash — no Python, no Node, no Docker.</p>
+        </div>
+
+        <div class="card">
+          <h3>Usage</h3>
+          <div class="log-view" style="max-height:none;line-height:1.9">./analyzer.sh                              <span style="color:var(--fg3)"># Interactive menu (TUI)</span>
+./analyzer.sh [OPTIONS] &lt;input&gt;            <span style="color:var(--fg3)"># Batch analysis</span>
+./analyzer.sh --compare &lt;base&gt; &lt;target&gt;    <span style="color:var(--fg3)"># Regression comparison</span>
+./analyzer.sh --fleet &lt;directory&gt;           <span style="color:var(--fg3)"># Multi-charger fleet analysis</span>
+./analyzer.sh --watch &lt;directory&gt;           <span style="color:var(--fg3)"># Live log monitoring</span>
+./analyzer.sh --server [--port N]           <span style="color:var(--fg3)"># This web UI</span>
+./start.sh                                 <span style="color:var(--fg3)"># Launcher menu (guided)</span></div>
+        </div>
+
+        <div class="card">
+          <h3>All Flags &amp; Options</h3>
+          <table>
+            <thead><tr><th>Flag</th><th>Args</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>-m, --mode</code></td><td>standard | deep</td><td>standard</td><td><strong>standard</strong>: 34+ issue detectors + health score.<br><strong>deep</strong>: + boot timing, causal chains, gap detection, config validation, error histogram, PMQ map.</td></tr>
+              <tr><td><code>-e, --evidence</code></td><td>min | std | full</td><td>std</td><td><strong>min</strong>: first/last only. <strong>std</strong>: ~30 lines. <strong>full</strong>: all matches.</td></tr>
+              <tr><td><code>-o, --output</code></td><td>&lt;dir&gt;</td><td>./reports</td><td>Output directory for reports.</td></tr>
+              <tr><td><code>--web</code></td><td>—</td><td>off</td><td>Generate interactive web app (single HTML, offline, ~130KB).</td></tr>
+              <tr><td><code>--mail</code></td><td>—</td><td>off</td><td>Email brief: plain text + inline-CSS HTML (Outlook/Gmail safe).</td></tr>
+              <tr><td><code>--tickets</code></td><td>—</td><td>off</td><td>Issue tickets: per-issue MD + Jira CSV + GitLab JSON.</td></tr>
+              <tr><td><code>--compare</code></td><td>&lt;base&gt; &lt;target&gt;</td><td>—</td><td>Regression comparison between two RACC captures.</td></tr>
+              <tr><td><code>--fleet</code></td><td>&lt;dir&gt;</td><td>—</td><td>Analyze all .zip files in directory.</td></tr>
+              <tr><td><code>--watch</code></td><td>&lt;dir&gt;</td><td>—</td><td>Live monitoring: tail logs, alert feed, session recording.</td></tr>
+              <tr><td><code>--server</code></td><td>—</td><td>off</td><td>Launch this browser-based UI.</td></tr>
+              <tr><td><code>--port</code></td><td>&lt;number&gt;</td><td>8080</td><td>Server port (with --server).</td></tr>
+              <tr><td><code>-q, --quiet</code></td><td>—</td><td>off</td><td>Suppress output (CI/batch).</td></tr>
+              <tr><td><code>-v, --verbose</code></td><td>—</td><td>off</td><td>Detailed progress.</td></tr>
+              <tr><td><code>--no-color</code></td><td>—</td><td>auto</td><td>Disable ANSI colors.</td></tr>
+              <tr><td><code>--check</code></td><td>—</td><td>—</td><td>Verify dependencies &amp; system info.</td></tr>
+              <tr><td><code>-h, --help</code></td><td>—</td><td>—</td><td>Show help.</td></tr>
+              <tr><td><code>--version</code></td><td>—</td><td>—</td><td>Print version.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Issue Detectors (34+ across all subsystems)</h3>
+          <table>
+            <thead><tr><th>Severity</th><th>Issue</th><th>Component</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag tag-crit">CRITICAL</span></td><td>PPP/Cellular Connection Never Established</td><td>NetworkBoss/PPP</td></tr>
+              <tr><td><span class="tag tag-crit">CRITICAL</span></td><td>Emergency Stop Triggered</td><td>ChargerApp/Safety</td></tr>
+              <tr><td><span class="tag tag-crit">CRITICAL</span></td><td>Grid Code Protection Triggered</td><td>ChargerApp/GridCodes</td></tr>
+              <tr><td><span class="tag tag-crit">CRITICAL</span></td><td>PMQ Thread Alarm Storm</td><td>PMQ/System</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>MQTT Connection Failure</td><td>i2p2/MQTT</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>Ethernet (eth0) Link Flapping</td><td>NetworkBoss/Ethernet</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>Power Board Fault at Boot</td><td>ChargerApp/PowerBoard</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>Tamper Detection — Lid Open</td><td>HealthMonitor/Tamper</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>DC Cable Check / IMD Failure</td><td>ChargerApp/EVIC</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>PMQ Message Queue Overflow</td><td>PMQ/System</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>Network Interfaces Init Failure</td><td>NetworkBoss</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>OCPP Connection / Boot Rejected</td><td>ocpp-cmd</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>V2G/ISO 15118 Communication Errors</td><td>ChargerApp/HLC</td></tr>
+              <tr><td><span class="tag tag-high">HIGH</span></td><td>Session-Blocking Errors Active</td><td>ErrorBoss</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>Certificate Manager Warnings</td><td>CertManager</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>Excessive Reboots / Unplanned Reboots</td><td>HealthMonitor</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>Excessive Process Restarts (Monit)</td><td>Monit</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>Firmware Update Validation Failure</td><td>iotc-fw-update</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>eMMC/Storage Degradation</td><td>HealthMonitor</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>HMI Board Communication Failure</td><td>hmi-boss</td></tr>
+              <tr><td><span class="tag tag-med">MEDIUM</span></td><td>GPIO Rebooter Failure</td><td>HealthMonitor</td></tr>
+              <tr><td><span class="tag tag-low">LOW</span></td><td>EVCC Watchdog Warnings</td><td>ChargerApp/EVCC</td></tr>
+              <tr><td><span class="tag tag-low">LOW</span></td><td>PMQ Subscription Failures</td><td>EnergyManager/PMQ</td></tr>
+              <tr><td><span class="tag tag-low">LOW</span></td><td>Network Interface Instability</td><td>NetworkBoss</td></tr>
+              <tr><td><span class="tag tag-low">LOW</span></td><td>Energy Meter / Eichrecht Errors</td><td>ChargerApp/Meter</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;color:var(--fg2)">+ 363 official IoTecha error registry entries matched via signature engine</p>
+        </div>
+
+        <div class="card">
+          <h3>Health Score (0–100)</h3>
+          <table>
+            <thead><tr><th>Category</th><th>Weight</th><th>Factors</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Connectivity</strong></td><td>40%</td><td>MQTT, PPP, Ethernet, WiFi, interface selection, backoff</td></tr>
+              <tr><td><strong>Hardware</strong></td><td>20%</td><td>Power board, GPIO, emergency stop, tamper, eMMC, grid codes, HMI, memory, kernel</td></tr>
+              <tr><td><strong>Services</strong></td><td>20%</td><td>OCPP, EVCC, PMQ, certs, monit, ErrorBoss, V2G, meter, eichrecht, firmware</td></tr>
+              <tr><td><strong>Configuration</strong></td><td>20%</td><td>Reboots (planned + unplanned), boot count, issue severity, TPM, error registry</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:12px;color:var(--fg2)">Grades: <strong class="grade-a">A</strong> (90+) &nbsp; <strong class="grade-b">B</strong> (75+) &nbsp; <strong class="grade-c">C</strong> (60+) &nbsp; <strong class="grade-d">D</strong> (40+) &nbsp; <strong class="grade-f">F</strong> (&lt;40)</p>
+        </div>
+
+        <div class="card">
+          <h3>Deep Analysis Modules</h3>
+          <table>
+            <thead><tr><th>Module</th><th>What It Does</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Boot Timing</strong></td><td>Boot event sequence, time between stages, slow boot detection.</td></tr>
+              <tr><td><strong>Causal Chains</strong></td><td>Links events across components (PPP down → MQTT fail → OCPP disconnect).</td></tr>
+              <tr><td><strong>Gap Detection</strong></td><td>Timeline discontinuities — crashes, power loss, log rotation.</td></tr>
+              <tr><td><strong>Config Validation</strong></td><td>.properties file checks: missing keys, bad values.</td></tr>
+              <tr><td><strong>Error Histogram</strong></td><td>Error distribution by time bucket.</td></tr>
+              <tr><td><strong>PMQ Map</strong></td><td>Inter-process message queue connections, failed subscriptions.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Report Outputs</h3>
+          <table>
+            <thead><tr><th>Format</th><th>Flag</th><th>File Pattern</th></tr></thead>
+            <tbody>
+              <tr><td>Markdown</td><td><em>(default)</em></td><td>analysis_*.md</td></tr>
+              <tr><td>HTML</td><td><em>(default)</em></td><td>analysis_*.html</td></tr>
+              <tr><td>Web App</td><td>--web</td><td>webapp_*.html</td></tr>
+              <tr><td>Email text</td><td>--mail</td><td>mail_*.txt</td></tr>
+              <tr><td>Email HTML</td><td>--mail</td><td>mail_*.html</td></tr>
+              <tr><td>Tickets</td><td>--tickets</td><td>tickets_*/</td></tr>
+              <tr><td>Comparison</td><td>--compare</td><td>comparison_*.md, .html</td></tr>
+              <tr><td>Fleet</td><td>--fleet</td><td>fleet_*.md, .html</td></tr>
+              <tr><td>Web Server</td><td>--server</td><td>http://localhost:8080</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Keyboard Shortcuts (Web UI)</h3>
+          <table>
+            <thead><tr><th>Key</th><th>View</th></tr></thead>
+            <tbody>
+              <tr><td><code>1</code></td><td>Load Logs</td></tr>
+              <tr><td><code>2</code></td><td>Run Analysis</td></tr>
+              <tr><td><code>3</code></td><td>Results</td></tr>
+              <tr><td><code>4</code></td><td>Search Logs</td></tr>
+              <tr><td><code>5</code></td><td>Components</td></tr>
+              <tr><td><code>6</code></td><td>Signatures</td></tr>
+              <tr><td><code>7</code></td><td>Compare</td></tr>
+              <tr><td><code>8</code></td><td>Fleet</td></tr>
+              <tr><td><code>9</code></td><td>Reports</td></tr>
+              <tr><td><code>0</code></td><td>Check Install</td></tr>
+              <tr><td><code>h</code></td><td>This Help</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Platforms</h3>
+          <p style="color:var(--fg2)">Linux, macOS, WSL, MSYS2/Git Bash, Docker, BusyBox (degraded).<br>
+          Requirements: bash 3.2+, awk, grep, sed, unzip. Python3 for --server only.<br>
+          Full documentation: <strong>README.html</strong></p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+let currentSession=null, analysisResults=null;
+const titles={upload:'Load Logs',analyze:'Run Analysis',results:'Results',search:'Search Logs',components:'Components',signatures:'Signatures',compare:'Regression Comparison',fleet:'Fleet Analysis',reports:'Reports',check:'Check Install',help:'Help & Reference'};
+
+function showView(n){
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+  document.getElementById('view-'+n)?.classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===n));
+  document.getElementById('viewTitle').textContent=titles[n]||n;
+  document.getElementById('viewCrumb').textContent=currentSession?'Session: '+currentSession:'';
+  if(n==='analyze')updateAnalyze();if(n==='results')updateResults();
+  if(n==='components')loadComps();if(n==='signatures')loadSigs();if(n==='reports')loadRpts();
+}
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+  const v=['check','upload','analyze','results','search','components','signatures','compare','fleet','reports'];
+  const k=parseInt(e.key);if(k>=0&&k<=9){e.preventDefault();showView(v[k])}
+  if(e.key==='h'||e.key==='H'){e.preventDefault();showView('help')}
+});
+function toast(m,t='info'){const e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;document.getElementById('toasts').appendChild(e);setTimeout(()=>e.remove(),4000)}
+function updateStatus(t,d='idle'){document.getElementById('statusBar').innerHTML=`<span class="dot dot-${d}"></span> ${t}`}
+async function api(p,o={}){try{const r=await fetch(p,o);return await r.json()}catch(e){toast('API error: '+e.message,'err');return{error:e.message}}}
+async function apiPost(p,b){return api(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function sevClass(s){return({CRITICAL:'crit',HIGH:'high',MEDIUM:'med',LOW:'low'})[s]||'low'}
+function colorize(t){if(!t)return'';return esc(t).replace(/\[OK\]/g,'<span class="ok">[OK]</span>').replace(/\[PASS\]/g,'<span class="ok">[PASS]</span>').replace(/\[ERROR\]/g,'<span class="err">[ERROR]</span>').replace(/\[FAIL\]/g,'<span class="err">[FAIL]</span>').replace(/\[WARN\]/g,'<span class="warn">[WARN]</span>').replace(/\[INFO\]/g,'<span style="color:var(--accent)">[INFO]</span>').replace(/\[CRITICAL\]/g,'<span class="crit">[CRITICAL]</span>').replace(/\[HIGH\]/g,'<span class="err">[HIGH]</span>').replace(/\[MEDIUM\]/g,'<span class="warn">[MEDIUM]</span>').replace(/\[LOW\]/g,'<span class="ok">[LOW]</span>').replace(/✓/g,'<span class="ok">✓</span>').replace(/✗/g,'<span class="err">✗</span>').replace(/Health Score:\s*(\d+)\/100\s*\(([A-F])\)/g,(m,s,g)=>`Health Score: <strong>${s}</strong>/100 (<strong class="grade-${g.toLowerCase()}">${g}</strong>)`)}
+
+// Upload
+const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+dz.addEventListener('click',()=>fi.click());
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files.length)uploadFile(e.dataTransfer.files[0])});
+fi.addEventListener('change',()=>{if(fi.files.length)uploadFile(fi.files[0])});
+
+async function uploadFile(file){
+  const st=document.getElementById('uploadStatus');st.classList.remove('hidden');
+  st.innerHTML='<div class="loading-msg"><div class="spinner"></div> Uploading '+file.name+'...</div>';
+  const fd=new FormData();fd.append('file',file);
+  try{
+    const r=await fetch('/api/upload',{method:'POST',body:fd});const d=await r.json();
+    if(d.ok){currentSession=d.session_id;st.innerHTML=`<div class="card" style="border-left:3px solid var(--green)"><strong style="color:var(--green)">✓ Loaded:</strong> ${d.file}<br><span style="color:var(--fg3)">Session: ${d.session_id}</span></div>`;updateStatus(d.file,'ok');toast('Logs loaded','ok')}
+    else{st.innerHTML=`<div class="card" style="border-left:3px solid var(--red)">Error: ${d.error}</div>`;toast('Upload failed','err')}
+  }catch(e){st.innerHTML=`<div class="card" style="border-left:3px solid var(--red)">Error: ${e.message}</div>`;toast('Upload error','err')}
+}
+
+async function loadFromPath(){
+  const p=document.getElementById('pathInput').value.trim();if(!p){toast('Enter a path','err');return}
+  const st=document.getElementById('uploadStatus');st.classList.remove('hidden');
+  st.innerHTML='<div class="loading-msg"><div class="spinner"></div> Loading...</div>';
+  const d=await apiPost('/api/upload',{path:p});
+  if(d.ok){currentSession=d.session_id;st.innerHTML=`<div class="card" style="border-left:3px solid var(--green)"><strong style="color:var(--green)">✓ Loaded:</strong> ${d.file}<br><span style="color:var(--fg3)">Session: ${d.session_id}</span></div>`;updateStatus(d.file,'ok');toast('Logs loaded','ok')}
+  else{st.innerHTML=`<div class="card" style="border-left:3px solid var(--red)">Error: ${d.error}</div>`}
+}
+
+// Analyze
+function updateAnalyze(){
+  if(currentSession){document.getElementById('analyzeNoSession').classList.add('hidden');document.getElementById('analyzeForm').classList.remove('hidden')}
+  else{document.getElementById('analyzeNoSession').classList.remove('hidden');document.getElementById('analyzeForm').classList.add('hidden')}
+}
+
+async function runAnalysis(){
+  if(!currentSession){toast('Load logs first','err');return}
+  const btn=document.getElementById('runBtn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Analyzing...';
+  const out=document.getElementById('analysisOutput'),log=document.getElementById('analysisLog');
+  out.classList.remove('hidden');log.innerHTML='Running analysis...\n';updateStatus('Analyzing...','warn');
+  const d=await apiPost('/api/analyze',{session_id:currentSession,mode:document.getElementById('analysisMode').value,web:document.getElementById('optWeb').checked,mail:document.getElementById('optMail').checked,tickets:document.getElementById('optTickets').checked});
+  btn.disabled=false;btn.innerHTML='▶ Run Analysis';
+  if(d.ok){log.innerHTML=colorize(d.output);updateStatus('Analysis complete','ok');toast(`Done — ${d.reports?.length||0} reports`,'ok');analysisResults=await api(`/api/session/${currentSession}/results`)}
+  else{log.innerHTML=`<span class="err">${esc(d.output||'')}\n${esc(d.errors||'')}</span>`;updateStatus('Failed','err');toast('Analysis failed','err')}
+}
+
+// Results
+function updateResults(){
+  const empty=document.getElementById('resultsEmpty'),content=document.getElementById('resultsContent');
+  if(!analysisResults||!analysisResults.issues){empty.classList.remove('hidden');content.classList.add('hidden');return}
+  empty.classList.add('hidden');content.classList.remove('hidden');
+  const r=analysisResults;
+  if(r.health?.score!==undefined){document.getElementById('healthScore').textContent=r.health.score;const g=r.health.grade||'?';const el=document.getElementById('healthGrade');el.textContent=g;el.className='grade grade-'+g.toLowerCase()}
+  document.getElementById('issueCount').textContent=r.issues.length;
+  document.getElementById('deviceId').textContent=r.device_info?.device_id||'—';
+  document.getElementById('modeLbl').textContent='complete';
+  const il=document.getElementById('issuesList');
+  il.innerHTML=r.issues.length?r.issues.map(i=>`<div class="issue-card sev-${i.severity.toLowerCase()}"><div class="issue-title"><span class="tag tag-${sevClass(i.severity)}">${i.severity}</span> &nbsp;${esc(i.title)}</div></div>`).join(''):'<p style="color:var(--green)">✓ No issues detected</p>';
+  document.getElementById('rawOutput').innerHTML=colorize(r.raw_output||'');
+}
+
+// Search
+async function runSearch(){
+  if(!currentSession){toast('Load logs first','err');return}
+  const q=document.getElementById('searchQ').value.trim();if(!q){toast('Enter a pattern','err');return}
+  const res=document.getElementById('searchResults'),log=document.getElementById('searchLog');
+  res.classList.remove('hidden');log.innerHTML='Searching...';
+  const d=await api(`/api/session/${currentSession}/search?q=${encodeURIComponent(q)}&severity=${document.getElementById('searchSev').value}&component=${encodeURIComponent(document.getElementById('searchComp').value)}&max=${document.getElementById('searchMax').value}`);
+  document.getElementById('searchCount').textContent=`(${d.count||0} matches)`;
+  log.innerHTML=d.results?.length?d.results.map(r=>colorize(r.line)).join('\n'):'<span style="color:var(--fg3)">No matches</span>';
+}
+
+// Components
+async function loadComps(){
+  if(!currentSession)return;
+  const d=await api(`/api/session/${currentSession}/components`);const c=d.components||{};const k=Object.keys(c);if(!k.length)return;
+  document.getElementById('compEmpty').classList.add('hidden');document.getElementById('compTable').classList.remove('hidden');
+  document.getElementById('compBody').innerHTML=k.sort().map(n=>{const v=c[n];return`<tr><td><strong>${esc(n)}</strong></td><td>${v.total.toLocaleString()}</td><td>${v.errors?`<span class="tag tag-err">${v.errors}</span>`:'0'}</td><td>${v.warnings?`<span style="color:var(--orange)">${v.warnings}</span>`:'0'}</td></tr>`}).join('');
+}
+
+// Signatures
+async function loadSigs(){
+  const d=await api('/api/signatures');const s=d.signatures||[];
+  document.getElementById('sigList').innerHTML=s.map(x=>`<div class="sig-card"><div style="display:flex;gap:8px;align-items:center"><span class="tag tag-${sevClass(x.severity)}">${x.severity}</span><span class="pattern">${esc(x.pattern)}</span><span style="color:var(--fg3);font-size:12px">→ ${esc(x.component)}</span></div><div class="sig-title">${esc(x.title)}</div><div class="sig-meta"><strong>Cause:</strong> ${esc(x.root_cause)}<br><strong>Fix:</strong> ${esc(x.fix)}</div></div>`).join('');
+}
+
+// Compare
+async function runCompare(){
+  const b=document.getElementById('cmpBase').value.trim(),t=document.getElementById('cmpTarget').value.trim();
+  if(!b||!t){toast('Enter both paths','err');return}
+  const out=document.getElementById('cmpOut'),log=document.getElementById('cmpLog');
+  out.classList.remove('hidden');log.innerHTML='<div class="loading-msg"><div class="spinner"></div> Comparing...</div>';
+  const d=await apiPost('/api/compare',{baseline:b,target:t});
+  log.innerHTML=colorize(d.output||d.errors||'No output');
+  if(d.reports?.length)document.getElementById('cmpReports').innerHTML='<h3>Reports</h3>'+d.reports.map(r=>`<div style="margin:4px 0">📄 ${r}</div>`).join('');
+  toast(d.ok?'Comparison complete':'Failed',d.ok?'ok':'err');
+}
+
+// Fleet
+async function runFleet(){
+  const dir=document.getElementById('fleetDir').value.trim();if(!dir){toast('Enter directory','err');return}
+  const out=document.getElementById('fleetOut'),log=document.getElementById('fleetLog');
+  out.classList.remove('hidden');log.innerHTML='<div class="loading-msg"><div class="spinner"></div> Analyzing fleet...</div>';
+  const d=await apiPost('/api/fleet',{directory:dir});
+  log.innerHTML=colorize(d.output||d.errors||'No output');
+  if(d.reports?.length)document.getElementById('fleetReports').innerHTML='<h3>Reports</h3>'+d.reports.map(r=>`<div style="margin:4px 0">📄 ${r}</div>`).join('');
+  toast(d.ok?'Fleet complete':'Failed',d.ok?'ok':'err');
+}
+
+// Reports
+async function loadRpts(){
+  if(!currentSession)return;
+  const d=await api(`/api/session/${currentSession}/info`);const rpts=d.session?.reports||[];
+  const empty=document.getElementById('rptEmpty'),list=document.getElementById('rptList');
+  if(!rpts.length){empty.classList.remove('hidden');list.classList.add('hidden');return}
+  empty.classList.add('hidden');list.classList.remove('hidden');
+  const ic={'md':'📝','html':'🌐','csv':'📊','json':'📦','txt':'📄'};
+  list.innerHTML=rpts.map(r=>{const ext=r.split('.').pop();return`<div class="card" style="padding:12px 18px;margin-bottom:8px;display:flex;align-items:center"><span style="flex:1">${ic[ext]||'📄'} <strong>${esc(r)}</strong></span><a class="btn btn-sm" href="/api/session/${currentSession}/report?file=${encodeURIComponent(r)}" target="_blank">View</a>&nbsp;<a class="btn btn-sm" href="/api/session/${currentSession}/report?file=${encodeURIComponent(r)}" download="${r}">Download</a></div>`}).join('');
+}
+
+// Check
+async function runCheck(){
+  const btn=document.getElementById('checkBtn');btn.disabled=true;btn.textContent='Checking...';
+  document.getElementById('checkOut').classList.remove('hidden');
+  const d=await api('/api/check');document.getElementById('checkLog').innerHTML=colorize(d.output||'');
+  btn.disabled=false;btn.textContent='✅ Run Check';toast(d.ok?'All checks passed':'Some checks failed',d.ok?'ok':'err');
+}
+
+// Init
+(async()=>{const d=await api('/api/status');if(d.ok)document.getElementById('ver').textContent='v'+d.version})();
+</script>
+</body>
+</html>

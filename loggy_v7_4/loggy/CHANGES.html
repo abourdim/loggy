@@ -1,0 +1,441 @@
+<html><head><meta charset="utf-8">
+<title>Loggy — Changelog</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:900px;margin:40px auto;padding:0 20px;color:#e0e0e0;background:#1a1a2e;line-height:1.6}
+h1{color:#00d4ff;border-bottom:2px solid #00d4ff;padding-bottom:10px}
+h2{color:#7fdbca;margin-top:2em}
+h3{color:#c792ea}
+code{background:#16213e;padding:2px 6px;border-radius:4px;font-size:0.9em;color:#addb67}
+pre{background:#16213e;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #333}
+pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{border:1px solid #444;padding:8px 12px;text-align:left}
+th{background:#16213e;color:#7fdbca}
+a{color:#00d4ff}
+hr{border:none;border-top:1px solid #444;margin:2em 0}
+li{margin:4px 0}
+strong{color:#f0f0f0}
+</style></head><body>
+<h1>Changelog — Loggy</h1>
+<p>All notable changes to this project are documented in this file.</p>
+<hr />
+<h2>V4.0.0 — Nested Archives, Content Detection &amp; MSYS2 Fixes (2026-02-23)</h2>
+<h3>Rebrand</h3>
+<ul>
+<li><strong>Renamed to Loggy</strong>: All user-facing display text, banners, report footers, and documentation updated from "IoTecha Log Analyzer" to "Loggy". Internal logic, detection paths, and settings file paths unchanged.</li>
+<li><strong>Version jump</strong>: 2.4 → 4.0 (v3.x skipped)</li>
+</ul>
+<h3>MSYS2/Windows Compatibility</h3>
+<ul>
+<li><strong><code>_pypath()</code> helper</strong>: Python on MSYS2 is a native Windows binary that cannot resolve MSYS2 paths like <code>/tmp/</code>. New <code>_pypath()</code> uses <code>cygpath -m</code> to convert all paths passed to Python fallback commands</li>
+<li><strong>Python 3.12+ tarfile security filter</strong>: RACC tarballs contain symlinks (e.g. <code>etc/dropbear</code> → <code>/var/run/dropbear</code>) that trigger <code>LinkOutsideDestinationError</code> on Python 3.12+. All <code>extractall()</code> calls now use <code>filter='fully_trusted'</code> where supported</li>
+<li><strong>Python fallback for all tar formats</strong>: <code>_extract_nested_archives</code> now has Python <code>tarfile</code> fallback for <code>.tar.gz</code>, <code>.tar</code>, <code>.tar.bz2</code>, <code>.tar.xz</code> (matching <code>_load_zip</code> which already had them)</li>
+<li><strong>Two-pass extraction</strong>: Runs nested extraction both before and after <code>.gz</code> decompression, handling the case where <code>gunzip</code> produces a <code>.tar</code> that needs a second pass</li>
+</ul>
+<h3>Nested Archive Extraction</h3>
+<ul>
+<li><strong>Recursive archive unpacking</strong>: <code>_load_zip</code> now scans extracted contents for inner archives (<code>.zip</code>, <code>.tar.gz</code>, <code>.tgz</code>, <code>.tar</code>, <code>.tar.bz2</code>, <code>.tar.xz</code>, <code>.7z</code>, <code>.rar</code>) and extracts them in place — loops until no more archives are found, up to 5 nesting levels</li>
+<li><strong>Extensionless archive detection</strong>: Inner archives without recognized extensions are detected via <code>file</code> magic</li>
+<li><strong>Previously</strong>: A zip containing <code>logs.tar.gz</code> would yield 0 log sources — the inner tarball was ignored</li>
+</ul>
+<h3>Content-Based Log Discovery</h3>
+<ul>
+<li><strong><code>_is_log_file()</code> helper</strong>: Identifies log files by content signature (first 10 lines), not file extension. Matches IoTecha app, syslog, kernel, generic timestamp, and HTTP access log formats</li>
+<li><strong><code>_register_component_logs()</code></strong>: Uses <code>_is_log_file()</code> instead of globbing <code>*.log *.log.* *.txt</code></li>
+<li><strong>System logs auto-detected</strong>: Replaced hardcoded <code>kern.log</code>/<code>syslog</code>/<code>auth.log</code> with content-based scan of <code>var/aux/log/*</code></li>
+<li><strong><code>_load_folder()</code> loose staging</strong>: Uses <code>_is_log_file()</code> instead of extension filtering</li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li><strong><code>_check_loaded()</code> false negative</strong>: Used <code>DEVICE_ID != unknown</code> which fails for RACCs without <code>info_commands.txt</code>. Now checks actual log count</li>
+<li><strong>Duplicate logs on menu reload</strong>: <code>load_input()</code> now clears previous state before loading</li>
+</ul>
+<hr />
+<h2>V2.3.0 — Bug Fixes &amp; Console Logging (2026-02-21)</h2>
+<h3>Bug Fixes</h3>
+<ul>
+<li><strong><code>cleanup_all()</code> re-enabled</strong>: Removed debug <code>return 0; #TMP</code> that prevented temp directory cleanup — <code>/tmp/iotlog.*</code> directories were leaking on every run</li>
+<li><strong><code>get_metric()</code> stale reads fixed</strong>: Changed <code>head -1</code> → <code>tail -1</code> so updated metrics return the latest value instead of the first (stale) one</li>
+<li><strong>Timeline <code>grep -am1</code> missing <code>-E</code> flag</strong>: 4 <code>add_timeline_event</code> calls used <code>|</code> alternation without <code>-E</code>, causing grep to match a literal pipe instead of OR — affected MQTT, Ethernet, PowerBoard, and CertManager timeline timestamps (always empty)</li>
+<li><strong>Trap chain restored</strong>: <code>_analyzer_cleanup()</code> now calls <code>cleanup_all()</code> so the EXIT trap set by <code>_setup_error_handling</code> doesn't silently discard the main cleanup registered in <code>main()</code></li>
+<li><strong>Health score weights in <code>--help</code></strong>: Corrected from 40/20/20/20 to 30/25/25/20 to match actual <code>scorer.sh</code> weights</li>
+<li><strong><code>menu.sh</code> parse errors fixed</strong>: Removed single-quotes inside <code>$(...)</code> command substitutions that caused <code>unexpected EOF while looking for matching</code> errors on source — affected <code>_clean_path</code> (line 81-82) and <code>_menu_settings</code> (line 937/957)</li>
+<li><strong>Config validator performance</strong>: Replaced O(lines × patterns) grep-per-key loop with single awk pass per file — eliminates ~26,000 subprocess spawns, critical for MSYS2/ucrt64 where it caused multi-minute hangs</li>
+</ul>
+<h3>Console Logging</h3>
+<ul>
+<li><strong>Full console capture</strong>: All stdout and stderr is now tee'd to <code>*_console.log</code> alongside the structured session log — faithful replay of everything printed, including ANSI codes, spinners, and progress bars</li>
+<li>Console log path printed at session start and end in batch, fleet, and compare modes</li>
+</ul>
+<h3>Version Housekeeping</h3>
+<ul>
+<li><code>ANALYZER_VERSION</code> bumped to 2.3</li>
+<li>All file header comments updated to v2.3 (previously a mix of v1.0 and v2.0)</li>
+</ul>
+<hr />
+<h2>V2.2.0 — Major Enhancement Release (2026-02-21)</h2>
+<h3>Scan &amp; Loading</h3>
+<ul>
+<li><strong>Recursive scan</strong>: <code>_menu_scan_dir</code> now scans all depths (not just 2 levels) using <code>find</code> → Python <code>os.walk</code> → deep glob fallback chain — works on Linux, macOS, WSL, MSYS2/Git Bash</li>
+<li><strong>All archive formats</strong>: Supports zip, tar.gz/tgz, tar.bz2/tbz2, tar.xz/txz, 7z, rar — with native tool → Python fallback for each</li>
+<li><strong>Password-protected zip</strong>: Detects password-protected zips, prompts user for password before extraction</li>
+<li><strong>Log rotation reassembly</strong>: <code>_load_folder</code> now detects numbered and date-stamped Linux log rotation sequences (e.g. <code>app.log</code>, <code>app.log.1</code>, <code>app.log.2.gz</code>), decompresses gz rotations, sorts chronologically and concatenates into a single combined log per component</li>
+<li><strong>Loose log staging</strong>: Non-RACC directories with <code>.log</code> files now automatically stage them into <code>var/aux/manual</code> so <code>_discover_logs</code> can find them</li>
+<li><strong>Relative paths in scan</strong>: Scan results show paths relative to the scanned directory instead of full absolute paths</li>
+<li><strong>Scan summary</strong>: Shows count of archives/RACC dirs/log dirs found; clear "nothing found" message with hints when empty</li>
+<li><strong>Archive type tags</strong>: Scan displays <code>[ZIP]</code>, <code>[TGZ]</code>, <code>[TBZ]</code>, <code>[TXZ]</code>, <code>[7Z]</code>, <code>[RAR]</code> labels</li>
+</ul>
+<h3>Path Normalization</h3>
+<ul>
+<li><strong>MSYS2/Windows</strong>: <code>_clean_path</code> now handles Windows paths — <code>C:\Users\...</code> and <code>C:/Users/...</code> → <code>/c/Users/...</code> using <code>cygpath</code> when available, manual conversion as fallback</li>
+</ul>
+<h3>Analysis Fixes</h3>
+<ul>
+<li><strong>Detector silent-fail audit</strong>: Fixed <code>_analyze_i2p2_mqtt</code>, <code>_analyze_network_boss</code>, <code>_analyze_cert_manager</code> — all missing <code>return 0</code> on last line, causing <code>safe_run</code> to flag them as failed</li>
+<li><strong><code>_analyze_charger_app</code></strong>: Fixed spurious failure exit code (previously triggered "detector failed" warning on every clean run)</li>
+<li><strong><code>safe_run</code> exit code</strong>: Fixed — old <code>if ! "$fn"</code> pattern captured post-negation <code>$?</code> (always 0); now captures real exit code in <code>$_rc</code></li>
+<li><strong>Config severity scaling</strong>: Config validation now raises MEDIUM (not just LOW) when 3+ issues are found; unknown/extra config keys are now detected and reported</li>
+</ul>
+<h3>Health Score Explanation</h3>
+<ul>
+<li><strong>Per-category penalty reasons</strong>: Each health score category now shows the specific reasons for point deductions (e.g. <code>↳ -30  MQTT failure rate 85% (critical)</code>)</li>
+<li><strong><code>_score_penalty</code> helper</strong>: New function tracks penalty reasons in per-category arrays during scoring; displayed by <code>_display_category</code></li>
+<li><strong>All 4 categories annotated</strong>: Connectivity (6 penalties), Hardware (13 penalties), Services (7 penalties), Configuration (3 penalties)</li>
+</ul>
+<h3>File Detection</h3>
+<ul>
+<li><strong>Binary/corrupt file detection</strong>: <code>validate_log_file</code> now uses a 3-method cascade — <code>grep -P</code> → Python → <code>file</code> command — for cross-platform null-byte detection; also detects unreadable/corrupt files by checking size vs readable line count; uses <code>stat -f%z</code> fallback for macOS</li>
+</ul>
+<h3>UX &amp; Menu</h3>
+<ul>
+<li><strong>Settings persistence</strong>: Settings (evidence level, colors, output dir, log level) now saved to <code>~/.iotecha_settings</code> and loaded on startup</li>
+<li><strong>Progress for reports</strong>: <code>generate_reports</code> now shows spinner feedback for each report type being generated</li>
+<li><strong>History with findings</strong>: Session history now shows loaded device ID, total issues by severity, and health score/grade</li>
+<li><strong>Clear empty-scan messaging</strong>: Scan with no results shows specific hints (check path, try parent dir, list supported formats)</li>
+</ul>
+<h3>Reporting</h3>
+<ul>
+<li><strong>Report filename fallback</strong>: When device ID is unknown, report filename now falls back to input filename + timestamp instead of <code>analysis_unknown_...</code></li>
+<li><strong>HTML auto-open</strong>: After generating reports, HTML report is automatically opened in the system browser (macOS: <code>open</code>, Linux: <code>xdg-open</code>, Windows/MSYS2: <code>start</code>)</li>
+<li><strong>Email Outlook/Gmail compatibility</strong>: HTML email template updated with MSO conditional comments, <code>role="presentation"</code> tables, <code>border-collapse:collapse</code>, removed <code>border-radius</code> (not supported in Outlook), added <code>mso-table-lspace/rspace</code> resets</li>
+</ul>
+<h3>Search</h3>
+<ul>
+<li><strong>Paginated results</strong>: <code>search_logs</code> now paginates at 50 results/page with <code>[n]ext / [p]rev / [a]ll / [q]uit</code> navigation instead of hard-cutting at 100</li>
+</ul>
+<h3>Fleet</h3>
+<ul>
+<li><strong>Cross-charger timeline correlation</strong>: <code>_fleet_correlate_timelines</code> finds ERROR/CRITICAL events within a 5-minute window across multiple chargers — indicates shared infrastructure issues (grid, network, backend outage). Requires Python; skipped gracefully if unavailable.</li>
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li><code>progress_bar</code> / <code>progress_step</code>: Fixed division-by-zero when <code>$total</code> arrives as empty string (now runs <code>safe_int</code> on inputs first)</li>
+<li><code>validate_log_file</code>: <code>stat -c%s</code> fallback added for macOS (<code>stat -f%z</code>)</li>
+</ul>
+<hr />
+<h2>V2.2.1 — Post-V2.2 Improvements (2026-02-20)</h2>
+<h3>Performance Optimization</h3>
+<ul>
+<li><strong>Batch grep</strong>: Converted 85 individual <code>count_grep</code> calls to 26 <code>batch_count_grep</code> calls</li>
+<li>Each batch uses single <code>awk</code> pass with multiple pattern counters instead of separate <code>grep</code> processes</li>
+<li>~2.5–3x faster analysis on large log bundles</li>
+<li>5 remaining single <code>count_grep</code> calls are loop-based (1 pattern/file) where batching provides no benefit</li>
+</ul>
+<h3>Connector-Level Analysis (New Detector)</h3>
+<ul>
+<li>New <code>_analyze_connector_health</code> detector — single awk pass per log file</li>
+<li>Identifies connector-attributed events via: <code>connector=N</code>, <code>ConnectorId=N</code>, <code>InnerSM-N</code>, <code>evseId=N</code>, <code>evse-N</code>, <code>socket N</code>, <code>M1/M2</code>, <code>Connector[N]</code></li>
+<li>Per-connector metrics: <code>conn1_errors</code>, <code>conn1_warnings</code>, <code>conn1_sessions</code>, <code>conn2_*</code></li>
+<li>Imbalance detection: raises targeted issue when one connector has 3x+ more errors (minimum 3)</li>
+<li>Total detectors: 25 → 26, analysis steps: 28 → 29</li>
+</ul>
+<h3>Connector Data Integration</h3>
+<ul>
+<li><strong>Health score</strong>: Connector imbalance penalizes Hardware category (-10 to -15)</li>
+<li><strong>Webapp</strong>: New "🔌 Connector Health" dashboard card with per-connector error/warning bars</li>
+<li><strong>HTML report</strong>: Connector breakdown table in health score section</li>
+<li><strong>Markdown report</strong>: Connector breakdown table</li>
+<li><strong>TUI</strong>: Connector line in health summary display</li>
+<li><strong>Email</strong> (text + HTML): Connector stats in header metrics</li>
+<li><strong>Tickets</strong>: Auto-detected <code>| Connector | Connector N |</code> metadata row</li>
+</ul>
+<h3>Search Enhancement</h3>
+<ul>
+<li>New <code>-n &lt;connector&gt;</code> flag for <code>search_logs</code> — filters results to specific connector</li>
+<li>Matches all IoTecha connector identification patterns</li>
+<li>Works in combination with all existing filters (-p, -s, -c, -a, -b)</li>
+</ul>
+<h3>Fleet Connector Aggregation</h3>
+<ul>
+<li>Per-charger connector info in fleet data (9th column: <code>single</code> or <code>dual:C1err/C2err</code>)</li>
+<li>TUI dashboard: "Connectors" column in charger table</li>
+<li>Fleet summary: dual/single count + imbalance warning count</li>
+<li>Markdown report: "Connectors" column in charger table</li>
+<li>HTML report: "Connectors" column in charger table</li>
+</ul>
+<h3>Test Expansion</h3>
+<ul>
+<li>Integration tests: 22 → 29 assertions</li>
+<li>New: config validation trigger scenarios (low timeout, disabled eMMC monitoring)</li>
+<li>New: <code>multi_connector</code> and <code>config_warnings</code> metric assertions</li>
+<li>New: connector imbalance issue detection assertion</li>
+<li>New: config validation issue detection assertion</li>
+<li>New: <code>_analyze_properties</code> in detector run list</li>
+</ul>
+<hr />
+<h2>V2.2 — Source-Informed Upgrade (2026-02-20)</h2>
+<h3>Error Registry Integration</h3>
+<ul>
+<li>Imported official <strong>363-error registry</strong> from IoTecha firmware source (44 modules, 8 severity types)</li>
+<li>Registry loaded by searcher, analyzer, and web backend</li>
+<li>All detectors now reference official error names, descriptions, and troubleshooting steps</li>
+</ul>
+<h3>Detectors: 7 → 53 issue detection points</h3>
+<p><strong>Enhanced existing:</strong>
+- OCPP: +OCPP_CONNECTION_ERROR, +boot rejection pattern, +offline queue, +txn rejected pre-boot
+- V2G/HLC: all 36 Error_* names (18 timeouts, power delivery, car-not-ready, EXI errors)
+- Firmware: 5 specific validation errors + PowerBoardFirmwareUpdateFailed (CRITICAL)
+- eMMC: high vs critical wearing distinguished, FSSwitchToRO, StorageFallbackMode
+- Monit: split into ProcessRestartedTooOften (HIGH) + AppHasRestarted + HighCpuUsage
+- Reboot: planned vs unplanned, SoftReset, EVIC reboot from CommonEVIC
+- HMI: HMIBboardIsNotReady + HMIBoardInitTimeout with official troubleshooting
+- Emergency: ExternalEmergencyStop distinguished from button press
+- Meter: 12 registry entries (RequiredMeterMissing CRITICAL, Eichrecht TERMINAL/UNAVAILABLE/ORPHAN)
+- Tamper: LidOpen (CRITICAL/blocks) + LidCloseWaitUnplug (must unplug to clear)
+- EnergyManager: +session start failure, +3ph current flow, +power imbalance, +state errors</p>
+<p><strong>New detectors:</strong>
+- Temperature/Overtemperature: 12+ patterns (CRITICAL blockers through LOW derating)
+- WiFi AP/client: NETWORK_NOT_FOUND, CONN_FAILED, SSID-TEMP-DISABLED, driver reload</p>
+<h3>Reports</h3>
+<ul>
+<li>Troubleshooting steps extracted into dedicated styled blocks (MD, HTML, tickets)</li>
+<li>On-site service flag (🚨) displayed prominently</li>
+<li>Jira/GitLab tickets auto-tagged with <code>on-site-service</code> label</li>
+</ul>
+<h3>Causal Chains: 6 → 10</h3>
+<ul>
+<li>PMQ chain: names all PMQ topics from source IDL</li>
+<li>+Thermal→Power cascade</li>
+<li>+Storage degradation cascade</li>
+<li>+Meter→Eichrecht→Billing cascade</li>
+<li>+V2G/HLC communication breakdown</li>
+</ul>
+<h3>Health Score</h3>
+<ul>
+<li>Rebalanced weights: Connectivity 30%, Hardware 25%, Services 25%, Config 20%</li>
+<li>New penalties: temperature, lid open, PowerBoard FW fail, WiFi, OCPP_CONNECTION_ERROR, meter missing, EnergyManager, power imbalance, Monit crash-loop</li>
+</ul>
+<h3>Config Validation</h3>
+<ul>
+<li>Validates real config keys from Layer 4 product configurations</li>
+<li>Checks: interfaceSelectionManager, ppp0/eth0 enabled, digitalCommunicationTimeout_ms, OCPP csUrl, OfflineTimeout_s</li>
+</ul>
+<hr />
+<h2>V1.0 — Full Release (2026-02-20)</h2>
+<h3>Phase 13 — Web Server Mode</h3>
+<ul>
+<li><strong><code>--server</code></strong> flag launches browser-based UI at <code>http://localhost:8080</code></li>
+<li><strong><code>--port</code></strong> flag for custom port</li>
+<li>Python3 HTTP backend (<code>lib/server_backend.py</code>) — REST API, stdlib only, no pip</li>
+<li>Single-page HTML frontend (<code>lib/server_frontend.html</code>) — dark theme, sidebar, keyboard shortcuts</li>
+<li><strong>11 browser views</strong>: Load Logs, Run Analysis, Results, Search, Components, Signatures, Compare, Fleet, Reports, Check Install, Help</li>
+<li>Drag-and-drop RACC upload or server-path loading</li>
+<li>Session management for concurrent analyses</li>
+<li>Full REST API (14 endpoints) for programmatic access</li>
+<li><strong>Help view</strong> — complete reference (flags, detectors, scores, reports, shortcuts) built into web UI</li>
+<li><strong><code>start.sh</code></strong> launcher menu — guided start for all modes, no flags to remember</li>
+</ul>
+<h3>Phase 12 — Self-Test &amp; Packaging</h3>
+<ul>
+<li><code>run_tests.sh</code> — 56 automated tests across 8 categories</li>
+<li>Test suites: syntax (22 files), dependencies (12 tools), help/version, signatures, standard analysis, comparison, mail/tickets, web app</li>
+<li><code>README.md</code> quick reference</li>
+<li><code>README.html</code> comprehensive documentation (1200+ lines, 26 sections, sidebar nav)</li>
+<li><code>install.sh</code> installation script</li>
+<li><code>CHANGES.html</code> visual changelog</li>
+</ul>
+<h3>Phase 11 — Fleet Mode</h3>
+<ul>
+<li><strong><code>--fleet &lt;dir&gt;</code></strong> analyzes all RACC .zip files in a directory</li>
+<li>Fleet dashboard sorted by health score (worst first)</li>
+<li>Cross-fleet pattern detection: shared vs unique issues</li>
+<li>Firmware version correlation across chargers</li>
+<li>Fleet MD + HTML reports (<code>fleet.sh</code>, 315 lines)</li>
+</ul>
+<h3>Phase 10 — Live Monitoring</h3>
+<ul>
+<li><strong><code>--watch &lt;dir&gt;</code></strong> tails log directory in real time</li>
+<li>Uses <code>inotifywait</code> when available, falls back to 2-second polling</li>
+<li>Color-coded alert feed: errors red, warnings orange, criticals flash</li>
+<li>Pattern matching against signature database</li>
+<li>Session recording to <code>watch_*.log</code> for later analysis</li>
+<li>Graceful Ctrl+C with session summary (<code>watcher.sh</code>, 209 lines)</li>
+</ul>
+<h3>Phase 9 — Mail &amp; Tickets</h3>
+<ul>
+<li><strong><code>--mail</code></strong> generates email brief:</li>
+<li>Plain text (.txt) with auto subject line including severity + score</li>
+<li>Inline-CSS HTML safe for Outlook, Gmail, Apple Mail</li>
+<li><strong><code>--tickets</code></strong> generates per-issue tickets:</li>
+<li>Individual Markdown file per issue with root cause + fix</li>
+<li>Jira CSV for bulk import (Summary, Priority, Component, Labels, Description)</li>
+<li>GitLab JSON array for API issue creation</li>
+<li>Signature auto-match populates root cause and fix in tickets</li>
+<li><code>gen_mail.sh</code> (210 lines), <code>gen_tickets.sh</code> (111 lines)</li>
+</ul>
+<h3>Phase 8 — Search, Investigation &amp; Signatures</h3>
+<ul>
+<li><strong>Search engine</strong> with filters: keyword/regex, severity (E/W/I/C/N), component, time range, context lines, max results, export to file</li>
+<li><strong>Component investigation</strong> — deep dive: log stats, related issues, timeline events, top error messages (normalized, deduplicated), signature matches</li>
+<li><strong>Signature database</strong> (<code>signatures/known_signatures.tsv</code>) — 80 built-in error signatures + 363-error registry:</li>
+<li>TSV format (no YAML/jq dependency)</li>
+<li>Each pattern: regex → component → severity → title → root cause → fix → KB URL</li>
+<li>Covers: MQTT, PPP, Ethernet, WiFi, OCPP, Certs, PMQ, Reboots, Kernel, GPIO, TPM, PowerBoard, EVCC</li>
+<li>Auto-match: all detected issues matched against database</li>
+<li>Interactive signature management: list, add, reset</li>
+<li><code>searcher.sh</code> (674 lines)</li>
+</ul>
+<h3>Phase 7 — Regression Comparison</h3>
+<ul>
+<li><strong><code>--compare &lt;baseline&gt; &lt;target&gt;</code></strong> — side-by-side analysis of two RACC captures</li>
+<li>Issue diff: new issues, resolved issues, persistent issues</li>
+<li>Metric deltas: 13 key metrics with delta and % change</li>
+<li>Smart color coding: MQTT failures up = red, MQTT successes up = green</li>
+<li>Subsystem status changes with ▲ improved / ▼ regressed indicators</li>
+<li>Config (.properties) diff: added/removed/changed keys</li>
+<li>Auto-verdict engine: Improvement / Regression / Mixed / No change / Clean</li>
+<li>Comparison MD + HTML reports</li>
+<li><code>comparator.sh</code> (782 lines)</li>
+</ul>
+<h3>Phase 6 — Deep Analysis</h3>
+<ul>
+<li><strong><code>--mode deep</code></strong> adds 6 investigation modules:</li>
+<li><strong>Boot timing</strong> — boot event sequence, stage durations, slow boot detection</li>
+<li><strong>Causal chains</strong> — links events across components (PPP down → MQTT fail → OCPP disconnect)</li>
+<li><strong>Gap detection</strong> — timeline discontinuities (crashes, power loss, log rotation)</li>
+<li><strong>Config validation</strong> — .properties file checks for missing keys, suspicious values</li>
+<li><strong>Error histogram</strong> — error distribution by time bucket (boot, steady-state, storms)</li>
+<li><strong>PMQ interaction map</strong> — inter-process message queue connections, failed subscriptions</li>
+<li><code>analyzer_deep.sh</code> (460 lines)</li>
+</ul>
+<h3>Phase 5 — Health Score &amp; Predictions</h3>
+<ul>
+<li>Automatic <strong>0–100 health score</strong> with weighted categories:</li>
+<li>Connectivity 40% (MQTT, PPP, Ethernet, WiFi)</li>
+<li>Hardware 20% (Power board, GPIO, boot, reboots)</li>
+<li>Services 20% (OCPP, EVCC, PMQ, components)</li>
+<li>Configuration 20% (Certificates, config validation)</li>
+<li>Letter grades: A (90+), B (75+), C (60+), D (40+), F (&lt;40)</li>
+<li>Predictive alerts — forward-looking warnings based on metric trends</li>
+<li><code>scorer.sh</code> (350 lines)</li>
+</ul>
+<h3>Phase 4 — Interactive Web App</h3>
+<ul>
+<li><strong><code>--web</code></strong> generates self-contained HTML SPA (~130KB, works offline)</li>
+<li>6 interactive views: Dashboard, Issues, Timeline (301+ events), Error Summary, Search, System Info</li>
+<li>Embedded JSON data — no server needed</li>
+<li>Dark theme, DM Sans + JetBrains Mono fonts</li>
+<li>Keyboard shortcuts (1–6), responsive, print-friendly</li>
+<li><code>gen_webapp.sh</code> (1200+ lines — largest generator)</li>
+</ul>
+<h3>Phase 3 — Report Generation</h3>
+<ul>
+<li><strong>Markdown reports</strong> — full analysis with issues, status, metrics, evidence, timeline</li>
+<li><strong>HTML reports</strong> — styled dark-theme, collapsible evidence blocks, print-friendly</li>
+<li>Reports auto-generated on every analysis run</li>
+<li><code>gen_markdown.sh</code> (380 lines), <code>gen_html.sh</code> (520 lines)</li>
+</ul>
+<h3>Phase 2 — Standard Analysis</h3>
+<ul>
+<li><strong>34+ issue detectors</strong> across all EV charger subsystems:</li>
+<li>MQTT connection failure (AWS IoT Core)</li>
+<li>PPP/Cellular not established (modem/SIM)</li>
+<li>Ethernet link flapping (PHY/cable)</li>
+<li>Certificate manager warnings (TPM/cert)</li>
+<li>EVCC watchdog warnings (timing)</li>
+<li>Power board fault at boot (relay/contactor)</li>
+<li>PMQ subscription failures (IPC)</li>
+<li><strong>Subsystem status</strong> for 7 systems (MQTT, OCPP, PPP, Ethernet, WiFi, Certs, PowerBoard)</li>
+<li><strong>37+ metrics</strong> collected (error counts, connection rates, boot events, etc.)</li>
+<li><strong>Timeline</strong> generation (301+ events from all log sources)</li>
+<li><code>analyzer_standard.sh</code> (2200+ lines — largest module)</li>
+</ul>
+<h3>Phase 1 — Foundation</h3>
+<ul>
+<li><strong>Pure Bash</strong> architecture — no Python, Node, Docker, jq, or yq</li>
+<li><strong>MSYS2/Git Bash</strong> compatible (pure-awk sort, no GNU extensions)</li>
+<li>Auto-detection of input format: RACC .zip, directory, individual files</li>
+<li><strong>Log parser</strong> — handles IoTecha app format, syslog, kern.log, .properties, info_commands.txt</li>
+<li>19+ component log files recognized</li>
+<li><strong>Evidence collection</strong> — min/std/full levels</li>
+<li>Color output with <code>--no-color</code> support</li>
+<li>Session logging, temp directory management, cleanup traps</li>
+<li><code>common.sh</code>, <code>loader.sh</code>, <code>parser.sh</code>, <code>evidence.sh</code></li>
+</ul>
+<hr />
+<h2>Project Statistics</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total lines of code</td>
+<td>~13,600</td>
+</tr>
+<tr>
+<td>Shell scripts (.sh)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>Python files</td>
+<td>1 (server backend)</td>
+</tr>
+<tr>
+<td>HTML files</td>
+<td>9 (reports, web app, frontend, docs)</td>
+</tr>
+<tr>
+<td>Self-tests</td>
+<td>113 (84 unit + 29 integration)</td>
+</tr>
+<tr>
+<td>Error signatures</td>
+<td>462 (+363 registry)</td>
+</tr>
+<tr>
+<td>Issue detectors</td>
+<td>26</td>
+</tr>
+<tr>
+<td>Report formats</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Deep analysis modules</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Causal chains</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Config validation checks</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Platforms supported</td>
+<td>6 (Linux, macOS, WSL, MSYS2, Docker, BusyBox)</td>
+</tr>
+<tr>
+<td>External dependencies</td>
+<td>0 (bash + coreutils only)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>IoTecha Log Analyzer V1.0 — Built 2026</em></p>
+</body></html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loggy — Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page { size: A3 portrait; margin: 10mm; }
+:root {
+  --bg:#0b0d12;--bg2:#111520;--bg3:#181d2a;--bg4:#1f2637;
+  --border:#2a3148;--border-bright:#3a4568;
+  --fg:#c5cbd8;--fg2:#8892a8;--fg3:#5a6380;
+  --accent:#4a8af5;--accent-dim:rgba(74,138,245,.12);
+  --red:#f04444;--red-bg:rgba(240,68,68,.1);
+  --green:#22c55e;--green-bg:rgba(34,197,94,.1);
+  --orange:#f5a623;--orange-bg:rgba(245,166,35,.1);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,.08);
+  --mag:#a855f7;--mag-bg:rgba(168,85,247,.1);
+  --mono:'JetBrains Mono','Consolas',monospace;
+  --sans:'Space Grotesk',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);font-size:12.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+.header{padding:24px 28px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between}
+.header h1{font-size:24px;font-weight:800;letter-spacing:-.5px;color:#fff}
+.header h1 span{color:var(--accent);font-weight:400;font-size:14px;font-family:var(--mono);margin-left:8px}
+.header .sub{color:var(--fg2);font-size:13px;margin-top:3px}
+.header .right{text-align:right;color:var(--fg3);font-family:var(--mono);font-size:11px;line-height:1.7}
+.header .right code{background:var(--bg3);padding:2px 8px;border-radius:4px;color:var(--accent);font-size:12px}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;break-inside:avoid}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.card.c-blue::before{background:var(--accent)}.card.c-green::before{background:var(--green)}
+.card.c-orange::before{background:var(--orange)}.card.c-red::before{background:var(--red)}
+.card.c-cyan::before{background:var(--cyan)}.card.c-mag::before{background:var(--mag)}
+.card h2{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.card h2 .emoji{font-size:14px}
+.card.span-2{grid-column:span 2}
+.card.span-3{grid-column:span 3}
+.card.span-4{grid-column:1/-1}
+
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+.key{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;padding:0 6px;background:var(--bg3);border:1px solid var(--border-bright);border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);box-shadow:0 1px 0 var(--border)}
+.key-label{font-size:12px;color:var(--fg2)}
+
+.clist{list-style:none;font-size:12px}
+.clist li{padding:3px 0;border-bottom:1px solid rgba(42,49,72,.4);display:flex;gap:8px;align-items:baseline}
+.clist li:last-child{border:none}
+.sev{font-family:var(--mono);font-weight:700;font-size:10px;padding:1px 5px;border-radius:3px;min-width:44px;text-align:center;display:inline-block}
+.sev-c{background:var(--red-bg);color:var(--red)}.sev-h{background:var(--red-bg);color:var(--red)}
+.sev-m{background:var(--orange-bg);color:var(--orange)}.sev-l{background:var(--green-bg);color:var(--green)}
+
+.api{font-size:11px;width:100%;border-collapse:collapse}
+.api td{padding:2px 0;vertical-align:top}
+.meth{font-family:var(--mono);font-weight:700;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:4px}
+.meth-get{background:var(--green-bg);color:var(--green)}.meth-post{background:var(--accent-dim);color:var(--accent)}
+.api .path{font-family:var(--mono);font-size:10.5px;color:var(--cyan)}
+.api .desc{color:var(--fg2);padding-left:6px}
+.api tr{border-bottom:1px solid rgba(42,49,72,.3)}
+
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px}
+.score-bar{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px}
+.score-lbl{min-width:85px;color:var(--fg2)}.score-pct{font-family:var(--mono);font-size:11px;color:var(--fg3);min-width:28px;text-align:right}
+.grades{display:flex;gap:6px;margin-top:6px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.grades span{padding:1px 7px;border-radius:4px}
+.g-a{background:var(--green-bg);color:var(--green)}.g-b{background:var(--green-bg);color:var(--green)}
+.g-c{background:var(--orange-bg);color:var(--orange)}.g-d{background:var(--orange-bg);color:var(--orange)}
+.g-f{background:var(--red-bg);color:var(--red)}
+
+.tag{font-family:var(--mono);font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px}
+.tag-flag{background:var(--orange-bg);color:var(--orange)}.tag-default{background:var(--bg3);color:var(--fg3)}
+
+.flow{display:flex;align-items:center;gap:0;font-size:11px;flex-wrap:wrap;margin:6px 0}
+.flow-step{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-weight:600;color:#fff;white-space:nowrap}
+.flow-arrow{color:var(--fg3);padding:0 3px;font-size:13px}
+.flow-step.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+
+/* ── Command blocks ─────────────── */
+.cmd-grid{display:flex;flex-direction:column;gap:8px}
+.cmd-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.cmd-block .cmd-header{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px}
+.cmd-block .cmd-header .cmd-num{font-family:var(--mono);font-weight:700;color:var(--accent);min-width:14px}
+.cmd-block .cmd-header .cmd-title{font-weight:700;color:#fff}
+.cmd-block .cmd-header .cmd-desc{color:var(--fg3);margin-left:auto;font-size:10px;text-align:right;max-width:55%}
+.cmd-block .cmd-code{font-family:var(--mono);font-size:11px;padding:6px 12px;line-height:1.5;color:var(--fg2);white-space:pre;overflow-x:auto}
+.cmd-code .c{color:var(--green)}.cmd-code .f{color:var(--orange)}.cmd-code .x{color:var(--fg3)}
+.cmd-code .v{color:var(--cyan)}.cmd-code .o{color:var(--fg2)}
+
+.section-divider{grid-column:1/-1;padding:6px 0 0;display:flex;align-items:center;gap:12px}
+.section-divider .line{flex:1;height:1px;background:var(--border)}
+.section-divider .label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--fg3)}
+
+@media print {
+  body{background:#fff;color:#222;font-size:10.5px}
+  .card{border:1px solid #ddd;background:#fafafa;break-inside:avoid}
+  .card::before{display:none}
+  .header{border-bottom:2px solid #333}
+  .header h1{color:#000}.header h1 span{color:#2563eb}
+  .key{background:#f0f0f0;border-color:#ccc;color:#2563eb}
+  .cmd-block{border-color:#ddd}.cmd-block .cmd-header{background:#f0f0f0}
+  .cmd-block .cmd-code{background:#f8f8f8}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⚡ Loggy <span>V2.2</span></h1>
+    <div class="sub">Complete Cheat Sheet — Web UI + CLI + API</div>
+  </div>
+  <div class="right">
+    Web: <code>./analyzer.sh --server</code> → <code>http://localhost:8080</code><br>
+    TUI: <code>./analyzer.sh</code> &nbsp;|&nbsp; Launcher: <code>./start.sh</code>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- ═══ ROW 1: Shortcuts + Workflow + Detectors + Health ═══ -->
+
+  <div class="card c-blue">
+    <h2><span class="emoji">⌨️</span> Keyboard Shortcuts</h2>
+    <div class="keys">
+      <span class="key">1</span><span class="key-label">Load Logs — upload RACC zip</span>
+      <span class="key">2</span><span class="key-label">Run Analysis — mode + options</span>
+      <span class="key">3</span><span class="key-label">Results — score, issues, output</span>
+      <span class="key">4</span><span class="key-label">Search — pattern/severity/component</span>
+      <span class="key">5</span><span class="key-label">Components — parsed log stats</span>
+      <span class="key">6</span><span class="key-label">Signatures — 20 error fingerprints</span>
+      <span class="key">7</span><span class="key-label">Compare — regression diff</span>
+      <span class="key">8</span><span class="key-label">Fleet — multi-charger batch</span>
+      <span class="key">9</span><span class="key-label">Reports — view &amp; download</span>
+      <span class="key">0</span><span class="key-label">Check Install — dependency verify</span>
+      <span class="key">H</span><span class="key-label">Help — full reference</span>
+    </div>
+  </div>
+
+  <div class="card c-green">
+    <h2><span class="emoji">🔄</span> Workflow</h2>
+    <div class="flow">
+      <span class="flow-step active">1 Upload</span><span class="flow-arrow">→</span>
+      <span class="flow-step active">2 Analyze</span><span class="flow-arrow">→</span>
+      <span class="flow-step active">3 Results</span><span class="flow-arrow">→</span>
+      <span class="flow-step">4 Search</span><span class="flow-arrow">→</span>
+      <span class="flow-step">9 Reports</span>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--fg2);line-height:1.7">
+      <strong style="color:#fff">Standard</strong> — 34+ detectors + health score<br>
+      <strong style="color:#fff">Deep</strong> — + boot timing, causal chains, gaps, config, histogram, PMQ<br>
+    </div>
+    <div style="margin-top:6px;font-size:11px">
+      <span class="tag tag-flag">--web</span> SPA
+      <span class="tag tag-flag">--mail</span> Email
+      <span class="tag tag-flag">--tickets</span> Jira/GitLab
+    </div>
+  </div>
+
+  <div class="card c-red">
+    <h2><span class="emoji">🚨</span> 34+ Issue Detectors</h2>
+    <ul class="clist">
+      <li><span class="sev sev-c">CRIT</span> PPP/Cellular never established</li>
+      <li><span class="sev sev-c">CRIT</span> Emergency stop triggered</li>
+      <li><span class="sev sev-c">CRIT</span> Grid code protection event</li>
+      <li><span class="sev sev-c">CRIT</span> PMQ thread alarm storm</li>
+      <li><span class="sev sev-h">HIGH</span> MQTT / Ethernet / WiFi failures</li>
+      <li><span class="sev sev-h">HIGH</span> Power board fault / tamper / IMD</li>
+      <li><span class="sev sev-h">HIGH</span> OCPP / V2G / cert / token errors</li>
+      <li><span class="sev sev-m">MED</span> Reboots / monit / firmware / HMI</li>
+      <li><span class="sev sev-l">LOW</span> EVCC watchdog / PMQ / meter</li>
+    </ul>
+    <div style="margin-top:4px;font-size:10px;color:var(--fg3)">+ 363 official error registry fingerprints</div>
+  </div>
+
+  <div class="card c-cyan">
+    <h2><span class="emoji">💯</span> Health Score</h2>
+    <div class="score-row"><span class="score-lbl">Connectivity</span><div class="score-bar"><div class="score-fill" style="width:40%;background:var(--accent)"></div></div><span class="score-pct">40%</span></div>
+    <div class="score-row"><span class="score-lbl">Hardware</span><div class="score-bar"><div class="score-fill" style="width:20%;background:var(--orange)"></div></div><span class="score-pct">20%</span></div>
+    <div class="score-row"><span class="score-lbl">Services</span><div class="score-bar"><div class="score-fill" style="width:20%;background:var(--green)"></div></div><span class="score-pct">20%</span></div>
+    <div class="score-row"><span class="score-lbl">Configuration</span><div class="score-bar"><div class="score-fill" style="width:20%;background:var(--mag)"></div></div><span class="score-pct">20%</span></div>
+    <div class="grades">
+      <span class="g-a">A 90+</span><span class="g-b">B 75+</span><span class="g-c">C 60+</span><span class="g-d">D 40+</span><span class="g-f">F &lt;40</span>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 2: Reports + API ═══ -->
+
+  <div class="card c-green">
+    <h2><span class="emoji">📄</span> Report Outputs</h2>
+    <ul class="clist">
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">MD</span> analysis_*.md <span class="tag tag-default">default</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">HTML</span> analysis_*.html <span class="tag tag-default">default</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">APP</span> webapp_*.html <span class="tag tag-flag">--web</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">TXT</span> mail_*.txt <span class="tag tag-flag">--mail</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">MAIL</span> mail_*.html <span class="tag tag-flag">--mail</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">TICK</span> tickets_*/ <span class="tag tag-flag">--tickets</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">CMP</span> comparison_* <span class="tag tag-flag">--compare</span></li>
+      <li><span style="font-family:var(--mono);font-size:11px;color:var(--accent);min-width:36px">FLT</span> fleet_* <span class="tag tag-flag">--fleet</span></li>
+    </ul>
+  </div>
+
+  <div class="card c-blue span-3">
+    <h2><span class="emoji">🔌</span> REST API</h2>
+    <table class="api">
+      <tr><td><span class="meth meth-get">GET</span></td><td class="path">/api/status</td><td class="desc">Server version + active sessions</td>
+          <td><span class="meth meth-get">GET</span></td><td class="path">/api/sessions</td><td class="desc">List all session IDs</td></tr>
+      <tr><td><span class="meth meth-post">POST</span></td><td class="path">/api/upload</td><td class="desc">Upload file (multipart) or JSON <code>{"path":"..."}</code></td>
+          <td><span class="meth meth-post">POST</span></td><td class="path">/api/analyze</td><td class="desc"><code>{"session_id","mode","web","mail","tickets"}</code></td></tr>
+      <tr><td><span class="meth meth-get">GET</span></td><td class="path">/api/session/{id}/results</td><td class="desc">Issues, health, device info, raw output</td>
+          <td><span class="meth meth-get">GET</span></td><td class="path">/api/session/{id}/search?q=</td><td class="desc">Search + severity, component, max filters</td></tr>
+      <tr><td><span class="meth meth-get">GET</span></td><td class="path">/api/session/{id}/components</td><td class="desc">Per-component line/error/warning counts</td>
+          <td><span class="meth meth-get">GET</span></td><td class="path">/api/session/{id}/report?file=</td><td class="desc">Download generated report</td></tr>
+      <tr><td><span class="meth meth-get">GET</span></td><td class="path">/api/session/{id}/info</td><td class="desc">Session metadata + report list</td>
+          <td><span class="meth meth-get">GET</span></td><td class="path">/api/signatures</td><td class="desc">20 error fingerprints database</td></tr>
+      <tr><td><span class="meth meth-get">GET</span></td><td class="path">/api/check</td><td class="desc">Dependency verification</td>
+          <td><span class="meth meth-post">POST</span></td><td class="path">/api/compare</td><td class="desc"><code>{"baseline":"...","target":"..."}</code></td></tr>
+      <tr><td><span class="meth meth-post">POST</span></td><td class="path">/api/fleet</td><td class="desc"><code>{"directory":"..."}</code></td>
+          <td></td><td></td><td></td></tr>
+    </table>
+  </div>
+
+  <!-- ═══ DIVIDER ═══ -->
+  <div class="section-divider"><div class="line"></div><div class="label">🤓 Detailed Command Reference</div><div class="line"></div></div>
+
+  <!-- ═══ ROW 3-6: Detailed Commands ═══ -->
+
+  <!-- Col 1: Start + Analyze -->
+  <div class="card c-green span-2">
+    <h2><span class="emoji">🚀</span> Start &amp; Launch</h2>
+    <div class="cmd-grid">
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">1</span><span class="cmd-title">Interactive TUI</span><span class="cmd-desc">Full terminal menu — load, analyze, search, settings</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">2</span><span class="cmd-title">Web Server</span><span class="cmd-desc">Browser UI on localhost — all TUI features in a web page</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--server</span>                <span class="x"># default port 8080</span>
+<span class="c">./analyzer.sh</span> <span class="f">--server --port 9090</span>     <span class="x"># custom port</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">3</span><span class="cmd-title">Guided Launcher</span><span class="cmd-desc">Pick-a-number menu — prompts for everything, no flags needed</span></div>
+        <div class="cmd-code"><span class="c">./start.sh</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">4</span><span class="cmd-title">Check Dependencies</span><span class="cmd-desc">Verifies bash, awk, grep, sed, unzip, python3 — reports missing</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--check</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">5</span><span class="cmd-title">Self-Test Suite</span><span class="cmd-desc">Runs 56 automated tests: syntax, deps, analysis, reports</span></div>
+        <div class="cmd-code"><span class="c">./run_tests.sh</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card c-orange span-2">
+    <h2><span class="emoji">🔍</span> Analyze</h2>
+    <div class="cmd-grid">
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">6</span><span class="cmd-title">Standard Analysis</span><span class="cmd-desc">34+ issue detectors + health score + MD/HTML reports</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="v">RACC-Report.zip</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">7</span><span class="cmd-title">Deep Analysis</span><span class="cmd-desc">Standard + boot timing, causal chains, gaps, config, histogram, PMQ</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--mode deep</span> <span class="v">RACC-Report.zip</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">8</span><span class="cmd-title">Deep + All Outputs</span><span class="cmd-desc">Everything: deep mode + interactive web app + email brief + Jira/GitLab tickets</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--mode deep --web --mail --tickets</span> <span class="v">RACC.zip</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">9</span><span class="cmd-title">Custom Output Dir</span><span class="cmd-desc">Save all reports to a specific folder instead of ./reports/</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">-o /tmp/my-reports</span> <span class="v">RACC.zip</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">10</span><span class="cmd-title">Full Evidence</span><span class="cmd-desc">Include every matching log line in reports (default: ~30 lines per issue)</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">-e full</span> <span class="v">RACC.zip</span>            <span class="x"># -e min | std | full</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">11</span><span class="cmd-title">Quiet / CI Mode</span><span class="cmd-desc">Suppress console output — useful for scripts, CI pipelines, cron</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">-q --no-color</span> <span class="v">RACC.zip</span>      <span class="x"># exit 0=clean, 1=issues</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">12</span><span class="cmd-title">Loose Log Files</span><span class="cmd-desc">Analyze individual .log files directly (no zip needed)</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="v">i2p2.log NetworkBoss.log ChargerApp.log</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card c-mag span-2">
+    <h2><span class="emoji">⚖️</span> Compare, Fleet &amp; Watch</h2>
+    <div class="cmd-grid">
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">13</span><span class="cmd-title">Regression Comparison</span><span class="cmd-desc">Diff two RACC captures — new/resolved/persistent issues, metric deltas, config changes</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--compare</span> <span class="v">before.zip after.zip</span>
+<span class="x"># Verdict: Improvement / Regression / Mixed / No change</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">14</span><span class="cmd-title">Fleet Analysis</span><span class="cmd-desc">Batch-analyze every .zip in a folder — fleet dashboard sorted by health, cross-charger patterns</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--fleet</span> <span class="v">/path/to/raccs/</span></div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">15</span><span class="cmd-title">Live Monitoring</span><span class="cmd-desc">Real-time log tail with alert feed — uses inotifywait or 2s polling fallback</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="f">--watch</span> <span class="v">/var/log/iotecha/</span>
+<span class="x"># Ctrl+C to stop — saves session to watch_*.log</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card c-cyan span-2">
+    <h2><span class="emoji">🔌</span> API with curl</h2>
+    <div class="cmd-grid">
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">16</span><span class="cmd-title">Upload a RACC</span><span class="cmd-desc">Load a zip from server-side path — returns session_id for subsequent calls</span></div>
+        <div class="cmd-code"><span class="v">SID</span>=$(<span class="c">curl</span> -s -X POST localhost:8080/api/upload \
+  -H 'Content-Type: application/json' \
+  -d '{"path":"/path/to/RACC.zip"}' | <span class="c">jq</span> -r '.session_id')</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">17</span><span class="cmd-title">Upload via Multipart</span><span class="cmd-desc">Upload a file from your machine — browser-style form upload</span></div>
+        <div class="cmd-code"><span class="v">SID</span>=$(<span class="c">curl</span> -s -X POST localhost:8080/api/upload \
+  -F "file=@RACC-Report.zip" | <span class="c">jq</span> -r '.session_id')</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">18</span><span class="cmd-title">Run Analysis</span><span class="cmd-desc">Trigger standard or deep analysis — optionally enable web/mail/ticket outputs</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s -X POST localhost:8080/api/analyze \
+  -H 'Content-Type: application/json' \
+  -d "{\"session_id\":\"<span class="v">$SID</span>\",\"mode\":\"deep\",\"web\":true}" | <span class="c">jq</span> '.ok, .reports'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">19</span><span class="cmd-title">Get Health Score</span><span class="cmd-desc">Extract score, grade, and issue count as JSON</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s localhost:8080/api/session/<span class="v">$SID</span>/results \
+  | <span class="c">jq</span> '{score:.health.score, grade:.health.grade, issues:.issues|length}'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">20</span><span class="cmd-title">List All Issues</span><span class="cmd-desc">Print severity + title for every detected issue — tab-separated for scripting</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s localhost:8080/api/session/<span class="v">$SID</span>/results \
+  | <span class="c">jq</span> -r '.issues[] | "\(.severity)\t\(.title)"'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">21</span><span class="cmd-title">Search Logs</span><span class="cmd-desc">Grep parsed logs via API — filter by severity (C/E/W/I/N) and component name</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s "localhost:8080/api/session/<span class="v">$SID</span>/search?q=MQTT&amp;severity=E&amp;max=20" \
+  | <span class="c">jq</span> '.count, .results[].line'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">22</span><span class="cmd-title">Component Stats</span><span class="cmd-desc">Per-component breakdown: total lines, error count, warning count</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s localhost:8080/api/session/<span class="v">$SID</span>/components | <span class="c">jq</span> '.components'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">23</span><span class="cmd-title">Download Report</span><span class="cmd-desc">Fetch a generated report file (MD, HTML, web app) — save to current dir</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -sO "localhost:8080/api/session/<span class="v">$SID</span>/report?file=analysis_device_20260220.html"</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">24</span><span class="cmd-title">Regression via API</span><span class="cmd-desc">Compare two RACC captures programmatically — returns diff output + report list</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s -X POST localhost:8080/api/compare \
+  -H 'Content-Type: application/json' \
+  -d '{"baseline":"/path/before.zip","target":"/path/after.zip"}' | <span class="c">jq</span> '.ok'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">25</span><span class="cmd-title">Fleet via API</span><span class="cmd-desc">Batch-analyze a folder of RACC zips — returns fleet dashboard data</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s -X POST localhost:8080/api/fleet \
+  -H 'Content-Type: application/json' \
+  -d '{"directory":"/path/to/raccs/"}' | <span class="c">jq</span> '.ok, .reports'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">26</span><span class="cmd-title">Signature Database</span><span class="cmd-desc">Dump all 20 error fingerprints — pattern, severity, root cause, fix</span></div>
+        <div class="cmd-code"><span class="c">curl</span> -s localhost:8080/api/signatures | <span class="c">jq</span> '.signatures[] | {pattern,severity,title}'</div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-header"><span class="cmd-num">27</span><span class="cmd-title">One-Liner: Upload → Analyze → Score</span><span class="cmd-desc">Full pipeline in one shot — upload, run deep, print health score</span></div>
+        <div class="cmd-code"><span class="v">SID</span>=$(<span class="c">curl</span> -s -X POST :8080/api/upload -H 'Content-Type: application/json' \
+  -d '{"path":"RACC.zip"}' | <span class="c">jq</span> -r .session_id) &amp;&amp; \
+<span class="c">curl</span> -s -X POST :8080/api/analyze -H 'Content-Type: application/json' \
+  -d "{\"session_id\":\"<span class="v">$SID</span>\",\"mode\":\"deep\"}" > /dev/null &amp;&amp; \
+<span class="c">curl</span> -s :8080/api/session/<span class="v">$SID</span>/results | <span class="c">jq</span> .health</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- v4.0 New Features -->
+  <div class="section">
+    <div class="section-title">&#9733; v4.0 &mdash; New Features</div>
+    <div class="cmd-grid">
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Load Any Archive</span><span class="cmd-desc">zip, tar.gz, tgz, tar.bz2, tar.xz, 7z, rar &mdash; auto-detects format</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="v">RACC-Report.tar.gz</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Recursive Directory Scan</span><span class="cmd-desc">Load logs &rarr; Scan: finds all archives + RACC dirs + log dirs at any depth</span></div>
+        <div class="cmd-code"><span class="c">./start.sh</span>  <span class="v"># Load logs &rarr; Scan directory</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Log Rotation Reassembly</span><span class="cmd-desc">Auto-detects app.log + app.log.1 + app.log.2.gz sequences &rarr; chronological concat</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="v">/path/to/log-folder/</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Health Score Reasons</span><span class="cmd-desc">Each health category shows why points were deducted (penalty breakdown)</span></div>
+        <div class="cmd-code"><span class="v">Connectivity  ↳ -25  MQTT failure rate 85% (critical)</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Paginated Search</span><span class="cmd-desc">Results paginate at 50/page: [n]ext [p]rev [a]ll [q]uit</span></div>
+        <div class="cmd-code"><span class="c">search_logs</span> -p <span class="v">"timeout"</span>  <span class="v"># [n] next page</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Fleet Timeline Correlation</span><span class="cmd-desc">Finds ERROR/CRITICAL events in 5-min window across chargers &rarr; shared outages</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh --fleet</span> <span class="v">/path/to/raccs/</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">Settings Persistence</span><span class="cmd-desc">Evidence level, colors, output dir saved to ~/.iotecha_settings on change</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span>  <span class="v"># Settings &rarr; 5 Reset defaults</span></div>
+      </div>
+      <div>
+        <div class="cmd-header"><span class="cmd-num">&#9733;</span><span class="cmd-title">HTML Auto-Open</span><span class="cmd-desc">After report generation, HTML report opens automatically in browser</span></div>
+        <div class="cmd-code"><span class="c">./analyzer.sh</span> <span class="v">RACC.zip</span>  <span class="v"># browser opens on completion</span></div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+</body>
+</html>

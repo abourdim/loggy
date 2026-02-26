@@ -1,0 +1,582 @@
+<html><head><meta charset="utf-8">
+<title>Loggy v4.0 — Documentation</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:900px;margin:40px auto;padding:0 20px;color:#e0e0e0;background:#1a1a2e;line-height:1.6}
+h1{color:#00d4ff;border-bottom:2px solid #00d4ff;padding-bottom:10px}
+h2{color:#7fdbca;margin-top:2em}
+h3{color:#c792ea}
+code{background:#16213e;padding:2px 6px;border-radius:4px;font-size:0.9em;color:#addb67}
+pre{background:#16213e;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #333}
+pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{border:1px solid #444;padding:8px 12px;text-align:left}
+th{background:#16213e;color:#7fdbca}
+a{color:#00d4ff}
+hr{border:none;border-top:1px solid #444;margin:2em 0}
+li{margin:4px 0}
+strong{color:#f0f0f0}
+</style></head><body>
+<h1>Loggy V4.0</h1>
+<p>Diagnostic toolkit for EV charger RACC log bundles. Pure Bash — no Python, no Node, no Docker. Runs on Linux, macOS, MSYS2/Git Bash, and WSL.</p>
+<h2>Quick Start</h2>
+<pre><code class="language-bash"># Launcher menu (guided — easiest way)
+./start.sh
+
+# Standard analysis
+./analyzer.sh RACC-Report.zip
+
+# Deep analysis + web app + health score
+./analyzer.sh --mode deep --web RACC-Report.zip
+
+# Interactive menu
+./analyzer.sh
+</code></pre>
+<h2>Installation</h2>
+<ol>
+<li>Extract or clone the repository</li>
+<li><code>chmod +x analyzer.sh run_tests.sh</code></li>
+<li>Verify: <code>./analyzer.sh --check</code></li>
+</ol>
+<p><strong>Requirements:</strong> Bash 3.2+, awk, grep, sed, unzip. Optional: tar, p7zip, unrar (for additional archive formats). Python 3 recommended (improves cross-platform compatibility for find, binary detection, and archive extraction fallbacks).</p>
+<h2>Usage</h2>
+<h3>Command Line</h3>
+<pre><code>./analyzer.sh [options] &lt;input.zip|input_dir&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-m, --mode &lt;std\|deep&gt;</code></td>
+<td>Analysis depth (default: std)</td>
+</tr>
+<tr>
+<td><code>--web</code></td>
+<td>Generate interactive web app</td>
+</tr>
+<tr>
+<td><code>--mail</code></td>
+<td>Generate email brief (plain text + HTML)</td>
+</tr>
+<tr>
+<td><code>--tickets</code></td>
+<td>Generate issue tickets (MD + Jira CSV + GitLab JSON)</td>
+</tr>
+<tr>
+<td><code>--compare &lt;base&gt; &lt;target&gt;</code></td>
+<td>Regression detection between two RACCs</td>
+</tr>
+<tr>
+<td><code>--fleet &lt;dir&gt;</code></td>
+<td>Multi-charger fleet analysis</td>
+</tr>
+<tr>
+<td><code>--watch &lt;dir&gt;</code></td>
+<td>Live log monitoring</td>
+</tr>
+<tr>
+<td><code>--server</code></td>
+<td>Launch browser-based UI at http://localhost:8080</td>
+</tr>
+<tr>
+<td><code>-o, --output &lt;dir&gt;</code></td>
+<td>Output directory (default: ./reports)</td>
+</tr>
+<tr>
+<td><code>--no-color</code></td>
+<td>Disable terminal colors</td>
+</tr>
+<tr>
+<td><code>-q, --quiet</code></td>
+<td>Suppress progress output</td>
+</tr>
+<tr>
+<td><code>--check</code></td>
+<td>Verify installation and dependencies</td>
+</tr>
+<tr>
+<td><code>-h, --help</code></td>
+<td>Show help</td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td>Show version</td>
+</tr>
+</tbody>
+</table>
+<h3>Interactive Menu</h3>
+<p>Run <code>./analyzer.sh</code> without arguments to enter the menu:</p>
+<pre><code>  1  Load logs
+  2  Run standard analysis
+  3  Run deep analysis
+  4  Search logs
+  5  Select / view log
+  6  View results
+  7  Generate reports
+  8  Compare / regression
+  9  Settings
+  0  Check install / system info
+  q  Quit
+</code></pre>
+<h2>Features</h2>
+<h3>Standard Analysis — 26 Detectors</h3>
+<p>Detects 65+ issue patterns across all EV charger subsystems:</p>
+<table>
+<thead>
+<tr>
+<th>Detector</th>
+<th>Component</th>
+<th>Key Patterns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i2p2/MQTT</td>
+<td>Cloud connectivity</td>
+<td>Token failure, MQTT disconnect, shadow update, backoff</td>
+</tr>
+<tr>
+<td>NetworkBoss</td>
+<td>PPP/Ethernet/WiFi</td>
+<td>Link flapping, PPP down, SSID not found, CONN_FAILED</td>
+</tr>
+<tr>
+<td>ChargerApp</td>
+<td>EVIC/State Machine</td>
+<td>CPState faults, EVCC watchdog, connector state tracking</td>
+</tr>
+<tr>
+<td>OCPP</td>
+<td>Central System</td>
+<td>WebSocket failure, boot rejection, offline queue, txn reject</td>
+</tr>
+<tr>
+<td>EnergyManager</td>
+<td>Power Management</td>
+<td>Session start error, 3ph current flow, power imbalance</td>
+</tr>
+<tr>
+<td>CertManager</td>
+<td>Certificates</td>
+<td>Load failures, TPM errors, cert chain issues</td>
+</tr>
+<tr>
+<td>HealthMonitor</td>
+<td>System Health</td>
+<td>Reboots, storage fallback, eMMC wear, GPIO, CPU</td>
+</tr>
+<tr>
+<td>ErrorBoss</td>
+<td>Error Coordination</td>
+<td>Block-all-sessions, locked warnings</td>
+</tr>
+<tr>
+<td>Kernel/Syslog</td>
+<td>OS Level</td>
+<td>Kernel errors, TPM, boot count</td>
+</tr>
+<tr>
+<td>Firmware/Monit</td>
+<td>Updates/Supervisor</td>
+<td>FW validation, PowerBoard FW, ProcessRestartedTooOften</td>
+</tr>
+<tr>
+<td>V2G/HLC</td>
+<td>ISO 15118</td>
+<td>36 Error_* patterns, cable check, precharge timeout</td>
+</tr>
+<tr>
+<td>Meter/Eichrecht</td>
+<td>Billing</td>
+<td>RequiredMeterMissing (CRITICAL), terminal/unavailable state</td>
+</tr>
+<tr>
+<td>Grid Codes</td>
+<td>AC Inverter</td>
+<td>Frequency/voltage events, inverter disconnection</td>
+</tr>
+<tr>
+<td>InnerSM</td>
+<td>Session State</td>
+<td>ERROR_UNAVAILABLE, confirmation timeout, repeating errors</td>
+</tr>
+<tr>
+<td>EVIC GlobalStop</td>
+<td>DC Safety</td>
+<td>CableCheck, IMD, rectifier, contactor failures</td>
+</tr>
+<tr>
+<td>HAL Errors</td>
+<td>Hardware Layer</td>
+<td>CIU/MIU errors (all CRITICAL)</td>
+</tr>
+<tr>
+<td>Compliance</td>
+<td>EV Behavior</td>
+<td>EV disobeys imposed limit, overcurrent</td>
+</tr>
+<tr>
+<td>PowerBoard Stops</td>
+<td>DC Hardware</td>
+<td>Overcurrent, ground fault, contactor weld, bender</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td>Thermal</td>
+<td>Overtemperature (CRITICAL), derating, MaximalDerating</td>
+</tr>
+<tr>
+<td>Tamper</td>
+<td>Physical Security</td>
+<td>LidOpen (CRITICAL/blocks), LidCloseWaitUnplug</td>
+</tr>
+<tr>
+<td>Emergency</td>
+<td>Safety</td>
+<td>EmergencyStop button, ExternalEmergencyStop</td>
+</tr>
+<tr>
+<td>Config Validation</td>
+<td>Properties</td>
+<td>12 checks across 7 config files</td>
+</tr>
+<tr>
+<td>Error Registry</td>
+<td>All Modules</td>
+<td>363-error official registry scan</td>
+</tr>
+<tr>
+<td>Connector Health</td>
+<td>Per-Connector</td>
+<td>Dual-connector imbalance detection</td>
+</tr>
+<tr>
+<td>OCPP Error Codes</td>
+<td>Protocol</td>
+<td>Official OCPP error code patterns</td>
+</tr>
+<tr>
+<td>PMQ System Health</td>
+<td>IPC</td>
+<td>PMQ subscription failures, topic mapping</td>
+</tr>
+</tbody>
+</table>
+<h3>Connector-Level Analysis</h3>
+<p>For dual-connector chargers, the analyzer attributes errors to specific connectors:</p>
+<ul>
+<li>Identifies connector via: <code>connector=N</code>, <code>ConnectorId=N</code>, <code>InnerSM-N</code>, <code>evseId=N</code>, <code>M1/M2</code></li>
+<li>Per-connector error, warning, and session counts</li>
+<li>Imbalance detection: raises targeted issue when one connector has 3x+ more errors</li>
+<li>Connector data flows to: health score, webapp, HTML/MD reports, email, tickets, fleet</li>
+</ul>
+<h3>Health Score</h3>
+<p>Weighted 0–100 score across four dimensions:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Weight</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connectivity</td>
+<td>30%</td>
+<td>MQTT success rate, PPP status, Ethernet stability, WiFi, OCPP</td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>25%</td>
+<td>PowerBoard, temperature, eMMC, kernel, memory, safety, HAL, connectors</td>
+</tr>
+<tr>
+<td>Services</td>
+<td>25%</td>
+<td>OCPP, V2G/HLC, EnergyManager, PMQ, certs, ErrorBoss, meter, InnerSM</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>20%</td>
+<td>Config keys, boot count, reboots, registry matches, issue severity</td>
+</tr>
+</tbody>
+</table>
+<p>Grades: A (90+), B (75+), C (55+), D (35+), F (&lt;35)</p>
+<p>Connector imbalance on dual-connector chargers penalizes the Hardware category.</p>
+<h3>Deep Analysis</h3>
+<p><code>--mode deep</code> adds 6 investigation modules:</p>
+<ul>
+<li><strong>Boot timing</strong> — boot event sequence, stage durations, slow boot detection</li>
+<li><strong>Causal chains</strong> — 10 linked event chains with temporal validation</li>
+<li><strong>Gap detection</strong> — timeline discontinuities (crashes, power loss, log rotation)</li>
+<li><strong>Config validation</strong> — .properties file checks for missing keys, suspicious values</li>
+<li><strong>Error histogram</strong> — error distribution by time bucket (boot, steady-state, storms)</li>
+<li><strong>PMQ interaction map</strong> — inter-process message queue connections, failed subscriptions</li>
+</ul>
+<h3>Reports</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown</td>
+<td>(default)</td>
+<td>Full analysis with evidence, connector breakdown</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td>(default)</td>
+<td>Styled report with charts, connector table</td>
+</tr>
+<tr>
+<td>Web App</td>
+<td><code>--web</code></td>
+<td>Interactive SPA with search, filters, connector card</td>
+</tr>
+<tr>
+<td>Email Brief</td>
+<td><code>--mail</code></td>
+<td>Outlook/Gmail-safe inline HTML + plain text, connector stats</td>
+</tr>
+<tr>
+<td>Tickets</td>
+<td><code>--tickets</code></td>
+<td>Per-issue MD + Jira CSV + GitLab JSON, connector attribution</td>
+</tr>
+<tr>
+<td>Comparison</td>
+<td><code>--compare</code></td>
+<td>Side-by-side regression report</td>
+</tr>
+<tr>
+<td>Fleet</td>
+<td><code>--fleet</code></td>
+<td>Multi-charger dashboard with connector column</td>
+</tr>
+</tbody>
+</table>
+<h3>Recursive Directory Scan</h3>
+<p><code>./start.sh</code> → Load logs → Scan directory recursively finds:
+- All supported archives at any depth
+- Extracted RACC dirs (<code>var/aux/</code> structure)
+- Directories containing <code>.log</code> files</p>
+<p>Shows relative paths, archive type tags (<code>[ZIP]</code>, <code>[TGZ]</code>, etc.), and file sizes.</p>
+<h3>Search &amp; Signatures</h3>
+<pre><code class="language-bash">search_logs -p &quot;error&quot; -s E              # Errors containing &quot;error&quot;
+search_logs -p &quot;timeout&quot; -c OCPP         # OCPP timeouts
+search_logs -p &quot;fault&quot; -n 1              # Connector 1 faults only
+search_logs -p &quot;.*&quot; -n 2 -s W            # All Connector 2 warnings
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-p</code></td>
+<td>Search pattern (keyword or regex)</td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>Severity filter (E/W/I/C/N or ALL)</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>Component name filter</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>Connector number (1, 2, ...)</td>
+</tr>
+<tr>
+<td><code>-a</code> / <code>-b</code></td>
+<td>Time range (after / before)</td>
+</tr>
+<tr>
+<td><code>-x</code></td>
+<td>Context lines (0–5)</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Regex mode</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td>Max results (default 200)</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>Export results to file</td>
+</tr>
+</tbody>
+</table>
+<p>462 built-in error signatures + 363-error official registry.</p>
+<h3>Archive Support</h3>
+<p>Supported archive formats for input:</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Extension(s)</th>
+<th>Tool Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZIP</td>
+<td><code>.zip</code></td>
+<td><code>unzip</code> or Python</td>
+</tr>
+<tr>
+<td>TAR+GZ</td>
+<td><code>.tar.gz</code>, <code>.tgz</code></td>
+<td><code>tar</code> or Python</td>
+</tr>
+<tr>
+<td>TAR+BZ2</td>
+<td><code>.tar.bz2</code>, <code>.tbz2</code></td>
+<td><code>tar</code> or Python</td>
+</tr>
+<tr>
+<td>TAR+XZ</td>
+<td><code>.tar.xz</code>, <code>.txz</code></td>
+<td><code>tar</code> or Python</td>
+</tr>
+<tr>
+<td>7-Zip</td>
+<td><code>.7z</code></td>
+<td><code>p7zip</code> (<code>7z</code>/<code>7za</code>)</td>
+</tr>
+<tr>
+<td>RAR</td>
+<td><code>.rar</code></td>
+<td><code>unrar</code> or <code>rar</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nested archives</strong>: Archives inside archives (e.g. a <code>.tar.gz</code> inside a <code>.zip</code>) are extracted automatically and recursively, up to 5 levels deep. Extensionless archives are detected via <code>file</code> magic.</p>
+<p>Password-protected ZIPs: the analyzer will prompt for a password at load time.</p>
+<h3>Log Rotation Support</h3>
+<p>When loading a folder, the analyzer automatically detects and reassembles Linux log rotation sequences:</p>
+<pre><code>app.log          ← current (newest)
+app.log.1        ← yesterday
+app.log.2.gz     ← older (decompressed automatically)
+app.log.2026-02-17  ← date-stamped rotation
+</code></pre>
+<p>All files in a sequence are sorted chronologically and concatenated into a single <code>_rotation_combined.log</code> for analysis.</p>
+<h3>Content-Based Log Detection</h3>
+<p>Log files are identified by their content, not their extension. The analyzer reads the first lines of each file and matches against known log signatures:</p>
+<ul>
+<li>IoTecha app format: <code>2026-02-23 08:19:10.588 [I] component: message</code></li>
+<li>Syslog format: <code>Feb 23 08:19:... hostname process[pid]: message</code></li>
+<li>Kernel format: <code>[  300.326187] message</code></li>
+<li>Generic timestamp: <code>2026-02-23T08:19:10 ...</code></li>
+<li>HTTP access log: <code>127.0.0.1 - - [23/Feb/2026:08:19:10] "GET ..."</code></li>
+</ul>
+<p>This means extensionless files like <code>syslog</code> are detected automatically, and non-log files (binaries, certificates, databases, configs) are skipped regardless of extension.</p>
+<h3>Health Score Explanation</h3>
+<p>Each health score category now shows the specific reasons for deductions:</p>
+<pre><code>  Connectivity    ████████████░░░░░░░░   63/100  (weight: 30%)
+    ↳ -25  MQTT failure rate 82% (critical)
+    ↳ -12  Ethernet flapping x8
+
+  Hardware        ████████████████████  100/100  (weight: 25%)
+</code></pre>
+<h3>Settings Persistence</h3>
+<p>Settings are saved to <code>~/.iotecha_settings</code> between sessions:</p>
+<pre><code>evidence level, colors on/off, output directory, log level
+</code></pre>
+<p>Use <strong>Settings → 5 Reset</strong> to restore defaults.</p>
+<h3>Fleet Mode</h3>
+<pre><code class="language-bash">./analyzer.sh --fleet /path/to/racc-folder/
+</code></pre>
+<p>Dashboard: per-charger score, grade, issues, connector info (<code>single</code> or <code>dual:C1err/C2err</code>), cross-fleet patterns, firmware correlation, connector fleet summary.</p>
+<h3>Regression Comparison</h3>
+<pre><code class="language-bash">./analyzer.sh --compare before.zip after.zip
+</code></pre>
+<p>Detects: new/resolved/persistent issues, metric deltas, status changes, config diffs. Auto verdict.</p>
+<h3>Live Monitoring</h3>
+<pre><code class="language-bash">./analyzer.sh --watch /path/to/log-dir/
+</code></pre>
+<p>Real-time alert feed with signature matching and session recording.</p>
+<h3>Web Server</h3>
+<pre><code class="language-bash">./analyzer.sh --server [--port 9090]
+</code></pre>
+<p>Browser UI with 11 views. REST API (14 endpoints) for programmatic access.</p>
+<h2>Error Handling</h2>
+<ul>
+<li>All detectors wrapped in <code>safe_run()</code> — individual failures don't halt analysis</li>
+<li>EXIT/INT/TERM signal traps with graceful cleanup</li>
+<li>Detector error count tracked in metrics</li>
+<li>Input validation: file size, binary detection, encoding checks</li>
+</ul>
+<h2>Performance</h2>
+<ul>
+<li><strong>Batch grep</strong>: <code>batch_count_grep</code> uses single awk pass per file instead of individual grep calls. 85 → 26 file scans. ~2.5–3x faster on large log bundles.</li>
+</ul>
+<h2>Project Structure</h2>
+<pre><code>loggy/
+├── analyzer.sh              # Main entry point
+├── start.sh                 # Launcher menu
+├── run_tests.sh             # Self-test suite (84 unit + 29 integration)
+├── install.sh               # Installation script
+├── CHANGES.md               # Version history
+├── README.md                # This file
+├── lib/
+│   ├── common.sh            # Core utilities, logging, error handling
+│   ├── loader.sh            # Input loading (zip, dir, file)
+│   ├── parser.sh            # Log parsing engine
+│   ├── evidence.sh          # Evidence collection
+│   ├── analyzer_standard.sh # Standard analysis (26 detectors, 2789 lines)
+│   ├── analyzer_deep.sh     # Deep analysis (10 causal chains, boot timing)
+│   ├── scorer.sh            # Health score calculator (935 lines)
+│   ├── comparator.sh        # Regression comparison engine
+│   ├── searcher.sh          # Search, investigation, signatures
+│   ├── watcher.sh           # Live monitoring
+│   ├── fleet.sh             # Multi-charger fleet analysis
+│   ├── menu.sh              # Interactive menu system
+│   ├── server.sh            # Web server launcher
+│   └── server_backend.py    # REST API backend (Python3 stdlib)
+├── generators/
+│   ├── gen_markdown.sh      # Markdown report (with connector breakdown)
+│   ├── gen_html.sh          # HTML report (with connector table)
+│   ├── gen_webapp.sh        # Interactive web app (with connector card)
+│   ├── gen_mail.sh          # Email brief (with connector stats)
+│   └── gen_tickets.sh       # Tickets (with connector attribution)
+├── signatures/
+│   ├── known_signatures.tsv # 462 error signatures
+│   └── error_registry.tsv   # 363-error official registry (44 modules)
+├── test/
+│   ├── test_v2.sh           # Unit tests (84 assertions)
+│   ├── test_integration.sh  # Integration tests (29 assertions)
+│   └── sample_logs/         # Synthetic test data
+└── reports/                 # Generated output
+</code></pre>
+<h2>Self-Test</h2>
+<pre><code class="language-bash">./run_tests.sh              # Run all tests (84 unit + 29 integration)
+</code></pre>
+<p>Covers: syntax validation, dependency checks, detector output, config validation triggers, connector imbalance detection, health score calculation.</p>
+<h2>Extending Signatures</h2>
+<p>Edit <code>signatures/known_signatures.tsv</code> or use the interactive menu:</p>
+<pre><code># pattern&lt;TAB&gt;component&lt;TAB&gt;severity&lt;TAB&gt;title&lt;TAB&gt;root_cause&lt;TAB&gt;fix&lt;TAB&gt;kb_url
+my_pattern  MyComponent HIGH    My Issue    Root cause  How to fix  https://...
+</code></pre>
+<h2>License</h2>
+<p>Open diagnostic tool for EV charger logs.</p>
+<hr />
+<p><em>Loggy V4.0 — Built 2026</em></p>
+</body></html>
