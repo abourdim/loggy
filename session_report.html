@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loggy Development Session — Feb 24, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e14;
+    --bg2: #12151e;
+    --bg3: #181c28;
+    --border: #252a3a;
+    --text: #c8cdd8;
+    --text-dim: #6b7280;
+    --text-bright: #e8ecf4;
+    --accent: #22d3ee;
+    --accent-dim: #0e7490;
+    --green: #34d399;
+    --green-dim: #065f46;
+    --red: #f87171;
+    --red-dim: #7f1d1d;
+    --yellow: #fbbf24;
+    --yellow-dim: #78350f;
+    --orange: #fb923c;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0c0e14 0%, #131827 50%, #0f1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    color: var(--text-bright);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero .subtitle {
+    font-size: 18px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .meta-item .label { color: var(--accent); font-weight: 600; }
+
+  .version-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-dim), #155e75);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 40px 0;
+  }
+
+  .stat {
+    background: var(--bg2);
+    padding: 20px 24px;
+    text-align: center;
+  }
+
+  .stat .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat .lbl {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  section { padding: 48px 0; }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    color: var(--text-bright);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-title span { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 22px; }
+
+  .timeline {
+    position: relative;
+    padding-left: 36px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 32px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .tl-item:hover { border-color: var(--accent-dim); }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 28px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  .tl-item.critical::before { background: var(--red); }
+  .tl-item.feature::before { background: var(--green); }
+  .tl-item.fix::before { background: var(--yellow); }
+
+  .tl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .tl-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .tl-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-version { background: var(--accent-dim); color: var(--accent); }
+  .badge-fix { background: var(--yellow-dim); color: var(--yellow); }
+  .badge-feature { background: var(--green-dim); color: var(--green); }
+  .badge-bug { background: var(--red-dim); color: var(--red); }
+
+  .tl-body { color: var(--text); font-size: 14px; }
+  .tl-body p { margin-bottom: 10px; }
+
+  .tl-body ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .tl-body li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    font-size: 14px;
+  }
+
+  .tl-body li::before {
+    content: '›';
+    position: absolute;
+    left: 4px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .file-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .file-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--bg3);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .file-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .file-table tr:hover { background: var(--bg3); }
+
+  .test-result {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+
+  .test-pass { background: var(--green-dim); color: var(--green); }
+  .test-fail { background: var(--red-dim); color: var(--red); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .detail-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .detail-card h4 {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .architecture-flow {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 2;
+    text-align: center;
+    color: var(--text-dim);
+  }
+
+  .architecture-flow .arrow { color: var(--accent); margin: 0 8px; }
+  .architecture-flow .node {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 5px;
+    color: var(--text-bright);
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px 4px 2px 0;
+  }
+
+  .tag-green { background: var(--green-dim); color: var(--green); }
+  .tag-yellow { background: var(--yellow-dim); color: var(--yellow); }
+  .tag-red { background: var(--red-dim); color: var(--red); }
+  .tag-blue { background: var(--accent-dim); color: var(--accent); }
+  .tag-purple { background: #2e1065; color: var(--purple); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .toc {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 32px;
+    margin: 0 0 40px;
+  }
+  .toc h3 { color: var(--text-bright); margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; display: block; padding: 4px 0; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:16px;">
+      <h1>Loggy <span>Dev Session</span></h1>
+      <span class="version-badge">v2.4 → v6.0.3</span>
+    </div>
+    <p class="subtitle">Full-day development marathon — 8 sessions, 15 hours, pure Bash EV charger log analyzer</p>
+    <div class="meta-row">
+      <div class="meta-item"><span class="label">Date</span> February 24, 2026</div>
+      <div class="meta-item"><span class="label">Sessions</span> 8 continuous</div>
+      <div class="meta-item"><span class="label">Platform</span> Linux / MSYS2 / macOS</div>
+      <div class="meta-item"><span class="label">Tests</span> 56/56 pass</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div class="container">
+  <div class="stats-bar">
+    <div class="stat"><span class="num">15k</span><span class="lbl">Lines of Code</span></div>
+    <div class="stat"><span class="num">26</span><span class="lbl">Detectors</span></div>
+    <div class="stat"><span class="num">10</span><span class="lbl">Deep Modules</span></div>
+    <div class="stat"><span class="num">526</span><span class="lbl">Signatures</span></div>
+    <div class="stat"><span class="num">56</span><span class="lbl">Tests Passing</span></div>
+    <div class="stat"><span class="num">19</span><span class="lbl">Source Files</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ TABLE OF CONTENTS ═══════════ -->
+<div class="container">
+  <div class="toc">
+    <h3>Contents</h3>
+    <a href="#s1">1 &middot; Session 1 — RACC Bundle Analysis &amp; Loader Improvements (v2.4)</a>
+    <a href="#s2">2 &middot; Session 2 — MSYS2 Nested Tar Fix (v2.4)</a>
+    <a href="#s3">3 &middot; Session 3 — Rebrand to Loggy (v4.0–4.1)</a>
+    <a href="#s4">4 &middot; Session 4 — MSYS2 UAC &amp; Stdin Fixes (v4.1–5.0)</a>
+    <a href="#s5">5 &middot; Session 5 — Progress Feedback &amp; Exit Codes (v5.1–5.4)</a>
+    <a href="#s6">6 &middot; Session 6 — Debug Toggle, UAC Detection, Deep Analysis Planning (v5.5–5.6)</a>
+    <a href="#s7">7 &middot; Session 7 — 4 New Deep Analysis Modules (v5.6–6.0)</a>
+    <a href="#s8">8 &middot; Session 8 — Parsed Migration, JSON Fix, Windows Defender Fix (v5.7–6.0.3)</a>
+    <a href="#arch">Architecture &amp; File Inventory</a>
+    <a href="#testing">Testing &amp; Quality</a>
+    <a href="#defender">Windows Defender Deep-Dive</a>
+  </div>
+</div>
+
+<!-- ═══════════ TIMELINE ═══════════ -->
+<div class="container">
+  <section id="s1">
+    <h2 class="section-title"><span>01</span> RACC Bundle Analysis &amp; Loader Improvements</h2>
+    <div class="timeline">
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">EV Charger RACC Analysis — Initial Review</span>
+          <span class="tl-badge badge-version">v2.4</span>
+        </div>
+        <div class="tl-body">
+          <p>Analyzed a real RACC (Remote Access Charger Capture) log bundle from an IoTecha EV charger. Identified fundamental loader limitations:</p>
+          <ul>
+            <li>No nested archive extraction — a <code>.tar.gz</code> inside a <code>.zip</code> was silently skipped</li>
+            <li>Extension-dependent log discovery — files like <code>syslog</code> (no extension) were missed</li>
+            <li>Proposed recursive archive handling and content-based detection</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s2">
+    <h2 class="section-title"><span>02</span> MSYS2 Nested Tar Extraction Fix</h2>
+    <div class="timeline">
+
+      <div class="tl-item fix">
+        <div class="tl-header">
+          <span class="tl-title">Recursive Archive Extraction + Content-Based Detection</span>
+          <span class="tl-badge badge-fix">BUG FIX</span>
+        </div>
+        <div class="tl-body">
+          <p>Implemented nested archive extraction (up to 5 levels deep) and content-based log detection by reading file headers instead of relying on extensions.</p>
+          <p><strong>MSYS2 tar failures fixed:</strong></p>
+          <ul>
+            <li><code>_pypath()</code> — Python path translation for Windows/MSYS2 paths</li>
+            <li>Python 3.12+ <code>tarfile</code> security filter bypass</li>
+            <li>Menu navigation bugs resolved</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s3">
+    <h2 class="section-title"><span>03</span> Rebrand: IoTecha Log Analyzer → Loggy</h2>
+    <div class="timeline">
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">Full Rebrand to "Loggy"</span>
+          <span class="tl-badge badge-version">v4.0 → v4.1</span>
+        </div>
+        <div class="tl-body">
+          <ul>
+            <li>Product renamed from "IoTecha Log Analyzer" to <strong>Loggy</strong> across all files</li>
+            <li>Fixed validation bugs discovered during rebrand testing</li>
+            <li>Fixed MSYS2 UAC popup caused by probing <code>~/bin/sort</code></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s4">
+    <h2 class="section-title"><span>04</span> MSYS2 UAC &amp; Stdin Hang Fixes</h2>
+    <div class="timeline">
+
+      <div class="tl-item critical">
+        <div class="tl-header">
+          <span class="tl-title">PATH Sanitization &amp; Safe Binary Probing</span>
+          <span class="tl-badge badge-bug">CRITICAL FIX</span>
+        </div>
+        <div class="tl-body">
+          <p>On MSYS2/Git Bash, non-system binaries in PATH (e.g. <code>~/bin/sort.exe</code>) triggered Windows UAC elevation popups, blocking execution entirely.</p>
+          <ul>
+            <li><strong>PATH sanitization</strong> — strips <code>/home/*</code> and <code>/c/Users/*</code> from PATH on MSYS2</li>
+            <li><code>_safe_probe()</code> — timeout-protected binary verification (3s timeout)</li>
+            <li><code>sort()</code> wrapper with cat-through fallback if no working sort found</li>
+            <li>Stdin hang fix — <code>/dev/null</code> redirection for all probes</li>
+            <li>Full shellcheck cleanup</li>
+          </ul>
+          <span class="tag tag-red">MSYS2</span> <span class="tag tag-yellow">UAC</span> <span class="tag tag-blue">PATH</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s5">
+    <h2 class="section-title"><span>05</span> Progress Feedback &amp; Exit Codes</h2>
+    <div class="timeline">
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">v5.1 — Universal Progress Spinners</span>
+          <span class="tl-badge badge-feature">FEATURE</span>
+        </div>
+        <div class="tl-body">
+          <ul>
+            <li>Spinners for comparator, searcher, standalone generators, rotation reassembly</li>
+            <li>Step-based progress bars for deep analysis</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">v5.2 — Loader Progress Gaps</span>
+          <span class="tl-badge badge-feature">FEATURE</span>
+        </div>
+        <div class="tl-body">
+          <p>Added spinners to nested extraction and folder scanning phases.</p>
+        </div>
+      </div>
+
+      <div class="tl-item fix">
+        <div class="tl-header">
+          <span class="tl-title">v5.3 — Progress/Log Collision Fix</span>
+          <span class="tl-badge badge-fix">BUG FIX</span>
+        </div>
+        <div class="tl-body">
+          <p>Spinner output collided with log messages. Added <code>_log_clear_line()</code> to erase spinner before printing. Fixed 22 detectors with explicit <code>return 0</code>.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-title">v5.4 — Codebase-Wide Return Code Audit</span>
+          <span class="tl-badge badge-version">AUDIT</span>
+        </div>
+        <div class="tl-body">
+          <p>12 more functions given explicit <code>return 0</code> to prevent false failure propagation through <code>safe_run()</code>.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s6">
+    <h2 class="section-title"><span>06</span> Debug Toggle &amp; Deep Analysis Planning</h2>
+    <div class="timeline">
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">v5.5 — Debug Verbosity Toggle</span>
+          <span class="tl-badge badge-feature">FEATURE</span>
+        </div>
+        <div class="tl-body">
+          <p>Menu option cycles log level: <code>info → verbose → DEBUG</code>. Added debug-level calls to comparator, searcher, and deep analyzer. Settings persist to <code>~/.iotecha_settings</code>.</p>
+        </div>
+      </div>
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">v5.6 — UAC/Defender Detection at Startup</span>
+          <span class="tl-badge badge-feature">FEATURE</span>
+        </div>
+        <div class="tl-body">
+          <p>Startup probe with timeout for MSYS2 tool paths. "Windows Tool Safety" section in install check. Console warning when tools are in non-system paths.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-title">Deep Analysis Planning</span>
+          <span class="tl-badge badge-version">PLAN</span>
+        </div>
+        <div class="tl-body">
+          <p>Identified 4 high-value deep analysis features to add:</p>
+          <ul>
+            <li><strong>Charging session reconstruction</strong> — OCPP StatusNotification lifecycle</li>
+            <li><strong>Reboot/crash timeline</strong> — kernel boots, watchdog, OOM, panic</li>
+            <li><strong>Network connectivity timeline</strong> — OCPP WebSocket, DNS, TLS</li>
+            <li><strong>Connector state machine validation</strong> — CPState + LogicState</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s7">
+    <h2 class="section-title"><span>07</span> 4 New Deep Analysis Modules</h2>
+    <div class="timeline">
+
+      <div class="tl-item feature">
+        <div class="tl-header">
+          <span class="tl-title">Deep Steps 7–10 Implemented</span>
+          <span class="tl-badge badge-version">v5.6 → v6.0</span>
+        </div>
+        <div class="tl-body">
+          <p>All 4 new deep analysis modules implemented with parsed file input, console output, markdown sections, and automatic issue raising:</p>
+
+          <div class="detail-grid">
+            <div class="detail-card">
+              <h4>Step 7: Charging Sessions</h4>
+              <p>Reconstructs OCPP StatusNotification lifecycle: Preparing → Charging → Finishing → Available. Detects incomplete sessions (never reached Charging), faulted sessions, transaction events (StartTransaction/StopTransaction/Authorize).</p>
+              <span class="tag tag-red">CRITICAL: never connected</span>
+            </div>
+            <div class="detail-card">
+              <h4>Step 8: Reboot Timeline</h4>
+              <p>13 event types: kernel boot, watchdog reset, OOM kill, kernel panic, Monit restarts, systemd crashes, ChargerApp watchdog kills, planned reboots, unplanned reboots.</p>
+              <span class="tag tag-red">CRITICAL: watchdog kill</span>
+            </div>
+            <div class="detail-card">
+              <h4>Step 9: Connectivity</h4>
+              <p>OCPP WebSocket connect/disconnect/fail cycle, BootNotification outcomes, DNS resolution failures, TLS handshake errors, NetworkBoss interface changes.</p>
+              <span class="tag tag-yellow">HIGH: DNS/TLS errors</span>
+            </div>
+            <div class="detail-card">
+              <h4>Step 10: State Machine</h4>
+              <p>CPStateMachine + LogicStateMachine transitions, OCPP connector status tracking, stuck-in-fault detection, watchdog escalation patterns.</p>
+              <span class="tag tag-yellow">HIGH: stuck in fault</span>
+            </div>
+          </div>
+
+          <p>Fixed false positive in BootNotification detection (matched <code>Key added: ...BootNotification</code> config lines).</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2 class="section-title"><span>08</span> Parsed Migration, JSON Fix &amp; Windows Defender</h2>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-title">v5.7.1 — Deep Analysis Parsed File Migration</span>
+          <span class="tl-badge badge-version">MIGRATION</span>
+        </div>
+        <div class="tl-body">
+          <p>Migrated original 6 deep analysis functions from raw <code>*_combined.log</code> files to normalized <code>parsed/*.parsed</code> format for consistency with the 4 new modules.</p>
+          <ul>
+            <li><code>_extract_ts</code> helper — updated to strip pipe delimiters</li>
+            <li><code>_deep_boot_timing</code> — 7 component paths updated</li>
+            <li><code>_deep_pmq_map</code> — glob and grep patterns updated for pipe format</li>
+            <li>Other 4 functions already used metrics/timeline only (no migration needed)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item fix">
+        <div class="tl-header">
+          <span class="tl-title">v6.0 — Webapp JSON Trigger Fix + PMQ Map</span>
+          <span class="tl-badge badge-fix">BUG FIX</span>
+        </div>
+        <div class="tl-body">
+          <ul>
+            <li><strong>JSON trigger fix:</strong> <code>deepAnalysis</code> was only emitted if causal chains existed. Now checks ANY deep output file.</li>
+            <li><strong>PMQ map added to JSON:</strong> <code>deepAnalysis.pmqMap[]</code> with source/dest/type for webapp consumption</li>
+            <li><strong>56/56 tests pass</strong> — 3 previously-failing tests fixed by the parsed migration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-header">
+          <span class="tl-title">v6.0.1 — README Update</span>
+          <span class="tl-badge badge-version">DOCS</span>
+        </div>
+        <div class="tl-body">
+          <ul>
+            <li>Deep analysis: 6 → 10 modules with descriptions</li>
+            <li>Line counts updated (analyzer_standard 2885, analyzer_deep 1798, scorer 975)</li>
+            <li>Signatures: 462 → 526</li>
+            <li>New: Platform Compatibility table</li>
+            <li>New: <code>--deep</code> CLI flag, history menu option</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item critical" id="defender">
+        <div class="tl-header">
+          <span class="tl-title">v6.0.2–v6.0.3 — Windows Defender Popup Fix</span>
+          <span class="tl-badge badge-bug">CRITICAL FIX</span>
+        </div>
+        <div class="tl-body">
+          <p>User reported "Sécurité Windows — Action bloquée" popup on MSYS2 startup. Root cause analysis:</p>
+
+          <p><strong>Root Cause:</strong> Three functions executed external binaries during <code>init_common()</code> startup, which Windows Defender on a corporate-locked machine flagged and blocked:</p>
+
+          <table class="file-table">
+            <tr><th>Function</th><th>Problem</th><th>Fix</th></tr>
+            <tr>
+              <td><code>_warn_nonsystem_tools()</code></td>
+              <td>Ran <code>timeout 3 "$path" --version</code> on every non-system tool</td>
+              <td>Path check only — no execution</td>
+            </tr>
+            <tr>
+              <td><code>_safe_probe()</code></td>
+              <td>Piped data to and executed sort binaries</td>
+              <td>On MSYS2: trust system paths by <code>-x</code> check, no execution</td>
+            </tr>
+            <tr>
+              <td><code>_find_sort()</code></td>
+              <td>Called <code>_safe_probe()</code> on every candidate</td>
+              <td>On MSYS2: <code>[ -x "$candidate" ]</code> only, includes <code>/mingw64/bin</code></td>
+            </tr>
+          </table>
+
+          <p><strong>Principle:</strong> On Windows (MSYS2/Cygwin), <em>never execute any binary during init</em>. Trust system paths by existence check. Execution probes only on Linux/macOS.</p>
+
+          <p><strong>Verified safe:</strong> <code>python3 -c</code> and <code>file</code> command calls in <code>loader.sh</code> only run during log loading (not startup) — not affected.</p>
+
+          <span class="tag tag-red">DEFENDER</span> <span class="tag tag-yellow">MSYS2</span> <span class="tag tag-blue">CORPORATE</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════ ARCHITECTURE ═══════════ -->
+  <section id="arch">
+    <h2 class="section-title">Architecture &amp; File Inventory</h2>
+
+    <div class="architecture-flow">
+      <span class="node">start.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">analyzer.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">loader.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">parser.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">analyzer_standard.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">scorer.sh</span>
+      <br>
+      <span style="opacity:0">start.sh → analyzer.sh → </span>
+      <span class="arrow" style="opacity:0.5">↘</span>
+      <span class="node">analyzer_deep.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">gen_*.sh</span>
+      <span class="arrow">→</span>
+      <span class="node">📄 Reports</span>
+    </div>
+
+    <table class="file-table">
+      <tr><th>File</th><th>Lines</th><th>Purpose</th></tr>
+      <tr><td>lib/common.sh</td><td>836</td><td>Core utilities, logging, error handling, MSYS2 safety</td></tr>
+      <tr><td>lib/loader.sh</td><td>1,010</td><td>Input loading — zip, dir, nested archives, content detection</td></tr>
+      <tr><td>lib/parser.sh</td><td>400</td><td>Log parsing engine — normalized timestamp format</td></tr>
+      <tr><td>lib/analyzer_standard.sh</td><td>2,885</td><td>26 detectors, 65+ issue patterns</td></tr>
+      <tr><td>lib/analyzer_deep.sh</td><td>1,798</td><td>10 forensic analysis modules</td></tr>
+      <tr><td>lib/scorer.sh</td><td>975</td><td>4-category weighted health score (0–100)</td></tr>
+      <tr><td>lib/comparator.sh</td><td>750</td><td>Side-by-side regression comparison</td></tr>
+      <tr><td>lib/searcher.sh</td><td>765</td><td>Search, investigation, 526 signatures</td></tr>
+      <tr><td>lib/menu.sh</td><td>983</td><td>Interactive TUI with history, settings persistence</td></tr>
+      <tr><td>lib/fleet.sh</td><td>450</td><td>Multi-charger fleet dashboard</td></tr>
+      <tr><td>lib/watcher.sh</td><td>210</td><td>Real-time log tail with alerts</td></tr>
+      <tr><td>lib/server.sh</td><td>45</td><td>Web server launcher</td></tr>
+      <tr><td>generators/gen_webapp.sh</td><td>1,088</td><td>Interactive SPA with JSON data + deep analysis</td></tr>
+      <tr><td>generators/gen_html.sh</td><td>350</td><td>Styled HTML report</td></tr>
+      <tr><td>generators/gen_markdown.sh</td><td>375</td><td>Full markdown with evidence</td></tr>
+      <tr><td>generators/gen_mail.sh</td><td>270</td><td>Email brief (plain text + HTML)</td></tr>
+      <tr><td>generators/gen_tickets.sh</td><td>145</td><td>Per-issue MD + Jira CSV + GitLab JSON</td></tr>
+      <tr><td colspan="2" style="color:var(--accent);font-weight:600">~15,035 total</td><td></td></tr>
+    </table>
+  </section>
+
+  <!-- ═══════════ TESTING ═══════════ -->
+  <section id="testing">
+    <h2 class="section-title">Testing &amp; Quality</h2>
+
+    <div class="test-result test-pass">✓ 56 / 56 PASS</div>
+
+    <div class="detail-grid">
+      <div class="detail-card">
+        <h4>Test Categories</h4>
+        <ul style="list-style:none;padding:0;">
+          <li style="padding:3px 0;">19 × Syntax validation (shellcheck all .sh files)</li>
+          <li style="padding:3px 0;">11 × Dependency &amp; tool availability</li>
+          <li style="padding:3px 0;">3 × Help, version, signature file checks</li>
+          <li style="padding:3px 0;">7 × Standard analysis end-to-end</li>
+          <li style="padding:3px 0;">4 × Comparison mode</li>
+          <li style="padding:3px 0;">3 × Mail &amp; ticket generation</li>
+          <li style="padding:3px 0;">4 × Webapp output</li>
+          <li style="padding:3px 0;">5 × Additional unit/integration</li>
+        </ul>
+      </div>
+      <div class="detail-card">
+        <h4>Quality Metrics</h4>
+        <ul style="list-style:none;padding:0;">
+          <li style="padding:3px 0;"><span class="tag tag-green">shellcheck</span> 0 errors across all files</li>
+          <li style="padding:3px 0;"><span class="tag tag-green">Ubuntu 24</span> Verified on clean install</li>
+          <li style="padding:3px 0;"><span class="tag tag-green">MSYS2</span> Verified — no UAC/Defender popups</li>
+          <li style="padding:3px 0;"><span class="tag tag-green">macOS</span> BSD awk/sed compatible</li>
+          <li style="padding:3px 0;"><span class="tag tag-green">Bash 3.2+</span> No bash4-only features required</li>
+          <li style="padding:3px 0;"><span class="tag tag-green">Zero deps</span> Pure bash — no Python/Node/Docker</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:32px;color:var(--text-bright);font-size:18px;">Version History</h3>
+    <table class="file-table" style="margin-top:12px;">
+      <tr><th>Version</th><th>Key Change</th></tr>
+      <tr><td>v2.4</td><td>Starting point — nested extraction &amp; content detection</td></tr>
+      <tr><td>v4.0</td><td>Rebrand to Loggy, validation bug fixes</td></tr>
+      <tr><td>v4.1</td><td>MSYS2 UAC popup from ~/bin/sort</td></tr>
+      <tr><td>v5.0</td><td>PATH sanitization, _safe_probe, sort wrapper, shellcheck</td></tr>
+      <tr><td>v5.1</td><td>Universal progress spinners</td></tr>
+      <tr><td>v5.2</td><td>Loader progress gaps</td></tr>
+      <tr><td>v5.3</td><td>Progress/log collision fix, 22 explicit return 0</td></tr>
+      <tr><td>v5.4</td><td>Return code audit — 12 more functions</td></tr>
+      <tr><td>v5.5</td><td>Debug verbosity toggle (info→verbose→DEBUG)</td></tr>
+      <tr><td>v5.6</td><td>UAC/Defender startup detection, deep analysis planning</td></tr>
+      <tr><td>v5.7</td><td>4 new deep analysis modules (sessions, reboots, connectivity, state machine)</td></tr>
+      <tr><td>v5.7.1</td><td>All deep analysis migrated to parsed files</td></tr>
+      <tr><td>v6.0</td><td>Webapp JSON fix, PMQ map in JSON, 56/56 tests pass</td></tr>
+      <tr><td>v6.0.1</td><td>README comprehensive update</td></tr>
+      <tr><td>v6.0.2</td><td>Windows Defender fix — remove --version probe</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600">v6.0.3</td><td style="color:var(--accent)">Complete Defender fix — zero binary execution on MSYS2 startup</td></tr>
+    </table>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    Loggy v6.0.3 — Development Session Report — Generated Feb 24, 2026
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loggy — All Bugs &amp; Corrections (Feb 24, 2026)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d11;
+    --bg2: #111318;
+    --bg3: #1a1d26;
+    --bg-code: #0d1117;
+    --border: #282d3e;
+    --text: #b8bcc8;
+    --text-dim: #5c6370;
+    --text-bright: #e2e6f0;
+    --red: #ff6b6b;
+    --red-dim: rgba(255,107,107,0.12);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.1);
+    --yellow: #fbbf24;
+    --yellow-dim: rgba(251,191,36,0.1);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34,211,238,0.08);
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --diff-add-bg: rgba(74,222,128,0.08);
+    --diff-add-border: rgba(74,222,128,0.25);
+    --diff-del-bg: rgba(255,107,107,0.08);
+    --diff-del-border: rgba(255,107,107,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0b0d11, #13161f, #110d18);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 50%;
+    height: 180%;
+    background: radial-gradient(ellipse, rgba(255,107,107,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  header h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 42px;
+    color: var(--text-bright);
+    letter-spacing: -0.5px;
+  }
+
+  header h1 .accent { color: var(--red); }
+  header .sub { color: var(--text-dim); font-size: 17px; margin-top: 6px; }
+
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 32px 0 12px;
+  }
+
+  .sb-cell {
+    background: var(--bg2);
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .sb-cell .n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    display: block;
+  }
+
+  .sb-cell .l {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .n-red { color: var(--red); }
+  .n-yel { color: var(--yellow); }
+  .n-grn { color: var(--green); }
+  .n-cyn { color: var(--cyan); }
+
+  /* ── SEVERITY ── */
+  .sev {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.6px;
+    vertical-align: middle;
+  }
+
+  .sev-critical { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,107,107,0.2); }
+  .sev-high { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(251,191,36,0.2); }
+  .sev-medium { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+  .sev-low { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34,211,238,0.2); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin: 0 3px;
+    background: var(--bg3);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  /* ── BUG CARD ── */
+  .bug {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .bug:hover { border-color: #3a3f52; }
+
+  .bug-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .bug-head:hover { background: rgba(255,255,255,0.015); }
+
+  .bug-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    min-width: 40px;
+  }
+
+  .bug-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-bright);
+    line-height: 1.4;
+  }
+
+  .bug-meta {
+    padding: 0 24px 16px;
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .bug-meta code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    color: var(--cyan);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  .bug-body {
+    padding: 0 24px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 16px;
+  }
+
+  .bug-body p { margin-bottom: 10px; font-size: 14px; }
+
+  .cause {
+    background: var(--diff-del-bg);
+    border-left: 3px solid var(--red);
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+  }
+
+  .cause strong { color: var(--red); }
+
+  .fix-desc {
+    background: var(--diff-add-bg);
+    border-left: 3px solid var(--green);
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+  }
+
+  .fix-desc strong { color: var(--green); }
+
+  /* ── CODE DIFFS ── */
+  .diff {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .diff-header {
+    background: var(--bg3);
+    padding: 8px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .diff-header .fname { color: var(--cyan); }
+
+  .diff pre {
+    padding: 12px 14px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+    background: transparent;
+    border: none;
+  }
+
+  .diff .del {
+    display: block;
+    background: var(--diff-del-bg);
+    border-left: 3px solid var(--diff-del-border);
+    padding-left: 8px;
+    margin-left: -14px;
+    padding-right: 14px;
+    margin-right: -14px;
+    color: #fca5a5;
+  }
+
+  .diff .add {
+    display: block;
+    background: var(--diff-add-bg);
+    border-left: 3px solid var(--diff-add-border);
+    padding-left: 8px;
+    margin-left: -14px;
+    padding-right: 14px;
+    margin-right: -14px;
+    color: #86efac;
+  }
+
+  .diff .ctx { color: var(--text-dim); }
+  .diff .sep { color: var(--purple); font-weight: 600; display: block; margin: 4px 0; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    color: var(--cyan);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── SECTIONS ── */
+  .section-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 26px;
+    color: var(--text-bright);
+    margin: 48px 0 24px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-title .ver { color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Loggy — <span class="accent">Bugs &amp; Corrections</span></h1>
+    <div class="sub">Complete registry of every bug found and fixed across all sessions — February 24, 2026</div>
+    <div class="summary-bar">
+      <div class="sb-cell"><span class="n n-red">19</span><span class="l">Bugs Fixed</span></div>
+      <div class="sb-cell"><span class="n n-yel">12</span><span class="l">Files Touched</span></div>
+      <div class="sb-cell"><span class="n n-cyn">8</span><span class="l">Sessions</span></div>
+      <div class="sb-cell"><span class="n n-grn">56/56</span><span class="l">Tests Pass</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v6.0.2 → v6.0.3</span> — Windows Defender Blocked Startup</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 1 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#01</span>
+    <span class="bug-title"><code>_warn_nonsystem_tools()</code> executed binaries with <code>--version</code>, triggering Defender</span>
+    <span class="sev sev-critical">CRITICAL</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v6.0.2</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">DEFENDER</span> <span class="tag">CORPORATE</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> During <code>init_common()</code>, the function iterated over all tools in <code>$REQUIRED_TOOLS</code> and <code>$OPTIONAL_TOOLS</code>, resolved their paths with <code>command -v</code>, then <em>executed each one</em> with <code>timeout 3 "$path" --version</code>. On corporate-locked MSYS2 installs, Windows Defender flagged this as suspicious behavior and showed "Action bloquée" (Action blocked).</div>
+    <div class="fix-desc"><strong>Fix:</strong> Removed all binary execution. Function now only checks path location with <code>case</code> pattern matching. No binary is ever invoked.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>_warn_nonsystem_tools()</span></div>
+<pre>
+ _warn_nonsystem_tools() {
+     [ "$OS_TYPE" = "msys" ] || [ "$OS_TYPE" = "cygwin" ] || return 0
+     local tool path warned=0 blocked=""
+     for tool in $REQUIRED_TOOLS $OPTIONAL_TOOLS; do
+         path=$(command -v "$tool" 2&gt;/dev/null) || continue
+         case "$path" in
+             /usr/bin/*|/bin/*|/usr/local/bin/*|/mingw*/bin/*|/ucrt*/bin/*)
+                 ;; # system — safe
+             *)
+<span class="del">-                # Probe the binary to see if it causes UAC/Defender
+-                if ! timeout 3 "$path" --version &lt;/dev/null &gt;/dev/null 2&gt;&amp;1; then
+-                    blocked="${blocked:+$blocked, }$tool ($path)"
+-                fi</span>
+<span class="add">+                # Just log warning — NEVER execute the binary
++                _log_file "WARN" "  $tool → $path (expected in /usr/bin)"
++                blocked="${blocked:+$blocked, }$tool ($path)"</span>
+         esac
+     done
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 2 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#02</span>
+    <span class="bug-title"><code>_safe_probe()</code> piped data to sort binaries on Windows, triggering Defender</span>
+    <span class="sev sev-critical">CRITICAL</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v6.0.3</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">DEFENDER</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Even for binaries in "known safe" system paths like <code>/usr/bin/sort</code>, the function piped test data through them: <code>printf 'b\na\n' | "$bin" 2&gt;/dev/null</code>. On locked-down corporate Windows machines, <em>any</em> binary execution from MSYS2 could trigger Defender.</div>
+    <div class="fix-desc"><strong>Fix:</strong> On MSYS2/Cygwin, trust system paths by existence check only (<code>[ -x "$bin" ]</code>). Execution-based verification only runs on Linux/macOS.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>_safe_probe()</span></div>
+<pre>
+ _safe_probe() {
+     local bin="$1"
+     [ -x "$bin" ] || return 1
+<span class="del">-    # Only probe binaries in known safe system paths
+-    case "$bin" in
+-        /usr/bin/*|/bin/*|/usr/local/bin/*|/mingw*/bin/*|/ucrt*/bin/*)
+-            printf 'b\na\n' | "$bin" 2&gt;/dev/null | head -1 | grep -q '^a$'
+-            ;;
+-        *) return 1 ;;
+-    esac</span>
+<span class="add">+    # On Windows: trust system paths without execution
++    if [ "$OS_TYPE" = "msys" ] || [ "$OS_TYPE" = "cygwin" ]; then
++        case "$bin" in
++            /usr/bin/*|/bin/*|/usr/local/bin/*|/mingw*/bin/*|/ucrt*/bin/*)
++                return 0 ;;
++            *) return 1 ;;
++        esac
++    fi
++    # On Linux/macOS: verify the binary actually sorts
++    printf 'b\na\n' | "$bin" 2&gt;/dev/null | head -1 | grep -q '^a$'</span>
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 3 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#03</span>
+    <span class="bug-title"><code>_find_sort()</code> called <code>_safe_probe()</code> on every candidate, executing binaries at init</span>
+    <span class="sev sev-critical">CRITICAL</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v6.0.3</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">DEFENDER</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The sort binary finder iterated system paths and called <code>_safe_probe()</code> on each, which executed the binary. On MSYS2, even <code>/usr/bin/sort</code> was being piped to, creating an execution event for Defender.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Replace <code>_safe_probe()</code> calls with simple <code>[ -x "$candidate" ]</code> for system paths. Added <code>/mingw64/bin/sort</code> and <code>/ucrt64/bin/sort</code> to known locations. PATH fallback only probes on non-Windows.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>_find_sort()</span></div>
+<pre>
+ _find_sort() {
+     [ -n "$_SORT_BIN" ] &amp;&amp; return
+     local candidate
+<span class="del">-    # Try common system locations in priority order
+-    for candidate in /usr/bin/sort /bin/sort /usr/local/bin/sort; do
+-        if _safe_probe "$candidate"; then</span>
+<span class="add">+    # Trust known system locations without probing
++    for candidate in /usr/bin/sort /bin/sort /usr/local/bin/sort \
++                     /mingw64/bin/sort /ucrt64/bin/sort; do
++        if [ -x "$candidate" ]; then</span>
+             _SORT_BIN="$candidate"
+             return
+<span class="del">-        fi
+-    done 2&gt;/dev/null
+-    local resolved
+-    resolved=$(command -v sort 2&gt;/dev/null)
+-    if [ -n "$resolved" ] &amp;&amp; _safe_probe "$resolved"; then
+-        _SORT_BIN="$resolved"
+-        return
+-    fi</span>
+<span class="add">+        fi
++    done 2&gt;/dev/null
++    local resolved
++    resolved=$(command -v sort 2&gt;/dev/null)
++    if [ -n "$resolved" ]; then
++        case "$resolved" in
++            /usr/bin/*|/bin/*|/usr/local/bin/*|/mingw*/bin/*|/ucrt*/bin/*)
++                [ -x "$resolved" ] &amp;&amp; { _SORT_BIN="$resolved"; return; } ;;
++            *)
++                # Non-system: probe only on non-Windows
++                if [ "$OS_TYPE" != "msys" ] &amp;&amp; [ "$OS_TYPE" != "cygwin" ]; then
++                    _safe_probe "$resolved" &amp;&amp; { _SORT_BIN="$resolved"; return; }
++                fi ;;
++        esac
++    fi</span>
+     _SORT_BIN="NONE"
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v6.0</span> — Webapp JSON &amp; PMQ Map</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 4 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#04</span>
+    <span class="bug-title">Webapp JSON omitted <code>deepAnalysis</code> unless causal chains existed</span>
+    <span class="sev sev-high">HIGH</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>generators/gen_webapp.sh</code></span>
+    <span>Version: <code>v6.0</code></span>
+    <span class="tag">JSON</span> <span class="tag">WEBAPP</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Line 153 only checked for <code>deep_causal.dat</code> to decide whether to emit the deepAnalysis JSON section. When only other deep modules produced output (boot_timing, reboots, connectivity, sessions, state_machine), the entire section was skipped.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Check for ANY deep output file, not just causal chains.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">generators/gen_webapp.sh</span> <span>line ~153</span></div>
+<pre>
+<span class="del">-    if [ -f "$WORK_DIR/deep_causal.dat" ]; then</span>
+<span class="add">+    local has_deep=0
++    for _df in deep_boot_timing.dat deep_reboots.dat deep_connectivity.dat \
++               deep_sessions.dat deep_state_machine.dat deep_causal.dat; do
++        [ -s "$WORK_DIR/$_df" ] &amp;&amp; { has_deep=1; break; }
++    done
++    if [ "$has_deep" -eq 1 ]; then</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v5.7.1</span> — Deep Analysis Parsed Migration</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 5 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#05</span>
+    <span class="bug-title">BootNotification false positive — <code>"isn't accepted"</code> matched <code>"accepted"</code> pattern</span>
+    <span class="sev sev-high">HIGH</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_deep.sh</code></span>
+    <span>Version: <code>v5.7.1</code></span>
+    <span class="tag">FALSE-POSITIVE</span> <span class="tag">OCPP</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The grep pattern <code>'BootNotification.*[Aa]ccepted'</code> also matched log lines containing <code>"BootNotification isn't accepted"</code>, incorrectly counting rejected notifications as accepted ones.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added explicit exclusion filter <code>grep -v "isn't accepted"</code> before the sed extraction. Also tightened the "failed" pattern to require <code>Sending.*BootNotification</code>.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/analyzer_deep.sh</span> <span>_deep_connectivity()</span></div>
+<pre>
+ # BootNotification outcomes (specific patterns only)
+<span class="del">- grep -a 'BootNotification.*is failed\|BootNotification.*[Aa]ccepted\|BootNotification.*[Rr]ejected' \
+-     "$ocpp_parsed" 2&gt;/dev/null | \
+-     sed -n 's/^\([0-9-]* [0-9:.]*\).*BootNotification.*is failed.*/\1\tboot_notif\tfailed/p
+-             s/^\([0-9-]* [0-9:.]*\).*BootNotification.*[Aa]ccepted.*/\1\tboot_notif\taccepted/p</span>
+<span class="add">+ grep -a 'BootNotification' "$ocpp_parsed" 2&gt;/dev/null | \
++     grep -v "isn't accepted" | \
++     sed -n 's/^\([0-9-]* [0-9:.]*\).*Sending.*BootNotification.*is failed.*/\1\tboot_notif\tfailed/p
++             s/^\([0-9-]* [0-9:.]*\).*BootNotification.*[Aa]ccepted.*/\1\tboot_notif\taccepted/p</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 6 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#06</span>
+    <span class="bug-title">Deep analysis boot timing used raw <code>*_combined.log</code> instead of parsed files</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_deep.sh</code></span>
+    <span>Version: <code>v5.7.1</code></span>
+    <span class="tag">MIGRATION</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Original 6 deep analysis functions used <code>get_log_file "kern_combined"</code> to read raw concatenated log files. After v5.7 migrated the pipeline to normalized <code>*.parsed</code> format, these functions looked for files that no longer existed.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Updated 7 component paths in <code>_deep_boot_timing</code> and all patterns in <code>_deep_reboot_timeline</code> / <code>_deep_pmq_map</code> to use <code>$WORK_DIR/parsed/*.parsed</code> files with pipe-delimited format.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/analyzer_deep.sh</span> <span>_deep_reboot_timeline()</span></div>
+<pre>
+<span class="del">-    local kern_log syslog_file
+-    kern_log=$(get_log_file "kern_combined")
+-    [ -z "$kern_log" ] &amp;&amp; kern_log=$(get_log_file "kern")
+-    syslog_file=$(get_log_file "syslog_combined")
+-    [ -z "$syslog_file" ] &amp;&amp; syslog_file=$(get_log_file "syslog")</span>
+<span class="add">+    local kern_parsed="$WORK_DIR/parsed/kern.parsed"
++    [ -f "$kern_parsed" ] || kern_parsed="$WORK_DIR/parsed/kern_full.parsed"
++    local syslog_parsed="$WORK_DIR/parsed/syslog.parsed"
++    [ -f "$syslog_parsed" ] || syslog_parsed="$WORK_DIR/parsed/syslog_full.parsed"</span>
+<span class="ctx"> </span>
+     # --- Detect kernel boots ---
+<span class="del">-    if [ -f "$kern_log" ]; then
+-        grep -a 'Booting Linux\|Linux version [0-9]' "$kern_log" 2&gt;/dev/null | \</span>
+<span class="add">+    if [ -f "$kern_parsed" ]; then
++        grep -a 'Booting Linux\|Linux version [0-9]' "$kern_parsed" 2&gt;/dev/null | \</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v5.0 → v5.4</span> — MSYS2 UAC / Stdin / Shellcheck</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 7 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#07</span>
+    <span class="bug-title">MSYS2 PATH contained <code>~/bin</code> with UAC-triggering binaries</span>
+    <span class="sev sev-critical">CRITICAL</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v5.0</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">UAC</span> <span class="tag">PATH</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> On MSYS2, user directories like <code>/home/user/bin</code> or <code>/c/Users/user/...</code> in PATH contained binaries (e.g. <code>sort.exe</code>) that triggered Windows UAC elevation popups. The script would hang waiting for user to click Allow/Block.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added PATH sanitization in <code>detect_environment()</code> that strips <code>/home/*</code> and <code>/c/Users/*</code> entries on MSYS2/Cygwin.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>detect_environment()</span></div>
+<pre>
+ detect_environment() {
+     local uname_out
+     uname_out=$(uname -s 2&gt;/dev/null || echo "Unknown")
+     case "$uname_out" in
+         MINGW*|MSYS*) OS_TYPE="msys" ;;
+         CYGWIN*)      OS_TYPE="cygwin" ;;
+         Darwin)       OS_TYPE="macos" ;;
+         *)            OS_TYPE="linux" ;;
+     esac
+
+<span class="add">+    # Strip user home directories from PATH on Windows
++    # Non-system binaries (e.g. ~/bin/sort.exe) can trigger Windows UAC
++    if [ "$OS_TYPE" = "msys" ] || [ "$OS_TYPE" = "cygwin" ]; then
++        local clean_path="" IFS_save="$IFS" d
++        IFS=":"
++        for d in $PATH; do
++            case "$d" in
++                /home/*|/c/Users/*|/C/Users/*)
++                    # Skip user home paths — may contain UAC-triggering binaries
++                    _log_file "DEBUG" "PATH sanitize: removed $d"
++                    ;;
++                *) clean_path="${clean_path:+$clean_path:}$d" ;;
++            esac
++        done
++        IFS="$IFS_save"
++        export PATH="$clean_path"
++    fi</span>
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 8 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#08</span>
+    <span class="bug-title"><code>_find_sort()</code> resolved to <code>~/bin/sort.exe</code> — UAC popup</span>
+    <span class="sev sev-critical">CRITICAL</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v4.1</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">UAC</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> <code>command -v sort</code> resolved to a sort binary in the user's home directory. Executing it triggered a Windows UAC elevation popup, blocking the script.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Created <code>_safe_probe()</code> with timeout-protected binary verification. Created <code>sort()</code> shell wrapper that falls through to <code>cat</code> if no working sort found — data is never lost.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>sort() wrapper — new function</span></div>
+<pre>
+<span class="add">+ sort() {
++     _find_sort
++     if [ "$_SORT_BIN" = "NONE" ]; then
++         cat  # pass-through — unsorted but data not lost
++     else
++         "$_SORT_BIN" "$@"
++     fi
++ }</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 9 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#09</span>
+    <span class="bug-title"><code>fleet.sh</code> printf: 8 format specifiers but 9 arguments</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/fleet.sh</code></span>
+    <span>Version: <code>v5.0</code></span>
+    <span class="tag">SHELLCHECK</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The error-path printf had <code>%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n</code> (8 specifiers) but passed 9 arguments including <code>"unknown"</code> at the end. The last argument was silently dropped.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added missing <code>%s</code> specifier.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/fleet.sh</span></div>
+<pre>
+<span class="del">- printf '%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \</span>
+<span class="add">+ printf '%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \</span>
+     "$idx" "unknown" "?" "0" "F" "?" "error" "$bname" "unknown"</pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 10 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#10</span>
+    <span class="bug-title"><code>analyzer_deep.sh</code> printf: <code>%d</code> missing for <code>$fallback</code> argument</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_deep.sh</code></span>
+    <span>Version: <code>v5.0</code></span>
+    <span class="tag">SHELLCHECK</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> <code>printf "EFFECT\tStorageFallbackMode active — blocks ALL sessions\n" "$fallback"</code> — the format string had no <code>%d</code> placeholder, so <code>$fallback</code> was silently ignored.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Changed to <code>"...active (%d) — blocks..."</code></div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/analyzer_deep.sh</span></div>
+<pre>
+<span class="del">- printf "EFFECT\tStorageFallbackMode active — blocks ALL sessions\n" "$fallback"</span>
+<span class="add">+ printf "EFFECT\tStorageFallbackMode active (%d) — blocks ALL sessions\n" "$fallback"</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 11 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#11</span>
+    <span class="bug-title"><code>$discon_files</code> unguarded grep — glob expansion on empty variable</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_standard.sh</code></span>
+    <span>Version: <code>v5.0</code></span>
+    <span class="tag">SHELLCHECK</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> <code>grep -roh '...' $discon_files</code> — when <code>$discon_files</code> was empty, the unquoted variable caused grep to read from stdin, potentially hanging.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Guard with <code>[ -n "$discon_files" ] &amp;&amp;</code>.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/analyzer_standard.sh</span></div>
+<pre>
+<span class="del">- discon_targets=$(grep -roh 'Direct queue not connected: /[^ ]*' $discon_files ...)</span>
+<span class="add">+ discon_targets=""
++ [ -n "$discon_files" ] &amp;&amp; discon_targets=$(grep -roh 'Direct queue not connected: /[^ ]*' $discon_files ...)</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 12 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#12</span>
+    <span class="bug-title">22+ detectors missing explicit <code>return 0</code> — false failures propagated</span>
+    <span class="sev sev-high">HIGH</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_standard.sh</code></span>
+    <span>Version: <code>v5.3 → v5.4</code></span>
+    <span class="tag">EXIT-CODE</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Bash functions return the exit code of their last command. When a detector's last statement was a <code>grep</code> or <code>[</code> test that failed (normal case for "no issues found"), the function returned 1. <code>safe_run()</code> then logged it as a failure.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added explicit <code>return 0</code> to 34 functions total (22 in v5.3, 12 more in v5.4 audit).</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/analyzer_standard.sh</span> <span>every detector</span></div>
+<pre>
+ _analyze_power_board() {
+     local comp="ChargerApp/PowerBoard"
+     ...
+     if [ "$pb_fault" -gt 0 ]; then
+         add_issue "MEDIUM" "$comp" "Power Board Fault" ...
+     fi
+<span class="add">+    return 0</span>
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v5.3</span> — Progress/Log Collision</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 13 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#13</span>
+    <span class="bug-title">Spinner/progress output collided with log messages on same line</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/common.sh</code></span>
+    <span>Version: <code>v5.3</code></span>
+    <span class="tag">TUI</span> <span class="tag">DISPLAY</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The spinner wrote to the same line using <code>\r</code> (carriage return). When a log message printed during spinner animation, the spinner remnants appeared prepended to the log output, creating garbled display.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added <code>_log_clear_line()</code> that erases the spinner before any log output. Integrated into <code>log_info</code>, <code>log_warn</code>, <code>log_error</code>, and <code>log_ok</code>.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/common.sh</span> <span>new helper</span></div>
+<pre>
+<span class="add">+ _log_clear_line() {
++     if [ "${_SPINNER_ACTIVE:-0}" -eq 1 ] &amp;&amp; _is_tty; then
++         printf '\r\033[K' &gt;&amp;2
++     fi
++ }</span>
+<span class="ctx"> </span>
+ log_info() {
+<span class="add">+    _log_clear_line</span>
+     [ "$LOG_LEVEL" -ge 2 ] || return 0
+     printf '  %s● %s%s\n' "${BLU}" "$1" "${RST}"
+     _log_file "INFO" "$1"
+ }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v2.4 → v4.0</span> — Loader &amp; Extraction</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 14 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#14</span>
+    <span class="bug-title">Nested archives silently skipped — <code>.tar.gz</code> inside <code>.zip</code> not extracted</span>
+    <span class="sev sev-high">HIGH</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/loader.sh</code></span>
+    <span>Version: <code>v2.4</code></span>
+    <span class="tag">LOADER</span> <span class="tag">ARCHIVES</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> After unzipping a <code>.zip</code> file, the loader scanned for <code>.log</code>/<code>.txt</code> files but never checked if any of the extracted files were themselves archives (tar.gz, tar.bz2, tar.xz, zip). Nested archives were treated as unknown binary files and silently skipped.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added <code>_extract_nested_archives()</code> — recursive extraction up to 5 levels deep, with Python fallbacks for every archive format (tar 3.12+ security filter bypass). Called both before and after <code>.gz</code> decompression.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/loader.sh</span> <span>_extract_nested_archives() — new function</span></div>
+<pre>
+<span class="add">+ _extract_nested_archives() {
++     local dir="$1" max_depth=5 depth=0
++     spinner_start "Extracting nested archives..."
++     while [ "$depth" -lt "$max_depth" ]; do
++         local found=0
++         find "$dir" -type f \( -name '*.tar.gz' -o -name '*.tgz' \
++              -o -name '*.tar.bz2' -o -name '*.zip' -o -name '*.tar' \) | \
++         while IFS= read -r f; do
++             local target_dir rc=1
++             target_dir=$(dirname "$f")/$(basename "$f" | sed 's/\.[^.]*$//')_nested
++             mkdir -p "$target_dir"
++             case "$f" in
++                 *.tar.gz|*.tgz) tar -xzf "$f" -C "$target_dir" 2&gt;/dev/null; rc=$?
++                     # Python fallback for MSYS2...
++                 ;;
++             esac
++             [ "$rc" -eq 0 ] &amp;&amp; { rm -f "$f"; found=1; }
++         done
++         depth=$((depth + 1))
++         [ "$found" -eq 0 ] &amp;&amp; break
++     done
++     spinner_stop
++ }</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 15 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#15</span>
+    <span class="bug-title">Extension-based log detection missed files like <code>syslog</code> (no extension)</span>
+    <span class="sev sev-high">HIGH</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/loader.sh</code></span>
+    <span>Version: <code>v2.4</code></span>
+    <span class="tag">LOADER</span> <span class="tag">DETECTION</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The loader used <code>*.log</code> / <code>*.txt</code> glob patterns to find log files. Files like <code>syslog</code>, <code>kern</code>, <code>messages</code>, <code>dmesg</code> (no file extension) were never discovered.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Replaced extension-based discovery with content-based detection — reads first 16KB of each file and checks for timestamp patterns (ISO 8601, syslog, epoch).</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/loader.sh</span> <span>_register_component_logs()</span></div>
+<pre>
+<span class="del">- # Discover log/txt files using glob
+- local log_files
+- log_files=$(find "$dir" -maxdepth 3 \( -name '*.log' -o -name '*.txt' \) 2&gt;/dev/null)</span>
+<span class="add">+ # Content-based log detection: read first 16KB and check for timestamps
++ local log_files=""
++ for f in $(find "$dir" -maxdepth 3 -type f -size +0c 2&gt;/dev/null); do
++     head -c 16384 "$f" 2&gt;/dev/null | \
++         grep -qE '[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:|^[A-Z][a-z]{2} [ 0-9]{2} [0-9]{2}:' &amp;&amp; \
++         log_files="$log_files $f"
++ done</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 16 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#16</span>
+    <span class="bug-title">MSYS2 Python tar extraction failed — 3.12+ security filter</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/loader.sh</code></span>
+    <span>Version: <code>v2.4</code></span>
+    <span class="tag">MSYS2</span> <span class="tag">PYTHON</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Python 3.12+ introduced a mandatory extraction filter for <code>tarfile.extractall()</code>. Without <code>filter='data'</code>, extraction raised a <code>DeprecationWarning</code> or failed entirely on some configurations.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added <code>filter='data'</code> for Python 3.12+ with a try/except fallback for older versions.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/loader.sh</span> <span>Python tar fallback</span></div>
+<pre>
+<span class="add">+ $pycmd -c "
++ import tarfile, sys
++ with tarfile.open('$f') as t:
++     try:
++         t.extractall('$target_dir', filter='data')
++     except TypeError:
++         t.extractall('$target_dir')  # Python &lt; 3.12
++ " 2&gt;/dev/null; rc=$?</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 17 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#17</span>
+    <span class="bug-title">Menu reload didn't clear previous load state</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/loader.sh</code></span>
+    <span>Version: <code>v4.0</code></span>
+    <span class="tag">MENU</span> <span class="tag">STATE</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> Loading a new log file via the interactive menu didn't clear the previous <code>log_files.idx</code> or the <code>extracted/</code> directory. Logs from the previous analysis leaked into the new one.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Added state cleanup at the start of <code>load_input()</code>.</div>
+
+    <div class="diff">
+      <div class="diff-header"><span class="fname">lib/loader.sh</span> <span>load_input()</span></div>
+<pre>
+ load_input() {
+     local input="$1"
+     if [ -z "$input" ]; then
+         log_error "No input specified"
+         return 1
+     fi
+
+<span class="add">+    # Clear previous load state (for menu reload)
++    : &gt; "$WORK_DIR/log_files.idx" 2&gt;/dev/null
++    if [ -d "$WORK_DIR/extracted" ]; then
++        rm -rf "$WORK_DIR/extracted"
++    fi</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 class="section-title"><span class="ver">v5.7</span> — Deep Analysis Reboot/PMQ Migration</h2>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- BUG 18 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#18</span>
+    <span class="bug-title">PMQ map grep patterns incompatible with pipe-delimited parsed format</span>
+    <span class="sev sev-medium">MEDIUM</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_deep.sh</code></span>
+    <span>Version: <code>v5.7.1</code></span>
+    <span class="tag">MIGRATION</span> <span class="tag">PMQ</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The PMQ map function used <code>grep</code> patterns designed for raw log format (<code>[Component] message</code>). After migration to parsed format (<code>timestamp|level|component|message</code>), the patterns no longer matched because component names were in a different column position.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Updated sed/awk patterns to handle pipe-delimited format. Changed glob from <code>*_combined.log</code> to <code>*.parsed</code>.</div>
+  </div>
+</div>
+
+<!-- BUG 19 -->
+<div class="bug">
+  <div class="bug-head">
+    <span class="bug-id">#19</span>
+    <span class="bug-title"><code>_extract_ts</code> helper didn't strip pipe delimiters from parsed format</span>
+    <span class="sev sev-low">LOW</span>
+  </div>
+  <div class="bug-meta">
+    <span>File: <code>lib/analyzer_deep.sh</code></span>
+    <span>Version: <code>v5.7.1</code></span>
+    <span class="tag">MIGRATION</span>
+  </div>
+  <div class="bug-body">
+    <div class="cause"><strong>Root cause:</strong> The timestamp extraction helper split on whitespace only. In parsed format, timestamps were followed by <code>|</code> which got included in the extracted value.</div>
+    <div class="fix-desc"><strong>Fix:</strong> Updated <code>_extract_ts</code> to also split on pipe characters: <code>cut -d'|' -f1</code> before the whitespace split.</div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    Loggy v6.0.3 — Bug &amp; Corrections Report — 19 fixes across 12 files — Feb 24, 2026
+  </div>
+</footer>
+
+</body>
+</html>
